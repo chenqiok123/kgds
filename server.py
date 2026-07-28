@@ -65,6 +65,7 @@ def hash_pw(password):
     return hashlib.sha256(("kgds_salt_" + password).encode()).hexdigest()
 
 def init_db():
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)  # 确保持久卷目录存在
     conn = get_db()
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS users (
@@ -134,13 +135,19 @@ def init_db():
         conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
     conn.commit()
 
-    # Seed default admin if none exists
+    # Seed default admin — 密码从环境变量读取，绝不硬编码
     admin = conn.execute("SELECT id FROM users WHERE is_admin = 1").fetchone()
     if not admin:
+        admin_email = os.environ.get("ADMIN_EMAIL", "admin@kgds.local")
+        admin_pw = os.environ.get("ADMIN_PASSWORD", secrets.token_hex(8))
         conn.execute("INSERT INTO users (name, email, token, password_hash, is_admin) VALUES (?,?,?,?,?)",
-                     ("管理员", "admin@kgds.local", new_token(), hash_pw("admin123"), 1))
+                     ("管理员", admin_email, new_token(), hash_pw(admin_pw), 1))
         conn.commit()
-        print("[KGDS] Default admin: admin@kgds.local / admin123")
+        if not os.environ.get("ADMIN_PASSWORD"):
+            print(f"[KGDS] ⚠️  未设置 ADMIN_PASSWORD 环境变量，已生成随机管理员密码（仅显示一次）:")
+            print(f"[KGDS]    邮箱: {admin_email}")
+            print(f"[KGDS]    密码: {admin_pw}")
+            print(f"[KGDS]    ⚠️  请立即在 Zeabur 环境变量中设置 ADMIN_PASSWORD，否则重新部署后密码会变！")
 
     conn.close()
 
