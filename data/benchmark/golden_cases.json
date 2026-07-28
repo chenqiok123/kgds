@@ -1,0 +1,237 @@
+[
+  {
+    "id": "GC-001",
+    "name": "新手代理人—基础知识均衡",
+    "description": "模拟0-6个月新代理人，基础层知识掌握较好但提升层和升华层薄弱",
+    "profile": {"role": "insurance-agent", "experience": "0-6个月", "level": "L1"},
+    "answers": {
+      "Q-001": 2, "Q-002": 2, "Q-003": 0, "Q-004": 2, "Q-005": 0,
+      "Q-011": 2, "Q-012": 1, "Q-013": 1, "Q-014": 2, "Q-015": 0,
+      "Q-021": 1, "Q-022": 0, "Q-023": 1, "Q-024": 0, "Q-025": 0,
+      "Q-031": 0, "Q-032": 0, "Q-033": 0, "Q-034": 1, "Q-035": 1
+    },
+    "expected": {
+      "theta_range": [-1.5, -0.5],
+      "mastered_nodes": ["L1-01", "L1-02", "L1-03"],
+      "weak_nodes": ["L2-01", "L2-02", "L3-01"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "foundation"
+    }
+  },
+  {
+    "id": "GC-002",
+    "name": "中级代理人—提升层掌握",
+    "description": "2-5年经验，基础层和提升层掌握较好，升华层开始涉及",
+    "profile": {"role": "insurance-agent", "experience": "2-5年", "level": "L3"},
+    "answers": {
+      "Q-001": 3, "Q-002": 3, "Q-003": 2, "Q-004": 3, "Q-005": 1,
+      "Q-011": 3, "Q-012": 3, "Q-013": 2, "Q-014": 3, "Q-015": 1,
+      "Q-021": 3, "Q-022": 2, "Q-023": 2, "Q-024": 1, "Q-025": 2,
+      "Q-031": 1, "Q-032": 1, "Q-033": 0, "Q-034": 2, "Q-035": 1
+    },
+    "expected": {
+      "theta_range": [0.0, 1.0],
+      "mastered_nodes": ["L1-01", "L1-02", "L2-01", "L2-03"],
+      "weak_nodes": ["L3-02", "L3-03"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "intermediate"
+    }
+  },
+  {
+    "id": "GC-003",
+    "name": "资深代理人—全层精通",
+    "description": "10年+经验，三层知识几乎全部掌握",
+    "profile": {"role": "insurance-agent", "experience": "10年+", "level": "L5"},
+    "answers": {
+      "Q-001": 3, "Q-002": 3, "Q-003": 3, "Q-004": 3, "Q-005": 2,
+      "Q-011": 3, "Q-012": 3, "Q-013": 3, "Q-014": 3, "Q-015": 2,
+      "Q-021": 3, "Q-022": 3, "Q-023": 3, "Q-024": 2, "Q-025": 3,
+      "Q-031": 3, "Q-032": 2, "Q-033": 2, "Q-034": 3, "Q-035": 3
+    },
+    "expected": {
+      "theta_range": [1.5, 3.0],
+      "mastered_nodes": ["L1-01","L1-02","L1-03","L2-01","L2-02","L2-03","L3-01","L3-02","L3-03"],
+      "weak_nodes": [],
+      "should_detect_blindspots": false,
+      "dominant_layer": "transcendent"
+    }
+  },
+  {
+    "id": "GC-004",
+    "name": "基础层强势但盲点明显",
+    "description": "死记硬背基础概念但对交叉应用场景一无所知",
+    "profile": {"role": "insurance-agent", "experience": "6-12个月", "level": "L2"},
+    "answers": {
+      "Q-001": 3, "Q-002": 3, "Q-003": 2, "Q-004": 3, "Q-005": 1,
+      "Q-011": 1, "Q-012": 0, "Q-013": 1, "Q-014": 1, "Q-015": 0,
+      "Q-021": 0, "Q-022": 0, "Q-023": 0, "Q-024": 0, "Q-025": 1,
+      "Q-031": 0, "Q-032": 0, "Q-033": 0, "Q-034": 0, "Q-035": 0
+    },
+    "expected": {
+      "theta_range": [-0.8, 0.2],
+      "mastered_nodes": ["L1-01", "L1-02"],
+      "weak_nodes": ["L2-01","L2-02","L2-03","L3-01","L3-02","L3-03"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "foundation",
+      "special_note": "基础层高分但提升层断崖式下跌，反盲选应标记为'概念与应用的断层'"
+    }
+  },
+  {
+    "id": "GC-005",
+    "name": "跨界人才—升华层突出但基础薄",
+    "description": "从其他行业转入保险，有商业洞察但缺少保险专业知识",
+    "profile": {"role": "insurance-agent", "experience": "3-6个月", "level": "L1"},
+    "answers": {
+      "Q-001": 1, "Q-002": 0, "Q-003": 0, "Q-004": 1, "Q-005": 0,
+      "Q-011": 1, "Q-012": 0, "Q-013": 0, "Q-014": 0, "Q-015": 0,
+      "Q-021": 2, "Q-022": 2, "Q-023": 1, "Q-024": 0, "Q-025": 1,
+      "Q-031": 2, "Q-032": 2, "Q-033": 1, "Q-034": 3, "Q-035": 2
+    },
+    "expected": {
+      "theta_range": [-1.0, 0.0],
+      "mastered_nodes": [],
+      "weak_nodes": ["L1-01","L1-02","L1-03","L2-01"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "transcendent",
+      "special_note": "升华层高于基础层，非典型分布，应推荐'反向夯实基础'"
+    }
+  },
+  {
+    "id": "GC-006",
+    "name": "随机瞎猜—完全没复习",
+    "description": "所有题目随机选择，模拟无准备的极端情况",
+    "profile": {"role": "insurance-agent", "experience": "0-3个月", "level": "L1"},
+    "answers": {
+      "Q-001": 1, "Q-002": 0, "Q-003": 2, "Q-004": 1, "Q-005": 0,
+      "Q-011": 0, "Q-012": 1, "Q-013": 2, "Q-014": 0, "Q-015": 1,
+      "Q-021": 0, "Q-022": 2, "Q-023": 1, "Q-024": 0, "Q-025": 1,
+      "Q-031": 2, "Q-032": 0, "Q-033": 1, "Q-034": 0, "Q-035": 1
+    },
+    "expected": {
+      "theta_range": [-3.0, -1.5],
+      "mastered_nodes": [],
+      "weak_nodes": ["L1-01","L1-02","L1-03","L2-01","L2-02","L2-03","L3-01","L3-02","L3-03"],
+      "should_detect_blindspots": false,
+      "dominant_layer": "none",
+      "special_note": "极低θ值，系统应提示'建议先学习再测评'而非出具详细报告"
+    }
+  },
+  {
+    "id": "GC-007",
+    "name": "产品知识专精—销售技能薄弱",
+    "description": "对保险产品了如指掌但不擅长客户沟通",
+    "profile": {"role": "insurance-agent", "experience": "1-2年", "level": "L2"},
+    "answers": {
+      "Q-001": 3, "Q-002": 3, "Q-003": 3, "Q-004": 3, "Q-005": 2,
+      "Q-011": 1, "Q-012": 0, "Q-013": 1, "Q-014": 0, "Q-015": 0,
+      "Q-021": 1, "Q-022": 0, "Q-023": 1, "Q-024": 0, "Q-025": 0,
+      "Q-031": 2, "Q-032": 1, "Q-033": 1, "Q-034": 0, "Q-035": 0
+    },
+    "expected": {
+      "theta_range": [-1.0, 0.5],
+      "mastered_nodes": ["L1-01", "L1-02"],
+      "weak_nodes": ["L2-01","L2-02"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "foundation",
+      "special_note": "知识域严重失衡：产品认知高/销售技能低，应触发'短板预警'"
+    }
+  },
+  {
+    "id": "GC-008",
+    "name": "合规达人—合规意识强但产品理解浅",
+    "description": "非常遵守合规要求但保险知识理解停留在表面",
+    "profile": {"role": "insurance-agent", "experience": "1-3年", "level": "L2"},
+    "answers": {
+      "Q-001": 1, "Q-002": 1, "Q-003": 0, "Q-004": 1, "Q-005": 0,
+      "Q-011": 1, "Q-012": 1, "Q-013": 0, "Q-014": 1, "Q-015": 0,
+      "Q-021": 3, "Q-022": 3, "Q-023": 2, "Q-024": 3, "Q-025": 2,
+      "Q-031": 1, "Q-032": 1, "Q-033": 0, "Q-034": 0, "Q-035": 1
+    },
+    "expected": {
+      "theta_range": [-0.5, 0.5],
+      "mastered_nodes": ["L2-03"],
+      "weak_nodes": ["L1-01","L1-02","L1-03","L2-01"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "intermediate"
+    }
+  },
+  {
+    "id": "GC-009",
+    "name": "纸面高手—考试型选手",
+    "description": "理论知识扎实但模拟实战场景时出错，考察理论→实践的转化能力",
+    "profile": {"role": "insurance-agent", "experience": "1-2年", "level": "L2"},
+    "answers": {
+      "Q-001": 3, "Q-002": 3, "Q-003": 3, "Q-004": 3, "Q-005": 2,
+      "Q-011": 3, "Q-012": 2, "Q-013": 2, "Q-014": 3, "Q-015": 1,
+      "Q-021": 3, "Q-022": 2, "Q-023": 2, "Q-024": 1, "Q-025": 2,
+      "Q-031": 0, "Q-032": 0, "Q-033": 0, "Q-034": 1, "Q-035": 0
+    },
+    "expected": {
+      "theta_range": [0.0, 1.0],
+      "mastered_nodes": ["L1-01","L1-02","L1-03","L2-01","L2-02"],
+      "weak_nodes": ["L3-01","L3-02"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "intermediate",
+      "special_note": "基础+提升层高分但升华层归零，'会考试但不会实战'的典型模式"
+    }
+  },
+  {
+    "id": "GC-010",
+    "name": "稳步成长—全层均衡渐进",
+    "description": "1年经验，各层掌握程度呈现自然的递减梯度",
+    "profile": {"role": "insurance-agent", "experience": "1年", "level": "L2"},
+    "answers": {
+      "Q-001": 3, "Q-002": 2, "Q-003": 1, "Q-004": 2, "Q-005": 1,
+      "Q-011": 2, "Q-012": 1, "Q-013": 1, "Q-014": 2, "Q-015": 0,
+      "Q-021": 1, "Q-022": 1, "Q-023": 1, "Q-024": 0, "Q-025": 1,
+      "Q-031": 1, "Q-032": 0, "Q-033": 0, "Q-034": 1, "Q-035": 1
+    },
+    "expected": {
+      "theta_range": [-1.0, 0.0],
+      "mastered_nodes": ["L1-01"],
+      "weak_nodes": ["L2-03","L3-01","L3-02"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "foundation"
+    }
+  },
+  {
+    "id": "GC-011",
+    "name": "反盲选压力测试—知识关联断裂",
+    "description": "同一个知识域：A题答对(概念题)但B题答错(应用场景题)，考察反盲选是否触发关联验证",
+    "profile": {"role": "insurance-agent", "experience": "6-12个月", "level": "L2"},
+    "answers": {
+      "Q-001": 3, "Q-002": 3, "Q-003": 0, "Q-004": 2, "Q-005": 0,
+      "Q-011": 2, "Q-012": 0, "Q-013": 0, "Q-014": 2, "Q-015": 0,
+      "Q-021": 0, "Q-022": 0, "Q-023": 0, "Q-024": 0, "Q-025": 0,
+      "Q-031": 0, "Q-032": 0, "Q-033": 0, "Q-034": 1, "Q-035": 0
+    },
+    "expected": {
+      "theta_range": [-1.5, -0.5],
+      "mastered_nodes": ["L1-01"],
+      "weak_nodes": ["L2-02","L2-03","L3-01"],
+      "should_detect_blindspots": true,
+      "dominant_layer": "foundation",
+      "special_note": "Q-001/Q-002高分但Q-003低分：同一知识域内概念→应用的断裂，应触发反盲选关联验证"
+    }
+  },
+  {
+    "id": "GC-012",
+    "name": "偏见型作答—特定选项倾向",
+    "description": "所有题目不假思索全选C(排第二)，模拟认知偏差",
+    "profile": {"role": "insurance-agent", "experience": "0-3个月", "level": "L1"},
+    "answers": {
+      "Q-001": 1, "Q-002": 1, "Q-003": 1, "Q-004": 1, "Q-005": 1,
+      "Q-011": 1, "Q-012": 1, "Q-013": 1, "Q-014": 1, "Q-015": 1,
+      "Q-021": 1, "Q-022": 1, "Q-023": 1, "Q-024": 1, "Q-025": 1,
+      "Q-031": 1, "Q-032": 1, "Q-033": 1, "Q-034": 1, "Q-035": 1
+    },
+    "expected": {
+      "theta_range": [-2.0, -0.5],
+      "mastered_nodes": [],
+      "weak_nodes": ["L1-01","L1-02","L1-03"],
+      "should_detect_blindspots": false,
+      "dominant_layer": "none",
+      "special_note": "全选同一选项，系统应检测作答模式异常并标记'低信度'"
+    }
+  }
+]

@@ -1,0 +1,18 @@
+# 密钥
+.env
+# 运行时
+kgds.db
+*.pyc
+__pycache__/
+# 必须保留根干净
+/apps/
+/backup/
+/backup_v2/
+/content/
+/edge-tts/
+/platform/
+/screenshots/
+/deliverables/
+/wealth-flow-sales/
+/wealth_flow_ppt.py
+/data/users/

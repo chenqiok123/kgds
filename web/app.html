@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KGDS — 知识图谱诊断系统</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#007AFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="KGDS">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<script src="//unpkg.com/3d-force-graph"></script>
+<script src="//unpkg.com/three@0.150.0/build/three.min.js"></script>
+<style>
+/* ── Apple Design Tokens ── */
+:root {
+  --bg: #F2F2F7;
+  --card: #FFFFFF;
+  --nav: rgba(255,255,255,0.88);
+  --tabbar: rgba(248,248,252,0.92);
+  --acc: #007AFF;
+  --acc2: rgba(0,122,255,0.08);
+  --gr: #34C759;
+  --ye: #FFCC00;
+  --rd: #FF3B30;
+  --tx: #1C1C1E;
+  --tx2: #8E8E93;
+  --tx3: #C7C7CC;
+  --bd: rgba(0,0,0,0.08);
+  --bd2: rgba(0,0,0,0.04);
+  --sh: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --sh-lg: 0 4px 14px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --safe-b: env(safe-area-inset-bottom, 12px);
+  /* Dark graph token — only for 3D panel */
+  --graph-bg: #060a14;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: -apple-system, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+/* ── Nav Bar ── */
+#nav-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px; height: 48px;
+  background: var(--nav);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--bd);
+  flex-shrink: 0; z-index: 50;
+}
+#nav-bar .logo { font-size: 16px; font-weight: 700; color: var(--tx); letter-spacing: -0.3px; white-space: nowrap; }
+#nav-bar .logo .dot { color: var(--acc); }
+#nav-bar .badge {
+  font-size: 10px; color: var(--acc); background: var(--acc2);
+  padding: 3px 8px; border-radius: 10px; font-weight: 600;
+  white-space: nowrap;
+}
+#nav-bar .spacer { flex: 1; }
+#nav-bar .user-info { font-size: 12px; color: var(--tx2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+#nav-bar .btn-logout { font-size: 11px; color: var(--rd); cursor: pointer; background: none; border: none; padding: 4px 8px; display: none; }
+#nav-bar .btn-logout:hover { opacity: .7; }
+
+/* ── Content ── */
+#content { flex: 1; position: relative; overflow: hidden; }
+.panel {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: none; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.panel.active { display: flex; flex-direction: column; }
+
+/* ── Bottom Tab Bar ── */
+#tab-bar {
+  display: flex; justify-content: center; gap: 4px;
+  padding: 6px 16px calc(6px + var(--safe-b));
+  background: var(--tabbar);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--bd);
+  flex-shrink: 0; z-index: 40;
+}
+.tab {
+  flex: 1; max-width: 120px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 4px; border-radius: var(--radius-sm);
+  font-size: 10px; font-weight: 500; color: var(--tx2);
+  cursor: pointer; transition: all .15s; border: none; background: none;
+}
+.tab .icon { font-size: 20px; line-height: 1; }
+.tab.active { color: var(--acc); }
+.tab:active { background: var(--bd2); }
+
+/* ── Graph Panel (dark remains) ── */
+#panel-graph { background: var(--graph-bg); }
+#graph-container { width: 100%; height: 100%; }
+.graph-legend {
+  position: absolute; bottom: 16px; left: 16px;
+  display: flex; flex-wrap: wrap; gap: 8px; z-index: 10;
+  background: rgba(6,10,20,0.88); padding: 8px 12px; border-radius: var(--radius-sm);
+}
+.graph-toggle {
+  position: absolute; top: 12px; right: 16px; z-index: 10;
+  padding: 6px 14px; font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--bd); border-radius: var(--radius-xs);
+  background: rgba(6,10,20,0.88); color: var(--tx2); cursor: pointer;
+  transition: all .15s; font-family: inherit;
+}
+.graph-toggle:hover { border-color: var(--acc); color: var(--tx); }
+.graph-toggle.active { border-color: var(--acc); background: rgba(91,155,213,0.2); color: var(--acc); }
+.graph-legend .item { display: flex; align-items: center; font-size: 10px; color: #8E8E93; gap: 5px; }
+.graph-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── Test Panel (light cards) ── */
+#panel-test { padding: 20px 16px; max-width: 640px; width: 100%; margin: 0 auto; gap: 0; }
+.phase { display: none; flex-direction: column; }
+.phase.active { display: flex; }
+
+/* Login Card */
+.login-card {
+  margin: auto; width: 100%; max-width: 380px;
+  background: var(--card); border-radius: 16px;
+  padding: 32px 24px; box-shadow: var(--sh-lg);
+}
+.login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+.login-card .sub { font-size: 13px; color: var(--tx2); line-height: 1.5; margin-bottom: 24px; }
+
+/* Form fields */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--tx2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field input, .field select {
+  width: 100%; padding: 12px 14px; font-size: 15px;
+  background: var(--bg); border: 1.5px solid var(--bd);
+  border-radius: var(--radius-sm); color: var(--tx);
+  outline: none; transition: border .2s, box-shadow .2s;
+  font-family: inherit;
+  -webkit-appearance: none;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--acc); box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+}
+.field input::placeholder { color: var(--tx3); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 24px; font-size: 15px; font-weight: 600;
+  border-radius: var(--radius-sm); cursor: pointer; border: none;
+  transition: all .15s; font-family: inherit; white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--acc); color: #fff; }
+.btn-primary:hover { background: #0066D6; }
+.btn-secondary { background: var(--bg); color: var(--acc); border: 1.5px solid var(--bd); }
+.btn-secondary:hover { background: var(--acc2); }
+.btn-block { width: 100%; justify-content: center; }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+
+/* Switch mode link */
+.switch-mode { text-align: center; margin-top: 16px; font-size: 13px; color: var(--tx2); }
+.switch-mode a { color: var(--acc); cursor: pointer; font-weight: 600; }
+
+/* Profile section */
+.pf-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+.pf-subtitle { font-size: 13px; color: var(--tx2); margin-bottom: 20px; line-height: 1.6; }
+.form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; min-width: 140px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--tx2); margin-bottom: 5px; }
+
+/* Level checkboxes */
+.level-opts { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.lvl {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--card);
+  border: 1.5px solid var(--bd); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all .15s; font-size: 13px;
+  flex: 1; min-width: 140px; user-select: none;
+}
+.lvl.checked { border-color: var(--acc); background: var(--acc2); }
+.lvl .cb {
+  width: 20px; height: 20px; border-radius: var(--radius-xs);
+  border: 2px solid var(--tx3); display: flex; align-items: center;
+  justify-content: center; font-size: 11px; flex-shrink: 0; transition: all .15s;
+}
+.lvl.checked .cb { border-color: var(--acc); background: var(--acc); color: #fff; }
+.lvl .lv { font-weight: 600; }
+.lvl .cnt { font-size: 10px; color: var(--tx2); }
+.lvl-info { font-size: 12px; color: var(--tx2); margin-bottom: 16px; text-align: center; }
+.sz-toggle { flex-shrink: 0; }
+.sz-btn {
+  font-size: 10px; font-weight: 600; padding: 3px 8px;
+  border-radius: 10px; border: 1.5px solid var(--bd);
+  background: var(--bg); color: var(--tx2); cursor: pointer;
+  transition: all .15s; line-height: 1.2;
+}
+.sz-btn:hover { border-color: var(--acc); color: var(--tx); }
+.sz-btn.active { border-color: var(--acc); background: var(--acc); color: #fff; }
+
+/* Question card */
+.q-bar-bg { background: var(--bd); border-radius: 10px; height: 4px; margin-bottom: 20px; overflow: hidden; }
+.q-bar-fill { height: 100%; background: var(--acc); border-radius: 10px; transition: width .3s; }
+.q-counter { font-size: 11px; color: var(--tx2); margin-bottom: 4px; text-align: center; }
+.q-hint { font-size: 11px; color: var(--acc); margin-bottom: 14px; text-align: center; font-weight: 500; }
+.q-card {
+  background: var(--card); border-radius: 16px;
+  padding: 24px 20px; box-shadow: var(--sh); margin-bottom: 16px;
+}
+.q-text { font-size: 16px; font-weight: 600; line-height: 1.5; margin-bottom: 18px; color: var(--tx); }
+.q-opts, .q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.q-tag { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px; }
+.q-tag.knowledge { background: #E8F5E9; color: #2E7D32; }
+.q-tag.scenario { background: #E3F2FD; color: #1565C0; }
+.q-tag.application { background: #FFF3E0; color: #E65100; }
+.q-tag.variant { background: #F3E5F5; color: #7B1FA2; }
+.q-opt {
+  padding: 14px 16px; font-size: 14px; border: 1.5px solid var(--bd);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all .15s;
+  background: var(--card); color: var(--tx); text-align: left; line-height: 1.4;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.q-opt:hover { border-color: var(--acc); background: var(--acc2); }
+.q-opt.chosen { border-color: var(--acc); background: var(--acc2); }
+.q-opt .qn { font-weight: 700; color: var(--acc); min-width: 20px; text-align: center; font-size: 13px; }
+.q-nav { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+
+/* Done */
+.done-state { text-align: center; padding: 32px 16px; }
+.done-state .check { font-size: 48px; margin-bottom: 12px; }
+.rp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+.rp-score-ring{text-align:center;min-width:90px}
+.rp-score-ring .score-text{font-size:44px;font-weight:800;letter-spacing:-2px;line-height:1}
+.rp-score-ring .score-label{font-size:11px;color:var(--tx2);margin-top:2px}
+.rp-summary{flex:1}
+.rp-summary h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.rp-summary .sub{font-size:13px;color:var(--tx2);margin-bottom:8px}
+.rp-badges{display:flex;gap:6px;flex-wrap:wrap}
+.rp-badge{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600}
+.rp-badge.excellent{background:#E8F5E9;color:#2E7D32}
+.rp-badge.good{background:#E3F2FD;color:#1565C0}
+.rp-badge.warning{background:#FFF8E1;color:#F57F17}
+.rp-badge.danger{background:#FFEBEE;color:#C62828}
+/* 飞轮反馈卡片 */
+.fw-card{background:linear-gradient(135deg,#007AFF12,#5AC8FA18);border:1px solid #007AFF30;border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:18px}
+.fw-title{font-weight:700;font-size:14px;color:#005BBB;margin-bottom:6px}
+.fw-line{font-size:12px;color:var(--tx2);line-height:1.7}
+.fw-line b{color:#005BBB}
+.fw-trend{font-size:11px;color:var(--tx2);margin-top:6px;font-style:italic}
+.rp-layers{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.rp-layer{background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--sh)}
+.layer-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.layer-pct{font-size:22px;font-weight:800;margin-bottom:6px}
+.layer-bar{height:6px;border-radius:3px;background:var(--bd);overflow:hidden}
+.layer-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+.rp-cards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.rp-card{flex:1;min-width:120px;background:var(--card);border-radius:var(--radius-sm);padding:14px;box-shadow:var(--sh)}
+.rp-card h4{font-size:13px;font-weight:700;margin-bottom:10px}
+.rp-item{margin-bottom:8px}
+.rp-item .name{font-size:13px;font-weight:600}
+.rp-item .detail{font-size:11px;color:var(--tx2);margin-top:2px}
+.rp-strength{color:var(--gr)}.rp-gap{color:var(--acc)}
+.rp-books{display:flex;flex-direction:column;gap:6px}
+.rp-book{padding:8px 0;border-bottom:1px solid var(--bd2)}
+.rp-book:last-child{border-bottom:none}
+.btitle{font-weight:600;font-size:13px}
+.bauthor{color:var(--tx2);font-size:10px}
+.breason{color:var(--tx2);font-size:10px;font-style:italic}
+
+/* History */
+.history-item {
+  background: var(--card); border: 1px solid var(--bd);
+  border-radius: var(--radius-sm); padding: 14px; margin-bottom: 8px;
+  box-shadow: var(--sh);
+}
+.history-item:hover { background: var(--bg); }
+
+/* Spinner */
+.submitting { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 12px; color: var(--tx2); font-size: 14px; }
+.spinner { width: 28px; height: 28px; border: 2.5px solid var(--bd); border-top-color: var(--acc); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  #nav-bar { padding: 0 14px; height: 44px; }
+  #nav-bar .logo { font-size: 14px; }
+  .tab { font-size: 9px; max-width: 80px; }
+  .tab .icon { font-size: 18px; }
+  #panel-test { padding: 14px 10px; max-width: 100%; }
+  .login-card { padding: 24px 16px; }
+  .form-row { flex-direction: column; gap: 8px; }
+  .form-row .form-group { min-width: 100%; }
+  .level-opts { flex-direction: column; gap: 8px; }
+  .lvl { min-width: 100%; }
+  .q-text { font-size: 15px; }
+  .q-opt { font-size: 13px; padding: 12px 14px; }
+  .rp-header { flex-direction: column; text-align: center; }
+  .rp-badges { justify-content: center; }
+  .rp-layers { flex-direction: column; }
+  .rp-cards { flex-direction: column; }
+  .graph-legend { bottom: 12px; left: 8px; font-size: 9px; }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  #panel-test { max-width: 580px; }
+  .rp-cards { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Nav Bar -->
+  <div id="nav-bar">
+    <div class="logo">🧠<span class="dot">·</span>KGDS</div>
+    <div class="badge">保险·寿险·个险代理人</div>
+    <div class="spacer"></div>
+    <span class="user-info" id="user-display"></span>
+    <button class="btn-logout" id="btn-logout" onclick="logout()">退出</button>
+  </div>
+
+  <!-- Content -->
+  <div id="content">
+    <!-- Graph Panel -->
+    <div class="panel" id="panel-graph">
+      <div class="graph-legend">
+        <div class="item"><div class="dot" style="background:#2ECC40"></div>已掌握</div>
+        <div class="item"><div class="dot" style="background:#FFDC00"></div>部分掌握</div>
+        <div class="item"><div class="dot" style="background:#FF4136"></div>需加强</div>
+        <div class="item"><div class="dot" style="background:#444466"></div>未选测</div>
+      </div>
+      <div id="graph-container"></div>
+      <button class="graph-toggle" id="btn-full-graph" onclick="toggleGraphMode()" style="display:none" title="切换为默认完整图谱">🗺️ 完整图谱</button>
+    </div>
+
+    <!-- Test Panel -->
+    <div class="panel active" id="panel-test">
+      <!-- Phase: Login -->
+      <div class="phase active" id="phase-login">
+        <div class="login-card">
+          <h2 id="login-title">👋 欢迎使用 KGDS</h2>
+          <div class="sub">知识图谱诊断系统 · 保险代理人专业测评<br>首次使用将自动注册，无需密码</div>
+          <div class="field">
+            <label>姓名</label>
+            <input type="text" id="f-name" placeholder="你的名字（选填）" autocomplete="name">
+          </div>
+          <div class="field" id="field-email">
+            <label>邮箱</label>
+            <input type="email" id="f-email" placeholder="your@email.com" autocomplete="email">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="handleAuth()" id="btn-auth">🚀 开始测评</button>
+          <div class="switch-mode" id="switch-mode">
+            已有账号？<a onclick="toggleAuthMode()">直接登录</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase: Profile -->
+      <div class="phase" id="phase-profile">
+        <div class="pf-title">📋 开始诊断</div>
+        <div class="pf-subtitle">系统将为你生成个性化诊断试卷（含 1/3 AI 变体题，每次不同）。</div>
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:16px">
+          当前岗位：<strong>保险行业 · 寿险公司 · 个险代理人</strong>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>从业年限</label>
+            <select id="f-years">
+              <option value="0-1">不到1年</option>
+              <option value="1-3" selected>1-3年</option>
+              <option value="3-5">3-5年</option>
+              <option value="5-10">5-10年</option>
+              <option value="10+">10年以上</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>目标层级</label>
+            <select id="f-target">
+              <option value="4">四级·初级专员</option>
+              <option value="3" selected>三级·中级专员</option>
+              <option value="2">二级·高级专员</option>
+              <option value="1">一级·资深专员</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>当前主要客群</label>
+            <select id="f-customer">
+              <option value="mass">大众客户</option>
+              <option value="middle" selected>中产客户</option>
+              <option value="hnw">高净值客户</option>
+              <option value="mixed">混合客群</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">📊 选择测试层级（可多选）</div>
+        <div class="level-opts">
+          <div class="lvl checked" id="cb-foundation">
+            <div class="cb" onclick="toggleLevel('foundation')">✓</div>
+            <div class="lv" onclick="toggleLevel('foundation')">🏗️ 基础技能</div>
+            <div class="cnt" onclick="toggleLevel('foundation')" id="foundation-cnt">51题 · 产品知识·合规</div>
+            <div class="sz-toggle" id="foundation-sz" style="display:inline-flex;gap:4px;margin-left:8px;align-items:center;">
+              <button class="sz-btn active" id="sz-compact" onclick="event.stopPropagation();setFoundationSize('compact')">51题</button>
+              <button class="sz-btn" id="sz-full" onclick="event.stopPropagation();setFoundationSize('full')">81题</button>
+            </div>
+          </div>
+          <div class="lvl checked" id="cb-advanced" onclick="toggleLevel('advanced')">
+            <div class="cb">✓</div>
+            <div class="lv">📈 提升技能</div>
+            <div class="cnt">38题 · 销售方法·需求分析</div>
+          </div>
+          <div class="lvl" id="cb-transcendent" onclick="toggleLevel('transcendent')">
+            <div class="cb">✓</div>
+            <div class="lv">🚀 升华技能</div>
+            <div class="cnt">30题 · 高客经营·团队管理</div>
+          </div>
+        </div>
+        <div class="lvl-info" id="level-info">已选：基础+提升 · 共 89 题</div>
+        <button class="btn btn-primary btn-block" onclick="startTest()">🚀 开始诊断</button>
+      </div>
+
+      <!-- Phase: Questions -->
+      <div class="phase" id="phase-questions">
+        <div class="q-bar-bg"><div class="q-bar-fill" id="q-bar" style="width:0%"></div></div>
+        <div class="q-counter" id="q-counter"></div>
+        <div class="q-hint" id="q-hint"></div>
+        <div id="q-card-area"></div>
+        <div class="q-nav">
+          <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()">← 上一题</button>
+          <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" disabled>下一题 →</button>
+        </div>
+      </div>
+
+      <!-- Phase: Done -->
+      <div class="phase" id="phase-done">
+        <div class="done-state" id="done-state">
+          <div class="check">✅</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px">诊断完成！</div>
+          <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="retakeTest()">🔄 重新测试</button>
+            <button class="btn btn-secondary" onclick="switchTab('graph')">🗺️ 查看图谱</button>
+            <button class="btn btn-secondary" id="btn-toggle-history" onclick="toggleHistory()">📋 历史记录</button>
+          </div>
+        </div>
+        <div id="report-section"></div>
+        <div id="history-section" style="display:none;margin-top:20px">
+          <div style="font-size:14px;font-weight:600;margin-bottom:12px">📋 历史记录</div>
+          <div id="history-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <div id="tab-bar">
+    <button class="tab active" data-panel="test" onclick="switchTab('test')">
+      <span class="icon">📝</span>诊断
+    </button>
+    <button class="tab" data-panel="graph" onclick="switchTab('graph')">
+      <span class="icon">🗺️</span>图谱
+    </button>
+    <button class="tab" onclick="location.href='/arena'">
+      <span class="icon">⚔️</span>擂台
+    </button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+// PWA: 注册 Service Worker（离线缓存）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function(e) {
+      console.log('SW 注册失败:', e);
+    });
+  });
+}
+</script>
+</body>
+</html>

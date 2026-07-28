@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>兔扑 topoo · AI伴读</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#007AFF">
+<script>
+// PWA: 注册 Service Worker（与主站共享缓存）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function(e){ console.log('SW:', e); });
+  });
+}
+</script>
+<style>
+/* ═══════ 兔扑 Design Tokens · 类苹果浅色 ═══════ */
+:root{
+  --bg:#F2F2F7; --card:#FFFFFF; --sep:rgba(60,60,67,0.12);
+  --tx:#000000; --tx2:#3C3C43; --tx3:rgba(60,60,67,0.6); --tx4:rgba(60,60,67,0.33);
+  --blue:#007AFF; --green:#34C759; --red:#FF3B30; --orange:#FF9500; --purple:#AF52DE;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.06);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:17px}
+body{background:var(--bg);color:var(--tx);font-family:var(--font);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+button{font-family:var(--font);border:none;cursor:pointer;background:none;color:var(--blue);font-size:17px}
+
+/* ═══════ 顶部导航（大标题，滚动时收缩） ═══════ */
+#navbar{flex-shrink:0;background:rgba(242,242,247,0.92);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--sep);padding:calc(env(safe-area-inset-top,0px) + 8px) 20px 10px;transition:all .25s ease}
+#nav-title{font-size:34px;font-weight:700;letter-spacing:0.4px;transition:all .25s ease}
+#nav-sub{font-size:13px;color:var(--tx3);margin-top:1px}
+#navbar.compact #nav-title{font-size:17px;font-weight:600;text-align:center}
+#navbar.compact #nav-sub{display:none}
+
+/* ═══════ 主内容区 ═══════ */
+#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.page{display:none;padding:16px 16px 40px;max-width:640px;margin:0 auto;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ═══════ 底部Tab Bar（毛玻璃） ═══════ */
+#tabbar{flex-shrink:0;display:flex;background:rgba(255,255,255,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:0.5px solid var(--sep);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 0 5px;color:var(--tx3);transition:color .15s;cursor:pointer}
+.tab-item.active{color:var(--blue)}
+.tab-item .t-icon{font-size:23px;line-height:1;margin-bottom:3px}
+.tab-item .t-label{font-size:10px;font-weight:500}
+
+/* ═══════ 通用卡片 ═══════ */
+.card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.sec-title{font-size:13px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin:22px 4px 8px}
+.sec-title:first-child{margin-top:0}
+
+/* ═══════ 今日页 ═══════ */
+.streak-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#007AFF 0%,#5AC8FA 100%);border-radius:var(--r-lg);padding:18px 20px;color:#fff;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,122,255,0.25)}
+.streak-banner .s-num{font-size:32px;font-weight:700}
+.streak-banner .s-label{font-size:13px;opacity:0.9}
+.streak-banner .s-book{text-align:right}
+.streak-banner .s-book-name{font-size:15px;font-weight:600}
+.streak-banner .s-book-ep{font-size:12px;opacity:0.85;margin-top:2px}
+
+.today-cover{background:linear-gradient(160deg,#1C1C1E 0%,#2C2C2E 60%,#3A3A3C 100%);border-radius:var(--r-lg);padding:26px 22px;color:#fff;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.18)}
+.today-cover::after{content:"📖";position:absolute;right:18px;bottom:14px;font-size:52px;opacity:0.18}
+.today-cover .c-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.18);margin-bottom:12px}
+.today-cover .c-title{font-size:21px;font-weight:700;line-height:1.35;margin-bottom:8px}
+.today-cover .c-concept{font-size:13px;color:rgba(255,255,255,0.65)}
+.today-cover .c-hook{font-size:14px;line-height:1.7;color:rgba(255,255,255,0.82);margin-top:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+.btn-main{display:block;width:100%;background:var(--blue);color:#fff;font-size:17px;font-weight:600;padding:14px;border-radius:14px;text-align:center;transition:opacity .15s,transform .1s}
+.btn-main:active{opacity:0.8;transform:scale(0.985)}
+.btn-ghost{display:block;width:100%;background:rgba(0,122,255,0.1);color:var(--blue);font-size:15px;font-weight:600;padding:12px;border-radius:12px;text-align:center;margin-top:10px}
+.btn-ghost:active{background:rgba(0,122,255,0.18)}
+
+.ep-list .ep-row{display:flex;align-items:center;padding:13px 16px;background:var(--card);border-radius:var(--r-md);margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s}
+.ep-list .ep-row:active{transform:scale(0.985);opacity:0.85}
+.ep-list .ep-no{width:34px;height:34px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--tx3);flex-shrink:0}
+.ep-list .ep-no.done{background:rgba(52,199,89,0.15);color:var(--green)}
+.ep-list .ep-info{flex:1;margin-left:12px;min-width:0}
+.ep-list .ep-title{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-list .ep-concept{font-size:12px;color:var(--tx3);margin-top:2px}
+.ep-list .ep-check{font-size:16px;color:var(--green);flex-shrink:0;margin-left:8px}
+
+/* ═══════ 沉浸阅读页 ═══════ */
+#reader{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;flex-direction:column}
+#reader.open{display:flex}
+#reader-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;background:rgba(242,242,247,0.92);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--sep)}
+#reader-bar .rb-close{font-size:15px;color:var(--blue);font-weight:500}
+#reader-bar .rb-title{font-size:13px;color:var(--tx3)}
+#reader-body{flex:1;overflow-y:auto;padding:24px 22px 40px;max-width:640px;margin:0 auto;width:100%}
+#reader-body h1{font-size:24px;font-weight:700;line-height:1.35;margin-bottom:4px}
+#reader-body .r-concept{font-size:14px;color:var(--blue);font-weight:600;margin-bottom:20px}
+.r-sec{margin-bottom:24px}
+.r-sec-tag{display:inline-block;font-size:12px;font-weight:700;color:var(--blue);background:rgba(0,122,255,0.1);padding:3px 10px;border-radius:6px;margin-bottom:10px}
+.r-sec-tag.echo{color:var(--purple);background:rgba(175,82,222,0.1)}
+.r-sec-tag.focus{color:var(--orange);background:rgba(255,149,0,0.12)}
+.r-sec p{font-size:17px;line-height:1.85;color:var(--tx2);margin-bottom:12px;text-align:justify}
+.r-quote{background:var(--card);border-radius:var(--r-md);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow);font-size:16px;line-height:1.6;font-weight:500;border-left:3px solid var(--blue)}
+#reader-foot{flex-shrink:0;padding:12px 22px calc(env(safe-area-inset-bottom,0px) + 14px);background:rgba(242,242,247,0.95);backdrop-filter:blur(20px);border-top:0.5px solid var(--sep)}
+
+/* ═══════ 书友Tab — 子导航 + 期卡片 + 评论 ═══════ */
+.sub-nav{display:flex;gap:0;margin-bottom:16px;background:rgba(120,120,128,0.08);border-radius:10px;padding:3px}
+.sub-nav-item{flex:1;text-align:center;padding:9px 8px;font-size:14px;font-weight:600;border-radius:8px;color:var(--tx3);cursor:pointer;transition:all .15s}
+.sub-nav-item.active{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.ep-card{cursor:pointer;background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;transition:transform .1s;position:relative}
+.ep-card:active{transform:scale(0.985);opacity:0.85}
+.ep-card-num{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--bg);color:var(--tx3)}
+.ep-card-num.done{background:rgba(52,199,89,0.15);color:var(--green)}
+.ep-card-num.best{background:rgba(0,122,255,0.12);color:var(--blue)}
+.ep-card-body{flex:1;min-width:0}
+.ep-card-title{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-card-concept{font-size:12px;color:var(--tx3);margin-top:2px}
+.ep-card-score{text-align:right;flex-shrink:0}
+.ep-card-score .val{font-size:18px;font-weight:700}
+.ep-card-score .lab{font-size:11px;color:var(--tx4);display:block}
+
+/* 排名表 */
+.rank-table{width:100%;font-size:14px;border-collapse:collapse}
+.rank-table th{text-align:left;font-size:12px;color:var(--tx3);padding:8px 6px;border-bottom:0.5px solid var(--sep);font-weight:600}
+.rank-table td{padding:10px 6px;border-bottom:0.5px solid var(--sep)}
+.rank-table tr:last-child td{border-bottom:none}
+.rank-label{display:inline-block;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:700;color:var(--tx3);background:var(--bg)}
+.rank-label.gold{background:#FFD700;color:#fff}
+.rank-label.silver{background:#C0C0C0;color:#fff}
+.rank-label.bronze{background:#CD7F32;color:#fff}
+
+/* 评论 */
+.cmt-item{padding:12px 0;border-bottom:0.5px solid var(--sep)}
+.cmt-item:last-child{border-bottom:none}
+.cmt-name{font-size:13px;font-weight:600;color:var(--tx2);display:flex;justify-content:space-between}
+.cmt-name .cmt-time{font-size:11px;color:var(--tx4);font-weight:400}
+.cmt-text{font-size:15px;line-height:1.5;margin-top:4px;color:var(--tx)}
+.cmt-input{width:100%;border:1.5px solid var(--sep);border-radius:14px;padding:12px 14px;font-size:15px;font-family:var(--font);resize:none;background:var(--bg);outline:none;transition:border-color .15s}
+.cmt-input:focus{border-color:var(--blue)}
+.cmt-submit{display:block;width:100%;margin-top:8px;padding:12px;border-radius:12px;font-size:15px;font-weight:600;background:var(--blue);color:#fff;border:none;cursor:pointer}
+.cmt-submit:active{opacity:0.8}
+
+/* 分享海报 */
+.share-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.share-card{background:#1C1C1E;border-radius:20px;padding:32px 24px;text-align:center;color:#fff;max-width:320px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.4)}
+.share-card .s-book{font-size:15px;opacity:0.7;margin-bottom:6px}
+.share-card .s-ep{font-size:14px;opacity:0.5;margin-bottom:14px}
+.share-card .s-score{font-size:48px;font-weight:700;margin:10px 0}
+.share-card .s-cta{font-size:13px;opacity:0.6;margin-top:16px}
+.ep-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ep-grid .ep-card{padding:12px;margin-bottom:0}
+.ep-grid .ep-card-num{width:32px;height:32px;font-size:12px}
+.ep-grid .ep-card-title{font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div id="navbar">
+  <div id="nav-title">今日</div>
+  <div id="nav-sub">兔扑 topoo · 《思考，快与慢》</div>
+</div>
+
+<!-- 主内容 -->
+<div id="main">
+
+  <!-- ═══ 今日页 ═══ -->
+  <div class="page active" id="page-today">
+    <div class="streak-banner">
+      <div>
+        <div class="s-num" id="streak-num">0</div>
+        <div class="s-label">连续伴读天数</div>
+      </div>
+      <div class="s-book">
+        <div class="s-book-name">《思考，快与慢》</div>
+        <div class="s-book-ep" id="streak-ep">共20期 · 已读 0 期</div>
+      </div>
+    </div>
+
+    <div id="today-card"></div>
+
+    <button class="btn-main" onclick="openTodayReader()">开始今日伴读</button>
+    <button class="btn-ghost" onclick="switchTab('buddy')">读完了？去「书友」验证一下 →</button>
+
+    <div class="sec-title">全部期数</div>
+    <div class="ep-list" id="ep-list"></div>
+  </div>
+
+  <!-- ═══ 书友页（测评） ═══ -->
+  <div class="page" id="page-buddy">
+    <div id="buddy-home"></div>
+  </div>
+
+  <!-- ═══ 我的页 ═══ -->
+  <div class="page" id="page-me">
+    <div id="me-content"></div>
+  </div>
+
+</div>
+
+<!-- 底部Tab -->
+<div id="tabbar">
+  <div class="tab-item active" data-tab="today" onclick="switchTab('today')">
+    <div class="t-icon">📖</div><div class="t-label">今日</div>
+  </div>
+  <div class="tab-item" data-tab="buddy" onclick="switchTab('buddy')">
+    <div class="t-icon">💬</div><div class="t-label">书友</div>
+  </div>
+  <div class="tab-item" data-tab="me" onclick="switchTab('me')">
+    <div class="t-icon">👤</div><div class="t-label">我的</div>
+  </div>
+</div>
+
+<!-- 沉浸阅读 -->
+<div id="reader">
+  <div id="reader-bar">
+    <button class="rb-close" onclick="closeReader()">‹ 返回</button>
+    <div class="rb-title" id="reader-progress-text"></div>
+    <button class="rb-close" id="btn-listen-local" onclick="toggleLocalListen()" style="width:auto;padding:6px 8px">📱 速读</button>
+    <button class="rb-close" id="btn-listen" onclick="toggleListen()" style="width:auto;padding:6px 8px">🔊 精读</button>
+  </div>
+  <div id="reader-body"></div>
+  <div id="reader-foot">
+    <button class="btn-main" id="btn-finish" onclick="finishReading()">我读完了 ✓</button>
+  </div>
+</div>
+
+<script src="/tts.js"></script>
+<script>
+/* ═══════ 数据层 ═══════ */
+let EPISODES = null, ARENA_TESTS = null; // arena_tests.json (legacy 12Q)
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem('topoo_'+k); return v===null? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('topoo_'+k, JSON.stringify(v)); }catch(e){} }
+};
+const state = {
+  read: LS.get('read', []),
+  streak: LS.get('streak', 0),
+  lastReadDate: LS.get('lastReadDate', null),
+  episodeScores: LS.get('episodeScores', {}), // {1:{score:85,correct:4,total:5}, ...}
+  token: LS.get('token', null),
+  name: LS.get('name', '书友'),
+  buddySub: LS.get('buddySub', 'list'), // 'list' | 'ranking'
+};
+function saveState(){
+  LS.set('read', state.read); LS.set('streak', state.streak);
+  LS.set('lastReadDate', state.lastReadDate); LS.set('episodeScores', state.episodeScores);
+  LS.set('token', state.token); LS.set('name', state.name);
+  LS.set('buddySub', state.buddySub);
+}
+
+async function boot(){
+  try{
+    const [epRes] = await Promise.all([
+      fetch('/api/reading/episodes')
+    ]);
+    EPISODES = await epRes.json();
+  }catch(e){
+    document.getElementById('today-card').innerHTML = '<div class="card">加载失败，请检查网络后刷新</div>';
+    return;
+  }
+  // URL 参数：?tab=buddy 直接进入书友擂台；/arena 路径也自动进书友
+  const params = new URLSearchParams(window.location.search);
+  const startTab = params.get('tab') || (window.location.pathname.startsWith('/arena') ? 'buddy' : 'today');
+  if(startTab !== 'today'){
+    switchTab(startTab);
+  } else {
+    renderToday(); renderBuddyHome(); renderMe();
+  }
+}
+
+/* ═══════ Tab 切换 ═══════ */
+const TAB_TITLES = {today:['今日','兔扑 topoo · 《思考，快与慢》'], buddy:['书友','每期打擂 · 验证真理解'], me:['我的','掌握度图谱与成长记录']};
+function switchTab(name){
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-title').textContent = TAB_TITLES[name][0];
+  document.getElementById('nav-sub').textContent = TAB_TITLES[name][1];
+  document.getElementById('main').scrollTop = 0;
+  if(name==='me') renderMe();
+  if(name==='buddy') renderBuddyHome();
+}
+
+/* 导航收缩 */
+document.getElementById('main').addEventListener('scroll', e=>{
+  document.getElementById('navbar').classList.toggle('compact', e.target.scrollTop > 40);
+});
+
+/* ═══════ 今日页 ═══════ */
+function todayEpisode(){
+  return Math.min(state.read.length + 1, EPISODES.total_episodes);
+}
+function renderToday(){
+  document.getElementById('streak-num').textContent = state.streak;
+  document.getElementById('streak-ep').textContent = `共${EPISODES.total_episodes}期 · 已读 ${state.read.length} 期`;
+
+  const epNo = todayEpisode();
+  const ep = EPISODES.episodes[epNo-1];
+  const done = state.read.includes(epNo);
+  document.getElementById('today-card').innerHTML = `
+    <div class="today-cover">
+      <span class="c-tag">第 ${String(epNo).padStart(2,'0')} 期 ${done?'· 已读 ✓':''}</span>
+      <div class="c-title">${ep.title}</div>
+      <div class="c-concept">核心概念：${ep.concept}</div>
+      <div class="c-hook">${(ep.sections.hook||'').slice(0,120)}…</div>
+    </div>`;
+  if(done) document.querySelector('#page-today .btn-main').textContent = '重读本期的内容';
+
+  document.getElementById('ep-list').innerHTML = EPISODES.episodes.map(e=>{
+    const d = state.read.includes(e.episode);
+    return `<div class="ep-row" onclick="openReader(${e.episode})">
+      <div class="ep-no ${d?'done':''}">${String(e.episode).padStart(2,'0')}</div>
+      <div class="ep-info">
+        <div class="ep-title">${e.title}</div>
+        <div class="ep-concept">${e.concept}</div>
+      </div>
+      ${d?'<div class="ep-check">✓</div>':''}
+    </div>`;
+  }).join('');
+}
+
+/* ═══════ 沉浸阅读 ═══════ */
+let readingEp = 1;
+/* ═══════ 听书（双轨：云端精读 mp3 + 本地速读 Web Speech）═══════ */
+let listenAudio = null, listenEp = 0;
+function toggleListen(){
+  const btn = document.getElementById('btn-listen');
+  if(listenAudio && !listenAudio.paused && listenEp === readingEp){
+    listenAudio.pause(); btn.textContent = '🔊 精读'; return;
+  }
+  stopListen();
+  listenEp = readingEp;
+  listenAudio = new Audio(`/audio/thinking-fast-slow/ep${String(readingEp).padStart(2,'0')}.mp3`);
+  listenAudio.onended = ()=>{ btn.textContent = '🔊 精读'; };
+  listenAudio.onerror = ()=>{ btn.textContent = '🔊 精读'; listenAudio = null; alert('本期音频还没准备好，可以用「📱 速读」即时朗读'); };
+  listenAudio.play().then(()=>{ btn.textContent = '⏸ 暂停'; }).catch(()=>{ btn.textContent = '🔊 精读'; });
+}
+function toggleLocalListen(){
+  const btn = document.getElementById('btn-listen-local');
+  if(typeof LocalTTS === 'undefined' || !LocalTTS.supported()){
+    alert('当前浏览器不支持本地朗读，请用「🔊 精读」'); return;
+  }
+  const st = LocalTTS.getState();
+  if(st === 'speaking'){ LocalTTS.pause(); return; }
+  if(st === 'paused'){ LocalTTS.resume(); return; }
+  stopListen();  // 停掉云端精读，双轨互斥
+  const body = document.getElementById('reader-body');
+  const text = body ? body.innerText : '';
+  if(!text.trim()){ alert('当前页面没有可朗读的内容'); return; }
+  LocalTTS.speak(text);
+}
+function stopListen(){
+  if(listenAudio){ listenAudio.pause(); listenAudio = null; }
+  if(typeof LocalTTS !== 'undefined') LocalTTS.stop();
+  const btn = document.getElementById('btn-listen');
+  if(btn) btn.textContent = '🔊 精读';
+  const lb = document.getElementById('btn-listen-local');
+  if(lb) lb.textContent = '📱 速读';
+}
+/* 本地朗读状态 → 按钮文字同步 */
+if(typeof LocalTTS !== 'undefined'){
+  LocalTTS.onStateChange = function(st){
+    const btn = document.getElementById('btn-listen-local');
+    if(!btn) return;
+    btn.textContent = st === 'speaking' ? '⏸ 暂停' : (st === 'paused' ? '▶ 继续' : '📱 速读');
+  };
+}
+function openTodayReader(){ openReader(todayEpisode()); }
+function openReader(epNo){
+  stopListen();
+  readingEp = epNo;
+  const ep = EPISODES.episodes[epNo-1];
+  const s = ep.sections;
+  const para = t => (t||'').split(/\n+/).filter(x=>x.trim()).map(x=>`<p>${x}</p>`).join('');
+  document.getElementById('reader-progress-text').textContent = `第 ${epNo} / ${EPISODES.total_episodes} 期`;
+  document.getElementById('reader-body').innerHTML = `
+    <h1>${ep.title}</h1>
+    <div class="r-concept">核心概念 · ${ep.concept}</div>
+    <div class="r-sec">${para(s.hook)}</div>
+    <div class="r-sec"><span class="r-sec-tag">书中精读</span>${para(s.reading)}</div>
+    <div class="r-sec"><span class="r-sec-tag echo">回声</span>${para(s.echo)}</div>
+    <div class="r-sec"><span class="r-sec-tag focus">敲重点</span>${para(s.focus)}</div>
+    <div class="r-sec"><span class="r-sec-tag">金句</span>
+      ${(s.quotes||[]).map(q=>`<div class="r-quote">${q}</div>`).join('')}
+    </div>
+    <div style="height:20px"></div>`;
+  document.getElementById('reader').classList.add('open');
+  document.getElementById('reader-body').scrollTop = 0;
+  document.getElementById('btn-finish').textContent = state.read.includes(epNo) ? '已完成 ✓（再读一遍也好）' : '我读完了，去打擂！';
+}
+function closeReader(){ stopListen(); document.getElementById('reader').classList.remove('open'); }
+function finishReading(){
+  const today = new Date().toDateString();
+  if(!state.read.includes(readingEp)){
+    state.read.push(readingEp);
+    state.read.sort((a,b)=>a-b);
+    const yest = new Date(Date.now()-86400000).toDateString();
+    state.streak = (state.lastReadDate === yest || state.lastReadDate === today) ? state.streak+1 : 1;
+    state.lastReadDate = today;
+    saveState();
+  }
+  closeReader(); renderToday();
+  // 读完跳转到打擂
+  setTimeout(()=>{ switchTab('buddy'); setTimeout(()=>openEpisodeQuiz(readingEp), 400); }, 300);
+}
+
+/* ═══════ 书友Tab — 期列表 + 打擂 ═══════ */
+let quizEp = 1, quizIdx = 0, quizAnswers = {}, quizQuestions = [];
+let quizPhase = 'home'; // 'reading' | 'test' | 'report'
+
+function switchBuddySub(sub){
+  state.buddySub = sub; saveState();
+  renderBuddyHome();
+}
+
+function renderBuddyHome(){
+  const bestEp = Object.entries(state.episodeScores).sort((a,b)=>b[1].score-a[1].score)[0];
+  const totalDone = Object.keys(state.episodeScores).length;
+
+  let html = `
+  <!-- 子导航 -->
+  <div class="sub-nav">
+    <div class="sub-nav-item ${state.buddySub==='list'?'active':''}" onclick="switchBuddySub('list')">📋 伴读期</div>
+    <div class="sub-nav-item ${state.buddySub==='ranking'?'active':''}" onclick="switchBuddySub('ranking')">🏆 总排名</div>
+  </div>`;
+
+  if(state.buddySub === 'list'){
+    html += `
+    <div class="card" style="display:flex;align-items:center;gap:14px;padding:16px 18px">
+      <div style="font-size:36px">💬</div>
+      <div style="flex:1">
+        <div style="font-size:16px;font-weight:700">${totalDone} / ${EPISODES.total_episodes} 期已挑战</div>
+        <div style="font-size:13px;color:var(--tx3);margin-top:2px">${bestEp?`最佳: 第${bestEp[0]}期 ${bestEp[1].score}%`: '读完伴读后点 → 打擂'}</div>
+      </div>
+    </div>`;
+
+    // 期数卡片网格
+    html += '<div class="ep-grid">';
+    EPISODES.episodes.forEach(ep=>{
+      const eid = ep.episode;
+      const score = state.episodeScores[eid];
+      const read = state.read.includes(eid);
+      const clazz = score && score.score>=90 ? 'best' : score ? 'done' : '';
+      html += `<div class="ep-card" onclick="openEpisodeQuiz(${eid})">
+        <div class="ep-card-num ${clazz}">${String(eid).padStart(2,'0')}</div>
+        <div class="ep-card-body">
+          <div class="ep-card-title">${ep.title.slice(0,14)}</div>
+          <div class="ep-card-concept">${ep.concept}</div>
+        </div>
+        ${score ? `<div class="ep-card-score">
+          <span class="val" style="color:${score.score>=80?'var(--green)':score.score>=50?'var(--orange)':'var(--red)'}">${score.score}%</span>
+          <span class="lab">${score.correct}/${score.total}题</span>
+        </div>` : (read ? '<div style="font-size:12px;color:var(--orange)">待打擂</div>' : '')}
+      </div>`;
+    });
+    html += '</div>';
+
+    // 如果已经登录，显示留言按钮引导
+    if(state.token){
+      html += `<div style="text-align:center;margin-top:8px">
+        <span style="font-size:13px;color:var(--tx3)">👤 ${state.name} · 已登录</span>
+      </div>`;
+    }
+  } else {
+    // 总排名
+    html += '<div class="card" style="padding:16px"><div style="text-align:center;color:var(--tx3);padding:20px">加载排名中…</div></div>';
+    fetchBookRanking().then(r=>{
+      const div = document.querySelector('#page-buddy .card:last-child');
+      if(!div) return;
+      if(!r || r.length===0){
+        div.innerHTML = '<div style="text-align:center;color:var(--tx3);padding:30px;font-size:15px">还没有人打擂，来做第一个吧！</div>';
+        return;
+      }
+      const medals = ['🥇','🥈','🥉'];
+      div.innerHTML = `<table class="rank-table">
+        <thead><tr><th>#</th><th>书友</th><th style="text-align:right">均分</th><th style="text-align:right">期数</th></tr></thead>
+        <tbody>${r.map((u,i)=>`
+          <tr${i===0?' style="font-weight:700"':''}>
+            <td>${i<3?medals[i]:i+1}</td>
+            <td>${u.name}</td>
+            <td style="text-align:right;color:${u.avg_score>=80?'var(--green)':u.avg_score>=50?'var(--orange)':'var(--red)'}">${u.avg_score}%</td>
+            <td style="text-align:right;color:var(--tx4)">${u.episodes_done}</td>
+          </tr>`).join('')}
+        </tbody></table>`;
+    }).catch(()=>{
+      const div = document.querySelector('#page-buddy .card:last-child');
+      if(div) div.innerHTML = '<div style="text-align:center;color:var(--tx3);padding:20px">排名加载失败，请重试</div>';
+    });
+  }
+
+  document.getElementById('buddy-home').innerHTML = html;
+}
+
+async function fetchBookRanking(){
+  try{
+    const res = await fetch('/api/arena/book-ranking?book=thinking-fast-slow');
+    const data = await res.json();
+    return data.ranking || [];
+  }catch(e){ return []; }
+}
+
+/* ═══════ 单期打擂 ═══════ */
+async function openEpisodeQuiz(epNo){
+  quizEp = epNo; quizIdx = 0; quizAnswers = {}; quizPhase = 'reading';
+
+  // 先展示伴读内容
+  const ep = EPISODES.episodes[epNo-1];
+  const s = ep.sections;
+  const para = t => (t||'').split(/\n+/).filter(x=>x.trim()).map(x=>`<p>${x}</p>`).join('');
+
+  document.getElementById('buddy-home').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <button class="btn-ghost" style="width:auto;flex:0;margin:0;padding:6px 14px;font-size:13px" onclick="renderBuddyHome()">‹ 返回列表</button>
+      <button class="btn-ghost" style="width:auto;flex:0;margin:0;padding:6px 12px;font-size:13px" onclick="switchTab('today')">🏠 首页</button>
+    </div>
+    <div class="card" style="padding:22px 18px">
+      <div style="font-size:18px;font-weight:700;line-height:1.35;margin-bottom:4px">${ep.title}</div>
+      <div style="font-size:13px;color:var(--blue);font-weight:600;margin-bottom:16px">核心概念 · ${ep.concept}</div>
+      <div class="r-sec" style="margin-bottom:18px">
+        ${para(s.hook)}
+      </div>
+      <div class="r-sec" style="margin-bottom:18px">
+        <span class="r-sec-tag">书中精读</span>${para(s.reading)}
+      </div>
+      <div class="r-sec" style="margin-bottom:18px">
+        <span class="r-sec-tag echo">回声</span>${para(s.echo)}
+      </div>
+      <div class="r-sec" style="margin-bottom:14px">
+        <span class="r-sec-tag focus">敲重点</span>${para(s.focus)}
+      </div>
+      ${(s.quotes||[]).length ? `<div class="r-sec"><span class="r-sec-tag">金句</span>
+        ${s.quotes.map(q=>`<div class="r-quote">${q}</div>`).join('')}
+      </div>` : ''}
+    </div>
+    <button class="btn-main" onclick="startEpisodeQuiz(${epNo})">⚔️ 开始打擂（5题）</button>`;
+
+  document.getElementById('main').scrollTop = 0;
+}
+
+async function startEpisodeQuiz(epNo){
+  quizEp = epNo; quizIdx = 0; quizAnswers = {}; quizPhase = 'test';
+
+  // 加载该期的题目
+  try{
+    const res = await fetch(`/api/arena/episode-tests?episode=${epNo}`);
+    const data = await res.json();
+    quizQuestions = data.tests || [];
+  }catch(e){ quizQuestions = []; }
+
+  if(quizQuestions.length === 0){
+    document.getElementById('buddy-home').innerHTML = `
+      <div class="card" style="text-align:center;padding:40px">
+        <div style="font-size:40px;margin-bottom:10px">🔧</div>
+        <div style="font-size:16px;font-weight:600">第${epNo}期题库建设中</div>
+        <div style="font-size:14px;color:var(--tx3);margin-top:6px">请先阅读伴读内容</div>
+      </div>
+      <button class="btn-ghost" onclick="renderBuddyHome()">返回期列表</button>`;
+    return;
+  }
+  renderQuizQ();
+}
+
+function renderQuizQ(){
+  if(quizQuestions.length === 0) return;
+  const t = quizQuestions[quizIdx];
+  const letters = ['A','B','C','D'];
+  const pct = Math.round((quizIdx)/quizQuestions.length*100);
+  const ep = EPISODES.episodes[quizEp-1];
+
+  document.getElementById('buddy-home').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <button class="btn-ghost" style="width:auto;flex:0;margin:0;padding:6px 14px;font-size:13px" onclick="renderBuddyHome()">‹ 返回</button>
+      <button class="btn-ghost" style="width:auto;flex:0;margin:0;padding:6px 12px;font-size:13px" onclick="switchTab('today')">🏠</button>
+      <span style="font-size:12px;color:var(--tx4);white-space:nowrap">第${quizEp}期 · ${ep.concept}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="flex:1;height:5px;background:rgba(120,120,128,0.16);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:var(--blue);border-radius:3px;transition:width .3s"></div>
+      </div>
+      <span style="font-size:12px;color:var(--tx3);white-space:nowrap">${quizIdx+1}/${quizQuestions.length}</span>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center">
+        <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;background:rgba(0,122,255,0.1);color:var(--blue)">${t.concept}</span>
+        <span style="font-size:11px;color:var(--tx4)">${t.type==='knowledge'?'概念':t.type==='scenario'?'场景':t.type==='integration'?'交叉':'应用'}</span>
+      </div>
+      <div style="font-size:16px;line-height:1.75;margin-bottom:18px">${t.question}</div>
+      ${t.options.map((o,i)=>`
+        <div onclick="pickQuizA(${i})" style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1.5px solid ${quizAnswers[t.id]===i?'var(--blue)':'var(--sep)'};background:${quizAnswers[t.id]===i?'rgba(0,122,255,0.08)':'var(--card)'}">
+          <span style="width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;${quizAnswers[t.id]===i?'background:var(--blue);color:#fff':'background:rgba(120,120,128,0.12);color:var(--tx3)'}">${letters[i]}</span>
+          <span style="font-size:15px;line-height:1.5">${o}</span>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:10px">
+      ${quizIdx>0?`<button class="btn-ghost" style="margin-top:0;flex:0 0 110px" onclick="quizNav(-1)">‹ 上一题</button>`:''}
+      <button class="btn-main" style="flex:1" onclick="${quizIdx<quizQuestions.length-1?'quizNav(1)':'submitEpisodeQuiz()'}">
+        ${quizIdx<quizQuestions.length-1?'下一题 ›':'提交答案 ✓'}
+      </button>
+    </div>`;
+}
+
+function pickQuizA(i){ quizAnswers[quizQuestions[quizIdx].id] = i; renderQuizQ(); }
+function quizNav(d){ quizIdx = Math.max(0, Math.min(quizQuestions.length-1, quizIdx+d)); renderQuizQ(); }
+
+async function submitEpisodeQuiz(){
+  const ta = quizQuestions.length;
+  let score, tc;
+  // 服务端判分（支持匿名；登录用户自动记录成绩与排名）
+  try{
+    const headers = {'Content-Type':'application/json'};
+    if(state.token) headers['Authorization'] = 'Bearer '+state.token;
+    const res = await fetch('/api/arena/episode-submit', {
+      method:'POST', headers,
+      body: JSON.stringify({book:'thinking-fast-slow', episode:quizEp, answers:quizAnswers})
+    });
+    const r = await res.json();
+    if(r.error) throw new Error(r.error);
+    score = r.total_score; tc = r.total_correct;
+  }catch(e){
+    document.getElementById('buddy-home').innerHTML = `
+      <div class="card" style="text-align:center;padding:34px 20px">
+        <div style="font-size:36px;margin-bottom:10px">📡</div>
+        <div style="font-size:15px;font-weight:600">判分失败，请检查网络</div>
+        <button class="btn-main" style="margin-top:16px" onclick="submitEpisodeQuiz()">重新提交</button>
+        <button class="btn-ghost" onclick="renderBuddyHome()">返回列表</button>
+      </div>`;
+    return;
+  }
+
+  // 保存到 localStorage
+  state.episodeScores[quizEp] = {score, correct: tc, total: ta};
+  saveState();
+
+  renderQuizReport(score, tc, ta);
+}
+
+function renderQuizReport(score, tc, ta){
+  quizPhase = 'report';
+  const ep = EPISODES.episodes[quizEp-1];
+  const col = score>=80 ? 'var(--green)' : score>=50 ? 'var(--orange)' : 'var(--red)';
+  const emoji = score>=90 ? '🏆' : score>=70 ? '👍' : score>=50 ? '💪' : '📚';
+
+  document.getElementById('buddy-home').innerHTML = `
+    <div class="card" style="text-align:center;padding:28px 22px">
+      <div style="font-size:40px;margin-bottom:8px">${emoji}</div>
+      <div style="font-size:13px;color:var(--tx3)">第${quizEp}期 · ${ep.concept}</div>
+      <div style="font-size:48px;font-weight:700;color:${col};margin:6px 0">${score}%</div>
+      <div style="font-size:14px;color:var(--tx3)">${tc}/${ta} 题正确</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-ghost" style="flex:0 0 56px" onclick="switchTab('today')">🏠</button>
+      <button class="btn-ghost" style="flex:1" onclick="renderBuddyHome()">返回列表</button>
+      <button class="btn-main" style="flex:1" onclick="showShare(${quizEp},${score})">📤 分享</button>
+    </div>
+    <button class="btn-ghost" onclick="retryQuiz()">🔄 重新打擂</button>
+
+    <!-- 本期排名 -->
+    <div class="sec-title">本期排名</div>
+    <div class="card" style="padding:10px 16px" id="ep-rank-container">
+      <div style="text-align:center;color:var(--tx3);padding:16px;font-size:14px">加载排名…</div>
+    </div>
+
+    <!-- 留言板 -->
+    <div class="sec-title">书友留言</div>
+    <div class="card" style="padding:8px 18px">
+      <div id="cmt-list" style="text-align:center;color:var(--tx4);padding:16px;font-size:14px">加载留言…</div>
+      ${state.token ? `
+        <textarea class="cmt-input" id="cmt-text" placeholder="写下你对这期的感悟…" rows="2"></textarea>
+        <button class="cmt-submit" onclick="postComment(${quizEp})">发表留言</button>
+      ` : `
+        <div style="text-align:center;padding:12px;color:var(--tx3);font-size:13px">
+          登录后即可留言交流 ✨<br>
+          <button class="btn-ghost" style="margin:8px auto 0;width:auto;padding:8px 24px" onclick="showLogin()">立即登录</button>
+        </div>
+      `}
+    </div>`;
+
+  // 延迟加载排名和留言
+  fetchEpisodeRanking(quizEp);
+  fetchComments(quizEp);
+}
+
+function retryQuiz(){ openEpisodeQuiz(quizEp); }
+
+/* ═══════ 留言 ═══════ */
+async function fetchComments(epNo){
+  try{
+    const res = await fetch(`/api/arena/comments?book=thinking-fast-slow&episode=${epNo}`);
+    const data = await res.json();
+    const list = data.comments || [];
+    const el = document.getElementById('cmt-list');
+    if(!el) return;
+    if(list.length===0){
+      el.innerHTML = '<div style="text-align:center;color:var(--tx4);padding:16px;font-size:14px">暂无留言，来写第一条吧 ✍️</div>';
+      return;
+    }
+    el.innerHTML = list.map(c=>`
+      <div class="cmt-item">
+        <div class="cmt-name">${c.name}<span class="cmt-time">${(c.time||'').slice(0,16)}</span></div>
+        <div class="cmt-text">${c.text}</div>
+      </div>
+    `).join('');
+  }catch(e){
+    const el = document.getElementById('cmt-list');
+    if(el) el.innerHTML = '<div style="text-align:center;color:var(--tx4);padding:16px">加载失败</div>';
+  }
+}
+
+async function postComment(epNo){
+  const textEl = document.getElementById('cmt-text');
+  const text = (textEl?.value||'').trim();
+  if(!text) return;
+  if(text.length > 500){ alert('留言不能超过500字'); return; }
+  try{
+    const res = await fetch('/api/arena/comment', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+state.token},
+      body: JSON.stringify({book:'thinking-fast-slow', episode:epNo, text})
+    });
+    const data = await res.json();
+    if(data.ok){
+      textEl.value = '';
+      fetchComments(epNo);
+    }else{
+      alert(data.error || '留言失败');
+    }
+  }catch(e){ alert('网络错误'); }
+}
+
+/* ═══════ 排名 ═══════ */
+async function fetchEpisodeRanking(epNo){
+  try{
+    const res = await fetch(`/api/arena/episode-ranking?book=thinking-fast-slow&episode=${epNo}`);
+    const data = await res.json();
+    const ranking = data.ranking || [];
+    const el = document.getElementById('ep-rank-container');
+    if(!el) return;
+    if(ranking.length===0){
+      el.innerHTML = '<div style="text-align:center;color:var(--tx4);padding:16px;font-size:14px">暂无排名数据</div>';
+      return;
+    }
+    const medals = ['🥇','🥈','🥉'];
+    el.innerHTML = `<table class="rank-table">
+      <thead><tr><th>#</th><th>书友</th><th style="text-align:right">分数</th><th style="text-align:right">正确</th></tr></thead>
+      <tbody>${ranking.map((u,i)=>`
+        <tr${i===0?' style="font-weight:700"':''}>
+          <td>${i<3?medals[i]:i+1}</td>
+          <td>${u.name}</td>
+          <td style="text-align:right;color:${u.score>=80?'var(--green)':u.score>=50?'var(--orange)':'var(--red)'}">${u.score}%</td>
+          <td style="text-align:right;color:var(--tx4)">${u.correct}/${u.total}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){
+    const el = document.getElementById('ep-rank-container');
+    if(el) el.innerHTML = '<div style="text-align:center;color:var(--tx4);padding:16px">加载失败</div>';
+  }
+}
+
+/* ═══════ 分享 ═══════ */
+function showShare(epNo, score){
+  const ep = EPISODES.episodes[epNo-1];
+  const overlay = document.createElement('div');
+  overlay.className = 'share-overlay';
+  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="share-card" onclick="event.stopPropagation()">
+      <div class="s-book">📖 《思考，快与慢》</div>
+      <div class="s-ep">第${epNo}期 · ${ep.concept}</div>
+      <div class="s-score" style="color:${score>=80?'#34C759':score>=50?'#FF9500':'#FF3B30'}">${score}%</div>
+      <div style="font-size:13px;opacity:0.5">${score>=80?'已掌权此概念 🎉':score>=50?'初窥门径，继续加油':'再接再厉 📚'}</div>
+      <div class="s-cta">扫码来打擂 → 兔扑 topoo</div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+/* ═══════ 登录 ═══════ */
+function showLogin(){
+  // 如果已有弹窗，先移除
+  const old = document.querySelector('.login-overlay');
+  if(old) old.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'share-overlay login-overlay';
+  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="share-card" onclick="event.stopPropagation()" style="padding:30px 22px;text-align:center">
+      <div style="font-size:40px;margin-bottom:10px">👤</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">登录兔扑</div>
+      <div style="font-size:13px;color:var(--tx3);margin-bottom:16px">登录后可用留言功能和云端排名</div>
+      <input id="login-name" placeholder="书友（你的用户名？）" style="width:100%;padding:14px;border:1.5px solid var(--sep);border-radius:12px;font-size:16px;margin-bottom:10px;font-family:var(--font);outline:none;box-sizing:border-box" value="${state.token ? state.name : ''}">
+      <input id="login-email" placeholder="邮箱（用于标识身份）" type="email" style="width:100%;padding:14px;border:1.5px solid var(--sep);border-radius:12px;font-size:16px;margin-bottom:10px;font-family:var(--font);outline:none;box-sizing:border-box">
+      <button class="btn-main" onclick="doLogin()">登录 / 注册</button>
+      <button class="btn-ghost" onclick="document.querySelector('.login-overlay')?.remove()">稍后再说</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function doLogin(){
+  const name = document.getElementById('login-name')?.value?.trim();
+  const email = document.getElementById('login-email')?.value?.trim();
+  if(!name || !email) return alert('请填写昵称和邮箱');
+  if(!email.includes('@')) return alert('请输入有效的邮箱地址');
+
+  try{
+    const res = await fetch('/api/register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name, email})
+    });
+    const data = await res.json();
+    if(data.user && data.user.token){
+      state.token = data.user.token;
+      state.name = data.user.name;
+      saveState();
+      // 关闭弹窗
+      document.querySelector('.login-overlay')?.remove();
+      // 刷新当前可见 Tab
+      const activePage = document.querySelector('.page.active');
+      if(activePage && activePage.id === 'page-me') renderMe();
+      else renderBuddyHome();
+    }else{
+      alert(data.error || '登录失败');
+    }
+  }catch(e){ alert('网络错误：'+e.message); }
+}
+
+/* ═══════ 我的页 · 2D双层图谱 ═══════ */
+const CONCEPT_POS = [
+  {c:'系统1与系统2', x:50, y:8},   {c:'注意力与认知努力', x:74, y:14},
+  {c:'自我损耗与心流', x:90, y:30}, {c:'启动效应', x:95, y:52},
+  {c:'认知放松度', x:88, y:73},     {c:'可得性启发', x:72, y:88},
+  {c:'锚定效应', x:50, y:94},       {c:'小数定律', x:28, y:88},
+  {c:'回归均值', x:12, y:73},       {c:'后见之明', x:5, y:52},
+  {c:'规划谬误', x:10, y:30},       {c:'过度自信', x:26, y:14},
+  {c:'公式vs直觉', x:50, y:30},     {c:'前景理论', x:66, y:38},
+  {c:'禀赋效应', x:70, y:56},       {c:'参照点与现状偏见', x:56, y:70},
+  {c:'框架效应', x:38, y:68},       {c:'沉没成本悖论', x:30, y:52},
+  {c:'峰终定律', x:34, y:36},       {c:'两个自我', x:50, y:50},
+];
+const CONCEPT_EDGES = [
+  ['系统1与系统2','注意力与认知努力'],['注意力与认知努力','自我损耗与心流'],
+  ['系统1与系统2','启动效应'],['启动效应','认知放松度'],
+  ['系统1与系统2','可得性启发'],['可得性启发','小数定律'],
+  ['小数定律','回归均值'],['可得性启发','锚定效应'],
+  ['系统1与系统2','后见之明'],['后见之明','过度自信'],
+  ['过度自信','规划谬误'],['公式vs直觉','过度自信'],
+  ['公式vs直觉','前景理论'],['前景理论','禀赋效应'],
+  ['禀赋效应','参照点与现状偏见'],['前景理论','框架效应'],
+  ['框架效应','沉没成本悖论'],['前景理论','两个自我'],
+  ['峰终定律','两个自我'],['沉没成本悖论','两个自我'],
+];
+
+function renderMe(){
+  // Map concept name → episode score
+  const conceptScores = {};
+  Object.entries(state.episodeScores).forEach(([epNo, s])=>{
+    const ep = EPISODES?.episodes?.[parseInt(epNo)-1];
+    if(ep) conceptScores[ep.concept] = s;
+  });
+
+  const totalEp = EPISODES ? EPISODES.total_episodes : 20;
+  const nodes = CONCEPT_POS.map(p=>{
+    const m = conceptScores[p.c];
+    const pct = m ? m.score : 0;
+    const fill = !m ? '#C7C7CC' : pct>=80 ? '#34C759' : pct>=50 ? '#FF9500' : '#FF3B30';
+    const opacity = m ? 1 : 0.55;
+    const r = m ? 4.2 : 3.4;
+    return `<g style="cursor:pointer" onclick="showConceptTip('${p.c}')">
+      <circle cx="${p.x}" cy="${p.y}" r="${r+2.5}" fill="${m?fill:'none'}" opacity="${m?0.15:0}"/>
+      <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" opacity="${opacity}" stroke="#fff" stroke-width="0.8"/>
+      <text x="${p.x}" y="${p.y+r+4.5}" text-anchor="middle" font-size="3.4" fill="${m?'#3C3C43':'#8E8E93'}" font-weight="${m?'600':'400'}">${p.c.length>6?p.c.slice(0,6):p.c}</text>
+    </g>`;
+  }).join('');
+  const posMap = Object.fromEntries(CONCEPT_POS.map(p=>[p.c,p]));
+  const edges = CONCEPT_EDGES.map(([a,b])=>{
+    const pa = posMap[a], pb = posMap[b];
+    const bothM = conceptScores[a] && conceptScores[b];
+    return `<line x1="${pa.x}" y1="${pa.y}" x2="${pb.x}" y2="${pb.y}" stroke="${bothM?'#5B9BD5':'#D1D1D6'}" stroke-width="${bothM?'0.7':'0.4'}" opacity="${bothM?'0.8':'0.5'}"/>`;
+  }).join('');
+
+  const masteredCount = Object.keys(conceptScores).length;
+  document.getElementById('me-content').innerHTML = `
+    <div class="card" style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <div style="font-size:17px;font-weight:700">我的概念图谱</div>
+        <div style="font-size:13px;color:var(--tx3)">${masteredCount}/20 已点亮</div>
+      </div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">灰色=待挑战 · 彩色=已打擂（绿≥80% 橙≥50% 红<50%）</div>
+      <svg viewBox="0 0 100 105" style="width:100%;display:block">${edges}${nodes}</svg>
+      <div id="concept-tip" style="min-height:22px;font-size:13px;color:var(--blue);text-align:center;margin-top:6px"></div>
+    </div>
+
+    <div class="card" style="display:flex;text-align:center;padding:8px 0">
+      <div style="flex:1;padding:12px 0;border-right:0.5px solid var(--sep)">
+        <div style="font-size:26px;font-weight:700;color:var(--blue)">${state.streak}</div>
+        <div style="font-size:12px;color:var(--tx3)">连续天数</div>
+      </div>
+      <div style="flex:1;padding:12px 0;border-right:0.5px solid var(--sep)">
+        <div style="font-size:26px;font-weight:700;color:var(--green)">${state.read.length}</div>
+        <div style="font-size:12px;color:var(--tx3)">已读期数</div>
+      </div>
+      <div style="flex:1;padding:12px 0">
+        <div style="font-size:26px;font-weight:700;color:var(--orange)">${Object.keys(state.episodeScores).length}</div>
+        <div style="font-size:12px;color:var(--tx3)">已打擂期数</div>
+      </div>
+    </div>
+    ${state.token ? `
+      <div class="card" style="text-align:center;padding:14px">
+        <div style="font-size:14px;color:var(--tx3)">👤 ${state.name}</div>
+        <button class="btn-ghost" style="width:auto;padding:6px 20px;margin:6px auto 0;font-size:13px" onclick="state.token=null;state.name='书友';saveState();renderMe();">退出登录</button>
+      </div>
+    ` : `
+      <button class="btn-ghost" onclick="showLogin()">登录解锁留言和排名</button>
+    `}
+    <button class="btn-ghost" style="color:var(--red);background:rgba(255,59,48,0.08)" onclick="resetAll()">清除本地数据（重新开始）</button>`;
+}
+
+function showConceptTip(c){
+  const m = Object.entries(state.episodeScores).find(([epNo,s])=>{
+    const ep = EPISODES?.episodes?.[parseInt(epNo)-1];
+    return ep?.concept === c;
+  });
+  const el = document.getElementById('concept-tip');
+  if(m){
+    const s = m[1];
+    el.textContent = `${c}：${s.score}%（${s.correct}/${s.total}题）`;
+    el.style.color = s.score>=80 ? 'var(--green)' : s.score>=50 ? 'var(--orange)' : 'var(--red)';
+  } else {
+    el.textContent = `${c}：尚未打擂，去「书友」挑战`;
+    el.style.color = 'var(--tx4)';
+  }
+}
+
+function resetAll(){
+  if(!confirm('确定清除所有本地数据？这将重置阅读进度和打擂成绩。')) return;
+  ['read','streak','lastReadDate','episodeScores','token','name','buddySub'].forEach(k=>localStorage.removeItem('topoo_'+k));
+  location.reload();
+}
+
+/* 启动 */
+boot();
+</script>
+</body>
+</html>

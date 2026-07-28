@@ -1,0 +1,560 @@
+[
+  {
+    "id": "L1-01",
+    "layer": "foundation",
+    "label": "寿险产品结构",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "定期寿险/终身寿险/两全保险的产品结构、费率逻辑、现金价值计算。"
+  },
+  {
+    "id": "L1-02",
+    "layer": "foundation",
+    "label": "健康险保障范围",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "重疾险28种标准定义、百万医疗/中高端医疗的保障范围与除外责任。"
+  },
+  {
+    "id": "L1-03",
+    "layer": "foundation",
+    "label": "意外险四要素",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "意外定义(突发的/外来的/非本意的/非疾病的)、职业分类与费率关系。"
+  },
+  {
+    "id": "L1-04",
+    "layer": "foundation",
+    "label": "年金险与IRR",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "即期/延期年金、分红/万能/投连区别、内部收益率(IRR)计算。"
+  },
+  {
+    "id": "L1-05",
+    "layer": "foundation",
+    "label": "保险法红线",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "告知义务/不可抗辩条款/受益人指定/保险利益/免责条款说明义务。"
+  },
+  {
+    "id": "L1-06",
+    "layer": "foundation",
+    "label": "合规双录制度",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "销售行为可回溯管理(双录)的适用范围、操作流程、保存期限。"
+  },
+  {
+    "id": "L1-07",
+    "layer": "foundation",
+    "label": "适当性管理",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "了解你的客户(KYC)义务、风险承受能力评估、产品与客户匹配。"
+  },
+  {
+    "id": "L1-08",
+    "layer": "foundation",
+    "label": "反洗钱义务",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FF6B6B",
+    "content": "大额保单的客户身份识别、可疑交易报告义务。"
+  },
+  {
+    "id": "L1-09",
+    "layer": "foundation",
+    "label": "客户获取方法",
+    "confidence": 0.8,
+    "weight": 5,
+    "color": "#FFA94D",
+    "content": "传统三大渠道：缘故市场(信任基础好但有限)、转介绍(无限连锁，需技巧)、陌生拜访(量大但转化率低)。数字化获客概览：私域运营(微信生态)、自媒体获客(短视频/直播/图文)、定制化活动(沙龙/产说会/社区活动)。核心原则：获客不是一次性动作，而是持续的流量池建设。"
+  },
+  {
+    "id": "L1-10",
+    "layer": "foundation",
+    "label": "初次面谈结构",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "建立信任→了解需求→激发兴趣的标准面谈框架。"
+  },
+  {
+    "id": "L1-11",
+    "layer": "foundation",
+    "label": "风险金字塔唤醒",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "死亡/疾病/养老/子女教育四大风险的需求唤醒逻辑。"
+  },
+  {
+    "id": "L1-12",
+    "layer": "foundation",
+    "label": "产品呈现技巧",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "产品亮点提炼(非条款朗读)、利益说明(而非功能罗列)。"
+  },
+  {
+    "id": "L1-13",
+    "layer": "foundation",
+    "label": "异议处理话术",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "LSCPA异议处理五步法(Listen倾听→Share同理→Clarify澄清→Present方案→Ask促成)、三大异议类型(不划算/不想买/不相信)、真假异议判断法、高频异议应对(太贵了/不需要/考虑一下/已买了/不吉利/有社保了/买保险容易理赔难)。核心原则：异议是购买的第一步，异议越多购买欲望越强。"
+  },
+  {
+    "id": "L1-14",
+    "layer": "foundation",
+    "label": "促成技巧",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "七大促成法：①请求成交法(直接请求)②假设成交法(假定已购买，引导具体细节)③选择成交法/二择一法(保额50万还是100万)④小点成交法(次要问题先行)⑤从众成交法(社会认同)⑥优惠成交法(让步促成)⑦总结利益成交法(回顾核心利益)。客户类型匹配：犹豫不决型→选择+小点；专家型→请求；朋友型→假设。试探性促成→识别购买信号→正式促成→成交确认。"
+  },
+  {
+    "id": "L1-15",
+    "layer": "foundation",
+    "label": "保单递送与服务",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "递送流程标准化/保单整理/年度检视/理赔协助。"
+  },
+  {
+    "id": "L1-16",
+    "layer": "foundation",
+    "label": "活动量管理",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "日均拜访量(3-5访)/有效拜访率/活动量追踪表。"
+  },
+  {
+    "id": "L1-17",
+    "layer": "foundation",
+    "label": "销售误导边界",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "夸大收益/隐瞒费用/混淆产品类型/代签字—四条绝对红线。"
+  },
+  {
+    "id": "L1-18",
+    "layer": "foundation",
+    "label": "职业道德诚信",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "最大诚信原则/客户信息保密/利益冲突披露。"
+  },
+  {
+    "id": "L1-19",
+    "layer": "foundation",
+    "label": "名单管理",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "客户名单分类/更新频率/优先级排序。"
+  },
+  {
+    "id": "L1-20",
+    "layer": "foundation",
+    "label": "保险赔款税务",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FF6B6B",
+    "content": "身故保险金/健康险赔付/年金领取的个人所得税处理。"
+  },
+  {
+    "id": "L1-21",
+    "layer": "foundation",
+    "label": "续期管理",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "续期提醒/宽限期管理/失效保单复效。"
+  },
+  {
+    "id": "L1-22",
+    "layer": "foundation",
+    "label": "核保基础知识",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#FF6B6B",
+    "content": "标准体/次标准体/延期/拒保的判断标准、健康告知处理。"
+  },
+  {
+    "id": "L2-01",
+    "layer": "advanced",
+    "label": "家庭财务诊断",
+    "confidence": 0.7,
+    "weight": 6,
+    "color": "#4A90E2",
+    "content": "资产负债表/收支储蓄表制作与解读、财务比率分析。"
+  },
+  {
+    "id": "L2-02",
+    "layer": "advanced",
+    "label": "风险缺口量化",
+    "confidence": 0.7,
+    "weight": 5,
+    "color": "#4A90E2",
+    "content": "生命价值法/遗嘱需求法/收入替代率的计算与应用。"
+  },
+  {
+    "id": "L2-03",
+    "layer": "advanced",
+    "label": "客户画像分层",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "按收入/家庭生命周期/风险偏好将客户分成6-8类画像，匹配产品组合。"
+  },
+  {
+    "id": "L2-04",
+    "layer": "advanced",
+    "label": "场景化需求唤醒",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "用'如果发生XX，你的家庭会怎样'的场景构建替代恐吓式营销。"
+  },
+  {
+    "id": "L2-05",
+    "layer": "advanced",
+    "label": "个人所得税基础",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "专项附加扣除/综合所得汇算/保险赔款免税规则。"
+  },
+  {
+    "id": "L2-06",
+    "layer": "advanced",
+    "label": "婚姻继承法基础",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "夫妻共同财产认定/法定继承顺序/遗嘱形式要件。"
+  },
+  {
+    "id": "L2-07",
+    "layer": "advanced",
+    "label": "分红险机制",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "分红来源(利差/死差/费差)/分红实现率/平滑储备金。"
+  },
+  {
+    "id": "L2-08",
+    "layer": "advanced",
+    "label": "万能险精算",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "结算利率与保底利率/初始费用/持续奖金/部分领取规则。"
+  },
+  {
+    "id": "L2-09",
+    "layer": "advanced",
+    "label": "投资基础",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#4A90E2",
+    "content": "股市/债券/基金基本概念、利率与保险产品价格的联动。"
+  },
+  {
+    "id": "L2-10",
+    "layer": "advanced",
+    "label": "客户分层管理",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "A/B/C类客户标准、差异化跟进频率、RFM模型应用。"
+  },
+  {
+    "id": "L2-11",
+    "layer": "advanced",
+    "label": "转介绍系统",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "转介绍时机选择/话术设计/激励机制/拒绝处理。"
+  },
+  {
+    "id": "L2-12",
+    "layer": "advanced",
+    "label": "沉默客户激活",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#50E3C2",
+    "content": "流失预警信号/激活策略/二次接触脚本。"
+  },
+  {
+    "id": "L2-13",
+    "layer": "advanced",
+    "label": "个人品牌运营",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#50E3C2",
+    "content": "朋友圈内容规划/短视频基础制作/公众号运营/本地IP打造。"
+  },
+  {
+    "id": "L2-14",
+    "layer": "advanced",
+    "label": "CRM系统应用",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#50E3C2",
+    "content": "客户信息录入/跟进提醒/数据看板/分析报表。"
+  },
+  {
+    "id": "L2-15",
+    "layer": "advanced",
+    "label": "AI工具辅助",
+    "confidence": 0.5,
+    "weight": 2,
+    "color": "#50E3C2",
+    "content": "用大模型优化话术/快速查询条款/生成个性化建议。"
+  },
+  {
+    "id": "L2-16",
+    "layer": "advanced",
+    "label": "房产保险交互",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#4A90E2",
+    "content": "房贷与定期寿险匹配逻辑/房产传承中的保险角色。"
+  },
+  {
+    "id": "L2-17",
+    "layer": "advanced",
+    "label": "投连险风控",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#4A90E2",
+    "content": "账户类型/费用结构/风险提示义务/适合性评估。"
+  },
+  {
+    "id": "L2-18",
+    "layer": "advanced",
+    "label": "竞品对比能力",
+    "confidence": 0.6,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "同业产品对比框架/优劣势分析/非恶性对比的处理方式。"
+  },
+  {
+    "id": "L3-01",
+    "layer": "transcendent",
+    "label": "资产配置理论",
+    "confidence": 0.5,
+    "weight": 6,
+    "color": "#B8E986",
+    "content": "马科维茨现代投资组合/标准普尔家庭资产象限/美林时钟。"
+  },
+  {
+    "id": "L3-02",
+    "layer": "transcendent",
+    "label": "税务筹划",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "个人所得税优化/企业主综合税筹/跨境税务/CRS影响。"
+  },
+  {
+    "id": "L3-03",
+    "layer": "transcendent",
+    "label": "家族财富传承",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "遗嘱+保险金信托+家族信托的组合架构设计。"
+  },
+  {
+    "id": "L3-04",
+    "layer": "transcendent",
+    "label": "企业主风险隔离",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "家企资产分离/股东互保/关键人保险/公司治理中的保险角色。"
+  },
+  {
+    "id": "L3-05",
+    "layer": "transcendent",
+    "label": "跨境财富规划",
+    "confidence": 0.4,
+    "weight": 4,
+    "color": "#B8E986",
+    "content": "移民前后税务规划/境外保险配置/外汇管理考量。"
+  },
+  {
+    "id": "L3-06",
+    "layer": "transcendent",
+    "label": "高客画像与触达",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#DDA0DD",
+    "content": "企业家/高管/专业人士的特征画像/商会、俱乐部、私行等圈层入口。"
+  },
+  {
+    "id": "L3-07",
+    "layer": "transcendent",
+    "label": "高客面谈方法论",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "不做产品推销→做家庭CFO角色/目标导向型规划/深度KYC。"
+  },
+  {
+    "id": "L3-08",
+    "layer": "transcendent",
+    "label": "保险金信托架构",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "1.0(理赔金进信托)/2.0(保单进信托)/3.0(信托持有保单)的区别与适用。"
+  },
+  {
+    "id": "L3-09",
+    "layer": "transcendent",
+    "label": "信托法基础",
+    "confidence": 0.5,
+    "weight": 3,
+    "color": "#B8E986",
+    "content": "信托三要素(委托人/受托人/受益人)、受托人义务、信托财产独立性。"
+  },
+  {
+    "id": "L3-10",
+    "layer": "transcendent",
+    "label": "增员方法论",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#FFD700",
+    "content": "增员画像定义/增员渠道(招募/同业引进/跨行挖角)/吸引力话术。"
+  },
+  {
+    "id": "L3-11",
+    "layer": "transcendent",
+    "label": "新人培养体系",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#FFD700",
+    "content": "90天培养计划/陪同拜访/复盘会/技能通关考核。"
+  },
+  {
+    "id": "L3-12",
+    "layer": "transcendent",
+    "label": "团队绩效管理",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#FFD700",
+    "content": "活动量追踪/产能看板/差异化辅导/流失预警与干预。"
+  },
+  {
+    "id": "L3-13",
+    "layer": "transcendent",
+    "label": "养老产业知识",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "9073养老格局/CCRC持续照护社区/长护险制度/养老社区运营模式。"
+  },
+  {
+    "id": "L3-14",
+    "layer": "transcendent",
+    "label": "医疗资源整合",
+    "confidence": 0.5,
+    "weight": 3,
+    "color": "#DDA0DD",
+    "content": "就医绿通/二次诊疗/海外就医/高端体检资源的整合与应用。"
+  },
+  {
+    "id": "L3-15",
+    "layer": "transcendent",
+    "label": "家族办公室概念",
+    "confidence": 0.4,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "单一家办/联合家办的运作模式、服务范围、设立条件。"
+  },
+  {
+    "id": "L1-23",
+    "layer": "foundation",
+    "label": "购买信号识别",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "语言信号(询问细节/价格/缴费方式/理赔流程/比较产品)、非语言信号(点头/前倾/沉默思考/拿合同仔细看/与家人交换眼神)、试探性促成(假设成交提问测试反应)、促成时机判断(信号出现后3分钟内行动)。反面信号：过度纠结价格不谈保障/频繁看手机/身体后倾。"
+  },
+  {
+    "id": "L1-24",
+    "layer": "foundation",
+    "label": "转介绍请求实务",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "六大请求时机：资料收集后/促成填要保书时/递交保单时/服务回访时/理赔协助后/日常联络中。请求话术四要素：明确描述目标画像/引导联想具体人名/降低心理门槛/承诺反馈结果。抗拒处理：消除顾虑(不会强推/只是认识一下)、降低期望(只需2-3个名字)。信息收集：被介绍人年龄/职业/收入/家庭/健康/最佳拜访时间。回访报告：联络结果/面谈进展/感谢转介绍/请求再次推荐。"
+  },
+  {
+    "id": "L1-25",
+    "layer": "foundation",
+    "label": "私域运营与活动获客",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "私域运营三板斧：朋友圈经营(专业内容30%+生活30%+互动40%)、社群运营(保险知识群/客户服务群，定期分享+答疑)、一对一私聊(节日问候/生日祝福/保单周年提醒/理赔资讯分享)。自媒体获客入门：短视频(保险科普/理赔故事/避坑指南)、直播(保险知识讲座/答疑互动)、图文(公众号/小红书/知乎)。定制化活动：产说会(产品说明会)、创说会(创业说明会/增员)、客户沙龙(亲子/养生/理财主题)、社区活动(义诊/法律咨询/节日活动)。核心原则：内容价值优先，获客是价值提供的副产品。"
+  },
+  {
+    "id": "L2-19",
+    "layer": "advanced",
+    "label": "促成心理学",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "六类客户决策风格×促成策略：犹豫不决型→选择成交+小点成交+从众成交；专家型/自我中心型→请求成交(尊重自主决策)；敌对型→请求成交+小点成交；朋友型→假设成交(关系信任基础)；信念型→从众成交(群体认同)；渴求型→优惠成交+保证成交。心理压力管理：识别客户压力信号/适时后退降低防御/用提问替代陈述。决策加速技术：损失厌恶框架(不买的代价>买的好处)、时间稀缺性(合规前提下)、社会证明。"
+  },
+  {
+    "id": "L2-20",
+    "layer": "advanced",
+    "label": "深层异议挖掘",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "表面异议vs真实异议：太贵了→可能是预算问题/价值感知不足/比价心态/支付能力不够。3F法则深挖：Feel(感受认同)→Focus(聚焦真实痛点)→Fact(数据事实支撑)。异议日志分析：建立异议类型-处理效果矩阵，识别高频问题，优化话术。异议预防策略：在客户提出前主动处理(价格锚定/价值前置/风险可视化)。情绪处理：先处理心情再处理事情，客户的情绪化异议需要同理心而非逻辑。"
+  },
+  {
+    "id": "L3-16",
+    "layer": "transcendent",
+    "label": "无限连锁经营",
+    "confidence": 0.6,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "John Fleming无限连锁法(Unlimited Chain)：每次面谈都是下一次获客的起点，签单不是终点而是转介绍的起点。关键人物(Center of Influence)培养：识别有影响力的客户/持续提供价值/建立战略合作关系/定期互惠。转介绍自动化体系：标准化请求话术库/转介绍追踪表/感谢激励机制/客户转介绍率KPI。目标：每周15个访谈约定，其中80%来自转介绍和关键人物推荐。从个人品牌到转介绍飞轮：专业声誉→客户满意度→主动推荐→新客户→更高声誉。"
+  },
+  {
+    "id": "L3-17",
+    "layer": "transcendent",
+    "label": "销售说服心理学",
+    "confidence": 0.6,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "Cialdini说服六原则保险场景化：互惠(先提供价值→再请求帮助)、承诺一致(小同意→大决定，健康告知→保障规划)、社会认同(同类客户案例/理赔数据)、喜好(共同兴趣/真诚赞美/相似性)、权威(专业资质/行业认证/公司品牌)、稀缺(合规前提下：核保政策收紧/产品停售)。说服伦理边界：不得利用信息不对称误导/不得制造虚假紧迫感/不得操纵恐惧情绪。高阶应用：将说服原则融入日常服务而非仅用于签单，建立长期信任关系。"
+  }
+]

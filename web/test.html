@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>KGDS - 知识诊断中</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a1a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #5B9BD5;
+        }
+        .header p { color: #7a8a9a; margin-top: 8px; font-size: 14px; }
+
+        .progress-bar {
+            width: 600px;
+            max-width: 90vw;
+            height: 4px;
+            background: #1a2a3a;
+            border-radius: 2px;
+            margin-bottom: 40px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4A90E2, #5B9BD5);
+            border-radius: 2px;
+            transition: width 0.4s;
+        }
+
+        .question-card {
+            background: rgba(10, 20, 40, 0.95);
+            border: 1px solid #2a3a5a;
+            border-radius: 16px;
+            padding: 32px;
+            width: 640px;
+            max-width: 90vw;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .question-card.active { display: block; }
+
+        .q-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #5a6a7a;
+        }
+        .q-type {
+            background: rgba(91, 155, 213, 0.15);
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #5B9BD5;
+        }
+        .q-text {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            color: #e0e0e0;
+        }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #2a3a5a;
+            border-radius: 10px;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            color: #c0c0c0;
+        }
+        .option:hover { border-color: #5B9BD5; background: rgba(91, 155, 213, 0.08); }
+        .option.selected { border-color: #5B9BD5; background: rgba(91, 155, 213, 0.15); color: #fff; }
+
+        .nav-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #2a3a5a;
+            color: #e0e0e0;
+            padding: 12px 32px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn:hover { border-color: #5B9BD5; }
+        .btn.primary { background: #4A90E2; border-color: #4A90E2; }
+        .btn.primary:hover { box-shadow: 0 0 20px rgba(74, 144, 226, 0.4); }
+
+        .complete-screen { display: none; text-align: center; padding: 60px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>知识图谱诊断中</h1>
+        <p id="user-greeting">正在为你生成试题...</p>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+
+    <div id="questions-container"></div>
+
+    <div class="nav-btns" id="nav-btns">
+        <button class="btn" onclick="prevQuestion()">← 上一题</button>
+        <span id="q-indicator" style="color: #7a8a9a; font-size: 14px; padding: 12px;"></span>
+        <button class="btn" onclick="nextQuestion()">下一题 →</button>
+        <button class="btn primary" onclick="submitTest()" style="display:none;" id="submit-btn">提交诊断</button>
+    </div>
+
+    <script>
+        // 加载试题
+        async function loadQuestions() {
+            const profile = JSON.parse(sessionStorage.getItem('kgds_profile') || '{}');
+            document.getElementById('user-greeting').textContent =
+                `${profile.name || '用户'} · ${profile.experience || ''}年经验`;
+
+            // 从 tests.json 加载真实试题
+            const resp = await fetch('../data/roles/insurance-agent/tests.json');
+            const rawTests = await resp.json();
+
+            // 打乱顺序
+            const questions = rawTests.sort(() => Math.random() - 0.5).map((t, idx) => ({
+                id: `Q${String(idx + 1).padStart(4, '0')}`,
+                node_id: t.node_id,
+                node_label: t.node_id,
+                layer: '',
+                type: t.type,
+                text: t.question,
+                options: t.options,
+                correct: t.correct
+            }));
+
+            return questions;
+        }
+
+        let questions = [];
+        let currentIdx = 0;
+        let answers = {};
+
+        async function init() {
+            questions = await loadQuestions();
+            renderAll();
+            showQuestion(0);
+        }
+
+        function renderAll() {
+            const container = document.getElementById('questions-container');
+            questions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `q-card-${idx}`;
+                card.innerHTML = `
+                    <div class="q-meta">
+                        <span>题 ${idx + 1} / ${questions.length}</span>
+                        <span class="q-type">${q.type}</span>
+                    </div>
+                    <div class="q-text">${q.text}</div>
+                    <div class="options">
+                        ${q.options.map((opt, oi) => `
+                            <div class="option" onclick="selectAnswer(${idx}, ${oi})" id="opt-${idx}-${oi}">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showQuestion(idx) {
+            document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+            const card = document.getElementById(`q-card-${idx}`);
+            if (card) card.classList.add('active');
+
+            currentIdx = idx;
+            document.getElementById('q-indicator').textContent = `${idx + 1} / ${questions.length}`;
+
+            const progress = ((idx + 1) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+
+            // 最后一题显示提交按钮
+            document.getElementById('submit-btn').style.display =
+                idx === questions.length - 1 ? 'inline-block' : 'none';
+        }
+
+        function selectAnswer(qIdx, optIdx) {
+            answers[questions[qIdx].id] = optIdx;
+            // 清除同一题的其他选项
+            for (let i = 0; i < 4; i++) {
+                const el = document.getElementById(`opt-${qIdx}-${i}`);
+                if (el) el.classList.remove('selected');
+            }
+            document.getElementById(`opt-${qIdx}-${optIdx}`).classList.add('selected');
+
+            // 0.5秒后自动跳到下一题
+            if (qIdx < questions.length - 1) {
+                setTimeout(() => showQuestion(qIdx + 1), 300);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) showQuestion(currentIdx - 1);
+        }
+
+        function nextQuestion() {
+            if (currentIdx < questions.length - 1) showQuestion(currentIdx + 1);
+        }
+
+        function submitTest() {
+            sessionStorage.setItem('kgds_answers', JSON.stringify(answers));
+            sessionStorage.setItem('kgds_questions', JSON.stringify(
+                questions.map(q => ({ id: q.id, node_id: q.node_id, correct: q.correct, node_label: q.node_label, layer: q.layer }))
+            ));
+            window.location.href = 'result.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

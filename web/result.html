@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>KGDS - 诊断结果</title>
+    <script src="//unpkg.com/3d-force-graph"></script>
+    <script src="//unpkg.com/three@0.150.0/build/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #00050a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        #graph-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+        .panel {
+            position: absolute;
+            z-index: 10;
+            background: rgba(0, 10, 20, 0.9);
+            border: 1px solid #2a3a5a;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            padding: 24px;
+        }
+        .top-left { top: 20px; left: 20px; width: 280px; }
+        .top-right { top: 20px; right: 20px; width: 320px; }
+        .bottom-left { bottom: 20px; left: 20px; right: 20px; height: 120px; overflow-y: auto; display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .score-circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 3px solid #5B9BD5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 12px auto;
+            background: rgba(91, 155, 213, 0.1);
+        }
+        .layer-score { display: flex; justify-content: space-between; margin: 8px 0; font-size: 13px; color: #8a9a9a; }
+        .layer-score span:last-child { color: #e0e0e0; font-weight: 600; }
+
+        h3 { font-size: 16px; color: #5B9BD5; margin-bottom: 12px; }
+        h3.warn { color: #FF6B6B; }
+
+        .book-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #2a3a5a;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            flex: 0 0 auto;
+            min-width: 180px;
+        }
+        .book-card .title { color: #B8E986; font-weight: 600; }
+        .book-card .author { color: #6a7a8a; font-size: 12px; }
+        .book-card .reason { color: #8a9a9a; font-size: 11px; margin-top: 4px; }
+
+        .legend { position: absolute; bottom: 140px; right: 20px; z-index: 10; }
+        .legend-item { display: flex; align-items: center; margin: 5px 0; font-size: 11px; color: #8a9a9a; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+
+        .tab { display: inline-block; padding: 6px 14px; border: 1px solid #2a3a5a; border-radius: 6px; cursor: pointer; margin-right: 6px; font-size: 12px; transition: all 0.2s; }
+        .tab.active { background: rgba(91, 155, 213, 0.2); border-color: #5B9BD5; color: #5B9BD5; }
+    </style>
+</head>
+<body>
+    <div id="graph-container"></div>
+
+    <div class="panel top-left">
+        <h3 id="user-name">诊断报告</h3>
+        <div class="score-circle" id="overall-score">--</div>
+        <div class="layer-score"><span>基础技能</span><span id="score-foundation">--</span></div>
+        <div class="layer-score"><span>提升技能</span><span id="score-advanced">--</span></div>
+        <div class="layer-score"><span>升华技能</span><span id="score-transcendent">--</span></div>
+    </div>
+
+    <div class="panel top-right">
+        <h3>知识缺口</h3>
+        <div id="gap-list" style="max-height: 200px; overflow-y: auto; font-size: 13px; color: #8a9a9a; line-height: 1.8;">
+            计算中...
+        </div>
+    </div>
+
+    <div class="panel bottom-left" id="book-panel">
+        <h3 style="width: 100%;">推荐学习</h3>
+        <div id="book-list" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="dot" style="background: #4A90E2;"></div> 提升技能</div>
+        <div class="legend-item"><div class="dot" style="background: #B8E986;"></div> 升华技能</div>
+        <div class="legend-item"><div class="dot" style="background: #FF6B6B;"></div> 基础技能</div>
+        <div class="legend-item"><div class="dot" style="background: #FFA94D;"></div> 销售流程</div>
+        <div class="legend-item"><div class="dot" style="background: #50E3C2;"></div> 客户经营</div>
+        <div class="legend-item"><div class="dot" style="background: #DDA0DD;"></div> 高客服务</div>
+        <div class="legend-item"><div class="dot" style="background: #FFD700;"></div> 团队管理</div>
+        <div class="legend-item"><div class="dot" style="background: #333333;"></div> 未掌握</div>
+    </div>
+
+    <div class="legend" style="bottom: 100px;">
+        <div style="margin-top:12px;">
+            <span class="tab active" onclick="switchView('actual')" id="tab-actual">我的图谱</span>
+            <span class="tab" onclick="switchView('ideal')" id="tab-ideal">应有图谱</span>
+            <span class="tab" onclick="switchView('both')" id="tab-both">对比模式</span>
+        </div>
+    </div>
+
+    <script>
+        let graphData = { nodes: [], links: [] };
+        let idealData = { nodes: [], links: [] };
+        let actualData = { nodes: [], links: [] };
+        let currentView = 'actual';
+        let graph;
+
+        async function init() {
+            // 加载应有知识图谱
+            const [nodesResp, edgesResp] = await Promise.all([
+                fetch('../data/roles/insurance-agent/nodes.json'),
+                fetch('../data/roles/insurance-agent/edges.json')
+            ]);
+            const allNodes = await nodesResp.json();
+            const allEdges = await edgesResp.json();
+
+            // 加载答题结果
+            const answersStr = sessionStorage.getItem('kgds_answers');
+            const questionsStr = sessionStorage.getItem('kgds_questions');
+            const profileStr = sessionStorage.getItem('kgds_profile');
+
+            if (!answersStr || !questionsStr) {
+                document.getElementById('user-name').textContent = '未找到答题数据，请重新诊断';
+                return;
+            }
+
+            const answers = JSON.parse(answersStr);
+            const questionMeta = JSON.parse(questionsStr);
+            const profile = JSON.parse(profileStr || '{}');
+
+            document.getElementById('user-name').textContent =
+                `${profile.name || '代理人'} · ${profile.experience || '未知'}年`;
+
+            // 计算节点掌握度
+            const nodeStatus = {};
+            questionMeta.forEach(q => {
+                if (!nodeStatus[q.node_id]) nodeStatus[q.node_id] = { correct: 0, total: 0 };
+                nodeStatus[q.node_id].total++;
+                if (answers[q.id] === q.correct) nodeStatus[q.node_id].correct++;
+            });
+
+            // 构建实际图谱
+            const mastery = {};
+            const masteredSet = new Set();
+            allNodes.forEach(node => {
+                const s = nodeStatus[node.id] || { correct: 0, total: 0 };
+                const conf = s.total > 0 ? s.correct / s.total : 0;
+                mastery[node.id] = { confidence: conf, mastered: conf >= 0.67, correct: s.correct, total: s.total };
+                if (conf >= 0.67) masteredSet.add(node.id);
+            });
+
+            actualData.nodes = allNodes.map(node => {
+                const m = mastery[node.id];
+                const conf = m.confidence;
+                if (m.mastered) {
+                    return { ...node, color: node.color, weight: node.weight * (0.8 + conf * 1.2), mastered: true, confidence: conf };
+                } else if (conf > 0) {
+                    return { ...node, color: '#FFD700', weight: node.weight * 0.6, mastered: false, confidence: conf };
+                } else {
+                    return { ...node, color: '#333333', weight: node.weight * 0.3, mastered: false, confidence: 0 };
+                }
+            });
+
+            actualData.edges = allEdges.map(e => {
+                const both = masteredSet.has(e.source) && masteredSet.has(e.target);
+                const one = masteredSet.has(e.source) || masteredSet.has(e.target);
+                return {
+                    ...e,
+                    color: both ? '#5B9BD5' : one ? '#3a5a7a' : '#1a2a3a',
+                    opacity: both ? 0.8 : one ? 0.4 : 0.15
+                };
+            });
+
+            idealData.nodes = allNodes.map(n => ({ ...n, color: '#555555', weight: n.weight * 0.6 }));
+            idealData.edges = allEdges.map(e => ({ ...e, color: '#333333', opacity: 0.25 }));
+
+            // 计算总分
+            const totalCorrect = Object.values(nodeStatus).reduce((sum, s) => sum + s.correct, 0);
+            const totalQ = Object.values(nodeStatus).reduce((sum, s) => sum + s.total, 0);
+            const overall = totalQ > 0 ? totalCorrect / totalQ : 0;
+
+            document.getElementById('overall-score').textContent = Math.round(overall * 100);
+
+            // 分层得分
+            ['foundation', 'advanced', 'transcendent'].forEach(layer => {
+                const layerNodes = allNodes.filter(n => n.layer === layer);
+                let lCorrect = 0, lTotal = 0;
+                layerNodes.forEach(n => {
+                    const s = nodeStatus[n.id] || { correct: 0, total: 0 };
+                    lCorrect += s.correct;
+                    lTotal += s.total;
+                });
+                const score = lTotal > 0 ? Math.round(lCorrect / lTotal * 100) : 0;
+                document.getElementById(`score-${layer}`).textContent = score + '%';
+            });
+
+            // 缺口列表
+            const gaps = allNodes.filter(n => !masteredSet.has(n.id));
+            let gapHTML = gaps.length === 0 ? '<span style="color:#B8E986;">🎉 全部掌握！</span>' : '';
+            const criticalGaps = gaps.filter(n => n.layer === 'foundation');
+            if (criticalGaps.length > 0) {
+                gapHTML += `<div style="color:#FF6B6B; margin-top:4px;">⚠ 基础缺口 (${criticalGaps.length}):</div>`;
+                criticalGaps.slice(0, 5).forEach(n => {
+                    gapHTML += `<div>· ${n.label}</div>`;
+                });
+                if (criticalGaps.length > 5) gapHTML += `<div style="color:#8a9a9a;">...等 ${criticalGaps.length} 项</div>`;
+            }
+            const advGaps = gaps.filter(n => n.layer === 'advanced').slice(0, 3);
+            if (advGaps.length > 0) {
+                gapHTML += `<div style="color:#FFD700; margin-top:8px;">提升缺口:</div>`;
+                advGaps.forEach(n => { gapHTML += `<div>· ${n.label}</div>`; });
+            }
+            document.getElementById('gap-list').innerHTML = gapHTML;
+
+            // 推荐书籍
+            const bookRecs = [];
+            if (criticalGaps.length > 0) {
+                bookRecs.push(
+                    { title: '保险原理与实务', author: '中国保险行业协会', reason: '覆盖所有保险产品基础。' },
+                    { title: '保险法', author: '全国人大', reason: '掌握保险法律红线。' }
+                );
+            }
+            if (gaps.filter(n => n.layer === 'advanced').length > 0) {
+                bookRecs.push(
+                    { title: '理财规划师基础知识', author: 'CHFP教材', reason: '系统学习家庭财务分析与理财规划。' },
+                    { title: '保险学（第六版）', author: '魏华林', reason: '深入理解保险定价与产品设计。' }
+                );
+            }
+            if (gaps.filter(n => n.layer === 'transcendent').length > 0) {
+                bookRecs.push(
+                    { title: '家族信托与财富管理', author: '韩良', reason: '理解保险金信托与家族传承。' },
+                    { title: '资产配置的艺术', author: 'David Darst', reason: '掌握资产配置理论与实务。' }
+                );
+            }
+            document.getElementById('book-list').innerHTML = bookRecs.map(b => `
+                <div class="book-card">
+                    <div class="title">${b.title}</div>
+                    <div class="author">${b.author}</div>
+                    <div class="reason">${b.reason}</div>
+                </div>
+            `).join('');
+
+            // 渲染3D图谱
+            renderGraph('actual');
+        }
+
+        function renderGraph(view) {
+            currentView = view;
+            let data;
+
+            if (view === 'actual') {
+                data = actualData;
+            } else if (view === 'ideal') {
+                data = idealData;
+            } else {
+                // both: 叠加，应有图谱半透明在背景
+                data = {
+                    nodes: [
+                        ...idealData.nodes.map(n => ({ ...n, id: 'ideal-' + n.id, color: '#333333', weight: n.weight * 0.4 })),
+                        ...actualData.nodes.map(n => ({ ...n, id: 'actual-' + n.id }))
+                    ],
+                    links: [
+                        ...idealData.edges.map(e => ({ ...e, source: 'ideal-' + e.source, target: 'ideal-' + e.target, color: '#222222', opacity: 0.15 })),
+                        ...actualData.edges.map(e => ({ ...e, source: 'actual-' + e.source, target: 'actual-' + e.target }))
+                    ]
+                };
+            }
+
+            const container = document.getElementById('graph-container');
+            container.innerHTML = '';
+
+            graph = ForceGraph3D()(container)
+                .graphData({ nodes: data.nodes, links: data.links })
+                .backgroundColor('#00050a')
+                .nodeLabel('label')
+                .nodeColor(n => n.color)
+                .nodeVal(n => n.weight * 2)
+                .linkColor(l => l.color || '#5B9BD5')
+                .linkOpacity(l => l.opacity !== undefined ? l.opacity : 0.6)
+                .linkWidth(l => l.strength * 2)
+                .linkDirectionalParticles(view === 'both' ? 1 : 2)
+                .linkDirectionalParticleSpeed(0.004)
+                .linkDirectionalParticleWidth(1.2)
+                .linkDirectionalParticleColor(() => '#8BC8F0')
+                .onNodeClick(node => {
+                    const m = mastery[node.id.split('actual-').pop() || node.id];
+                    if (m) {
+                        alert(`${node.label}\n掌握度: ${Math.round(m.confidence * 100)}%\n(${m.correct}/${m.total}题正确)`);
+                    }
+                });
+
+            // 星空
+            const starCount = 1500;
+            const starGeo = new THREE.BufferGeometry();
+            const starPos = new Float32Array(starCount * 3);
+            for (let i = 0; i < starCount; i++) {
+                starPos[i * 3] = (Math.random() - 0.5) * 2000;
+                starPos[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+                starPos[i * 3 + 2] = (Math.random() - 0.5) * 2000;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({
+                color: '#334466', size: 1.0, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+            }));
+            stars.renderOrder = -1;
+            graph.scene().add(stars);
+
+            // 慢速旋转
+            let angle = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                angle += 0.002;
+                graph.cameraPosition({
+                    x: 700 * Math.sin(angle),
+                    z: 700 * Math.cos(angle),
+                    y: 150
+                });
+                stars.rotation.y += 0.01;
+                stars.rotation.x += 0.003;
+            }
+            animate();
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + view).classList.add('active');
+            renderGraph(view);
+        }
+
+        init();
+    </script>
+</body>
+</html>

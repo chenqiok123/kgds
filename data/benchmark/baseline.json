@@ -1,0 +1,204 @@
+{
+  "run_at": "2026-07-26 23:33:19",
+  "total_cases": 12,
+  "cases": [
+    {
+      "id": "GC-001",
+      "name": "新手代理人—基础知识均衡",
+      "passed": true,
+      "checks": {
+        "accuracy": 0.25,
+        "theta": -1.099,
+        "theta_in_range": true,
+        "dominant_layer": "foundation",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": []
+    },
+    {
+      "id": "GC-002",
+      "name": "中级代理人—提升层掌握",
+      "passed": true,
+      "checks": {
+        "accuracy": 0.65,
+        "theta": 0.619,
+        "theta_in_range": true,
+        "dominant_layer": "intermediate",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": []
+    },
+    {
+      "id": "GC-003",
+      "name": "资深代理人—全层精通",
+      "passed": false,
+      "checks": {
+        "accuracy": 1.0,
+        "theta": 4.595,
+        "theta_in_range": false,
+        "dominant_layer": "transcendent",
+        "blindspots_detected": false,
+        "blindspots_match": true
+      },
+      "issues": [
+        "θ=4.60 不在预期范围 [1.5, 3.0]"
+      ]
+    },
+    {
+      "id": "GC-004",
+      "name": "基础层强势但盲点明显",
+      "passed": false,
+      "checks": {
+        "accuracy": 0.2,
+        "theta": -1.386,
+        "theta_in_range": false,
+        "dominant_layer": "none",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": [
+        "θ=-1.39 不在预期范围 [-0.8, 0.2]"
+      ]
+    },
+    {
+      "id": "GC-005",
+      "name": "跨界人才—升华层突出但基础薄",
+      "passed": true,
+      "checks": {
+        "accuracy": 0.3,
+        "theta": -0.847,
+        "theta_in_range": true,
+        "dominant_layer": "foundation",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": []
+    },
+    {
+      "id": "GC-006",
+      "name": "随机瞎猜—完全没复习",
+      "passed": false,
+      "checks": {
+        "accuracy": 0.2,
+        "theta": -1.386,
+        "theta_in_range": false,
+        "dominant_layer": "none",
+        "blindspots_detected": true,
+        "blindspots_match": false
+      },
+      "issues": [
+        "θ=-1.39 不在预期范围 [-3.0, -1.5]",
+        "反盲选预期 不触发，实际 触发"
+      ]
+    },
+    {
+      "id": "GC-007",
+      "name": "产品知识专精—销售技能薄弱",
+      "passed": true,
+      "checks": {
+        "accuracy": 0.3,
+        "theta": -0.847,
+        "theta_in_range": true,
+        "dominant_layer": "foundation",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": []
+    },
+    {
+      "id": "GC-008",
+      "name": "合规达人—合规意识强但产品理解浅",
+      "passed": false,
+      "checks": {
+        "accuracy": 0.25,
+        "theta": -1.099,
+        "theta_in_range": false,
+        "dominant_layer": "foundation",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": [
+        "θ=-1.10 不在预期范围 [-0.5, 0.5]"
+      ]
+    },
+    {
+      "id": "GC-009",
+      "name": "纸面高手—考试型选手",
+      "passed": true,
+      "checks": {
+        "accuracy": 0.65,
+        "theta": 0.619,
+        "theta_in_range": true,
+        "dominant_layer": "intermediate",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": []
+    },
+    {
+      "id": "GC-010",
+      "name": "稳步成长—全层均衡渐进",
+      "passed": false,
+      "checks": {
+        "accuracy": 0.25,
+        "theta": -1.099,
+        "theta_in_range": false,
+        "dominant_layer": "foundation",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": [
+        "θ=-1.10 不在预期范围 [-1.0, 0.0]"
+      ]
+    },
+    {
+      "id": "GC-011",
+      "name": "反盲选压力测试—知识关联断裂",
+      "passed": true,
+      "checks": {
+        "accuracy": 0.25,
+        "theta": -1.099,
+        "theta_in_range": true,
+        "dominant_layer": "foundation",
+        "blindspots_detected": true,
+        "blindspots_match": true
+      },
+      "issues": []
+    },
+    {
+      "id": "GC-012",
+      "name": "偏见型作答—特定选项倾向",
+      "passed": false,
+      "checks": {
+        "accuracy": 0.0,
+        "theta": -4.595,
+        "theta_in_range": false,
+        "dominant_layer": "none",
+        "blindspots_detected": true,
+        "blindspots_match": false
+      },
+      "issues": [
+        "θ=-4.60 不在预期范围 [-2.0, -0.5]",
+        "反盲选预期 不触发，实际 触发"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "passed": 6,
+    "failed": 6,
+    "pass_rate": 0.5,
+    "avg_theta": -0.635,
+    "avg_accuracy": 0.358,
+    "failed_cases": [
+      "GC-003",
+      "GC-004",
+      "GC-006",
+      "GC-008",
+      "GC-010",
+      "GC-012"
+    ]
+  }
+}
