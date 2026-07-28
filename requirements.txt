@@ -1,0 +1,2 @@
+﻿# KGDS — 零外部 pip 依赖，全部使用 Python 标准库
+# 此文件仅供 Zeabur 识别项目为 Python 服务
