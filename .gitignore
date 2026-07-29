@@ -16,3 +16,13 @@ __pycache__/
 /wealth-flow-sales/
 /wealth_flow_ppt.py
 /data/users/
+"_*.py"  
+"_*.gz"  
+"*.log"  
+"fix_*.py"  
+"test_*.py"  
+"screenshot_*.png"  
+"manifest.json"  
+"sw.js"  
+"zeabur.json"  
+"index.html"  

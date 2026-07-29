@@ -7,7 +7,9 @@ var state = {
   nodes:[], edges:[], report:null, graphInstance:null,
   blinkTimer: null, selectedLevels: ['foundation','advanced'],
   foundationSize: 'compact',  // 'compact' | 'full'
-  graphMode: 'report'  // 'report' | 'full' — 图谱着色模式
+  graphMode: 'report', // 'report' | 'full' — 图谱着色模式
+  internalCategory: null,  // 内部知识单选
+  learningShown: {}        // 学习推荐去重: {node_id: [tip_indices]}
 };
 
 // ── Init ──
@@ -162,19 +164,23 @@ function switchTab(name) {
 function toggleGraphMode() {
   var btn = document.getElementById('btn-full-graph');
   if (state.graphMode === 'report') {
-    // 切换到完整图谱（默认无色）
+    // 切换到完整图谱（恢复节点原始颜色）
     state.graphMode = 'full';
     if (btn) { btn.textContent = '🎯 诊断图谱'; btn.classList.remove('active'); }
     if (state.blinkTimer) { clearInterval(state.blinkTimer); state.blinkTimer = null; }
     if (state.graphInstance) {
+      var layerColors = { 'foundation':'#5B9BD5', 'advanced':'#2ECC40', 'transcendent':'#9B59B6' };
       var resetNodes = state.nodes.map(function(n){
         var node = Object.assign({}, n);
-        delete node.mastery; delete node._blinkGroup; delete node.color; delete node.val;
+        delete node.mastery; delete node._blinkGroup;
+        // state.nodes 保留原始颜色，直接恢复；若无颜色则按层级着色
+        if (!node.color) node.color = layerColors[n.layer] || '#5B9BD5';
+        node.val = (n.weight || 3) * 1.5;
         return node;
       });
       state.graphInstance.graphData({ nodes: resetNodes, links: state.edges });
-      state.graphInstance.nodeColor(function(n){ return n.color || '#888'; });
-      state.graphInstance.nodeVal(function(n){ return (n.weight || 3) * 1.5; });
+      state.graphInstance.nodeColor(function(n){ return n.color; });
+      state.graphInstance.nodeVal(function(n){ return n.val; });
     }
   } else {
     // 切换到诊断着色图谱
@@ -190,6 +196,65 @@ function showPhase(name) {
   var el = document.getElementById('phase-' + name);
   if (el) el.classList.add('active');
   document.getElementById('panel-test').scrollTop = 0;
+}
+
+// ── 内部知识单选 ──
+function selectInternal(category) {
+  // 如果当前已选中同一类别 → 取消选择
+  if (state.internalCategory === category) {
+    state.internalCategory = null;
+  } else {
+    state.internalCategory = category;
+  }
+  updateInternalUI();
+}
+
+function updateInternalUI() {
+  var cats = ['基础知识', '产品知识', '合规知识'];
+  var ids = ['basic', 'product', 'compliance'];
+  cats.forEach(function(cat, i) {
+    var el = document.getElementById('cb-internal-' + ids[i]);
+    var radio = document.getElementById('radio-' + ids[i]);
+    if (el) {
+      el.classList.toggle('checked', state.internalCategory === cat);
+    }
+    if (radio) {
+      radio.textContent = state.internalCategory === cat ? '●' : '○';
+    }
+  });
+  var info = document.getElementById('internal-info');
+  if (info) {
+    if (state.internalCategory) {
+      // 获取该类别题目数
+      var cnt = 0;
+      info.textContent = '已选：' + state.internalCategory + ' · 共 ' + cnt + ' 题';
+      info.style.color = 'var(--tx)';
+    } else {
+      info.textContent = '未选择内部知识方向';
+      info.style.color = 'var(--tx2)';
+    }
+  }
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  var btn = document.querySelector('.btn-block');
+  if (!btn) return;
+  var marketTotal = 0;
+  var counts = { foundation: state.foundationSize === 'compact' ? 51 : 81, advanced: 38, transcendent: 30 };
+  state.selectedLevels.forEach(function(l){ marketTotal += counts[l]; });
+  var internalTotal = 0; // 待服务端返回
+  var parts = [];
+  if (marketTotal > 0) parts.push('市场' + marketTotal + '题');
+  if (state.internalCategory) parts.push('内部' + internalTotal + '题');
+  var total = marketTotal + internalTotal;
+  if (total === 0) {
+    btn.textContent = '🚀 请选择诊断范围';
+    btn.disabled = true;
+  } else {
+    btn.textContent = '🚀 开始诊断（共 ' + total + ' 题：' + parts.join(' + ') + '）';
+    btn.disabled = false;
+  }
 }
 
 function toggleLevel(level) {
@@ -220,6 +285,8 @@ function updateLevelInfo() {
   var total = 0;
   state.selectedLevels.forEach(function(l){ total += counts[l]; });
   document.getElementById('level-info').textContent = '已选：' + state.selectedLevels.map(function(l){ return names[l]; }).join('+') + ' · 共 ' + total + ' 题';
+  updateInternalUI();
+  updateStartBtn();
 }
 
 // ── Graph ──
@@ -280,7 +347,7 @@ function startTest() {
 
   function loadTests() {
     return fetch(API + '/api/generate-test', { method:'POST', headers:authHeaders(),
-      body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, foundation_size:state.foundationSize })
+      body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, foundation_size:state.foundationSize, internal_category: state.internalCategory })
     }).then(function(r){ return r.json(); }).then(function(d){ return d.questions; })
     .catch(function(){
       return fetch(API + '/api/tests').then(function(r){ if(!r.ok) throw new Error('no'); return r.json(); })
@@ -473,11 +540,97 @@ function renderReport() {
   }
   html += '</div>';
 
-  html += '<div class="rp-card"><h4>📚 推荐书单</h4><div class="rp-books">';
-  books.slice(0,6).forEach(function(b){ html+='<div class="rp-book"><div class="btitle">'+b.title+'</div><div class="bauthor">'+b.author+'</div><div class="breason">'+b.reason+'</div></div>'; });
-  html+='</div></div></div>';
+  // ── 学习推荐（替代书单）──
+  html += '<div class="rp-card" id="learning-card"><h4>📖 推荐学习</h4><div id="learning-tips" style="min-height:80px;display:flex;align-items:center;justify-content:center"><div class="spinner" style="width:20px;height:20px;border-width:2px"></div></div></div>';
+  html+='</div></div>';
 
   document.getElementById('report-section').innerHTML = html;
+  // 异步加载学习推荐
+  loadLearningTips();
+}
+
+// ── 学习推荐引擎 ──
+function loadLearningTips() {
+  var container = document.getElementById('learning-tips');
+  if (!container) return;
+  
+  // 从 node_status 中提取薄弱节点（confidence < 0.67），按 confidence 升序取前 5
+  var ns = state.report.node_status || {};
+  var weakNodes = Object.keys(ns)
+    .filter(function(nid){ return (ns[nid].confidence || 0) < 0.67; })
+    .sort(function(a, b){ return (ns[a].confidence || 0) - (ns[b].confidence || 0); })
+    .slice(0, 5);
+  
+  if (weakNodes.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gr)"><div style="font-size:32px;margin-bottom:8px">🎉</div><div style="font-weight:600">全部掌握！</div><div style="font-size:12px;color:var(--tx2);margin-top:4px">你已经掌握了所有测试节点的知识，继续保持</div></div>';
+    return;
+  }
+  
+  // 加载 tips — 前端直接加载本地 JSON，无服务端依赖
+  var shown = state.learningShown || {};
+  var nodeLabels = {};
+  (state.nodes || []).forEach(function(n){ nodeLabels[n.id] = n.label || n.layer || ''; });
+
+  function renderTips(tipsData) {
+    var html = '';
+    weakNodes.forEach(function(nid){
+      var pool = tipsData[nid];
+      var conf = Math.round((ns[nid].confidence || 0) * 100);
+      var color = conf <= 35 ? 'var(--rd)' : 'var(--ye)';
+      var label = nodeLabels[nid] || nid;
+
+      if (!pool || !pool.length) {
+        html += '<div class="learning-item" style="padding:14px;margin-bottom:10px;background:var(--card);border-radius:10px;border-left:3px solid ' + color + '">';
+        html += '<span style="font-weight:600;font-size:13px">' + label + '</span>';
+        html += '<div style="margin-top:6px;font-size:13px;color:var(--tx)">💡 建议深入学习该知识点。</div>';
+        html += '</div>';
+        return;
+      }
+      // 选择未展示过的 tip
+      var shownForNode = shown[nid] || [];
+      var chosenIdx = 0;
+      for (var k = 0; k < pool.length; k++) {
+        if (shownForNode.indexOf(k) < 0) { chosenIdx = k; break; }
+      }
+      var chosen = pool[chosenIdx] || pool[0];
+      shownForNode.push(chosenIdx);
+      if (shownForNode.length > pool.length) shownForNode = [chosenIdx];
+      shown[nid] = shownForNode;
+
+      html += '<div class="learning-item" style="padding:14px;margin-bottom:10px;background:var(--card);border-radius:10px;border-left:3px solid ' + color + '">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+      html += '<span style="font-weight:600;font-size:13px">' + label + '</span>';
+      html += '<span style="font-size:11px;color:' + color + '">掌握度 ' + conf + '%</span>';
+      html += '</div>';
+      html += '<div style="font-size:13px;line-height:1.6;color:var(--tx)">💡 ' + chosen.tip + '</div>';
+      if (chosen.example) {
+        html += '<div style="margin-top:6px;font-size:12px;color:var(--tx2)">📌 ' + chosen.example + '</div>';
+      }
+      if (chosen.mnemonic) {
+        html += '<div style="margin-top:4px;font-size:11px;color:var(--acc);font-style:italic">🧠 ' + chosen.mnemonic + '</div>';
+      }
+      html += '</div>';
+    });
+    container.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--tx2)">暂无推荐内容</div>';
+    state.learningShown = shown;
+    try { localStorage.setItem('kgds_learning_shown', JSON.stringify(shown)); } catch(e) {}
+  }
+
+  // 直接使用嵌入的 __LEARNING_TIPS 变量，零网络请求
+  if (typeof __LEARNING_TIPS !== 'undefined') {
+    renderTips(__LEARNING_TIPS);
+  } else {
+      var html = '';
+      weakNodes.forEach(function(nid){
+        var conf = Math.round((ns[nid].confidence || 0) * 100);
+        html += '<div class="learning-item" style="padding:14px;margin-bottom:10px;background:var(--card);border-radius:10px;border-left:3px solid ' + (conf<=35?'var(--rd)':'var(--ye)') + '">';
+        html += '<span style="font-weight:600;font-size:13px">' + (nodeLabels[nid]||nid) + '</span>';
+        html += '<span style="font-size:11px;margin-left:8px;color:' + (conf<=35?'var(--rd)':'var(--ye)') + '">掌握度 ' + conf + '%</span>';
+        html += '<div style="margin-top:6px;font-size:13px;color:var(--tx)">💡 建议深入学习该知识点。</div>';
+        html += '</div>';
+      });
+      container.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--tx2)">暂无推荐内容</div>';
+  }
 }
 
 function applyGraphColors() {
@@ -520,9 +673,165 @@ function startBlinkAnimation() {
   }, 600);
 }
 
+
+/* ═══ 我的进步面板 ═══ */
+function showProgress() {
+  var overlay = document.getElementById('progress-overlay');
+  if (!overlay) return;
+  overlay.classList.add('show');
+  renderProgress();
+}
+function hideProgress() {
+  var overlay = document.getElementById('progress-overlay');
+  if (overlay) overlay.classList.remove('show');
+}
+
+function renderProgress() {
+  var container = document.getElementById('progress-body');
+  if (!container) return;
+
+  function render(sessions) {
+    // 规范化字段：兼容服务端(overall_score/created_at)和本地(score/date)
+    sessions.forEach(function(s){
+      s.score = s.overall_score || s.total_score || s.score || 0;
+      s.date = s.created_at || s.timestamp || s.date || '';
+    });
+    if (!sessions || sessions.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--tx2)"><div style="font-size:48px;margin-bottom:12px">🌱</div><div style="font-size:15px;font-weight:600;margin-bottom:4px">还没有诊断记录</div><div style="font-size:13px">完成第一次诊断后，这里会展示你的进步轨迹</div></div>';
+      return;
+    }
+
+    // 最新的在前面，反转为时间正序画趋势
+    var sorted = sessions.slice().reverse();
+    var scores = sorted.map(function(s){ var sc = s.overall_score || s.total_score || s.score || 0; return sc; });
+    var latest = sessions[0];
+    var prev = sessions.length > 1 ? sessions[1] : null;
+
+    var totalTests = sessions.length;
+    var maxScore = Math.max.apply(null, scores);
+    var avgScore = Math.round(scores.reduce(function(a,b){return a+b;},0) / scores.length);
+    var masteredCount = 0;
+    if (latest.node_status) {
+      Object.keys(latest.node_status).forEach(function(k){
+        if (latest.node_status[k].confidence >= 0.67) masteredCount++;
+      });
+    }
+
+    // 对比上次
+    var diffHtml = '';
+    if (prev) {
+      var diff = (latest.overall_score || latest.total_score || latest.score || 0) - (prev.overall_score || prev.total_score || prev.score || 0);
+      if (diff > 0) diffHtml = '<div style="color:var(--gr);font-size:14px;font-weight:700">↑ 比上次提高 ' + diff + ' 分 🎉</div>';
+      else if (diff < 0) diffHtml = '<div style="color:var(--rd);font-size:14px;font-weight:700">↓ 比上次下降 ' + Math.abs(diff) + ' 分</div>';
+      else diffHtml = '<div style="color:var(--tx2);font-size:14px">— 与上次持平</div>';
+    }
+
+    // 趋势 SVG
+    var chartW = 320, chartH = 120, padX = 30, padY = 20;
+    var plotW = chartW - padX * 2, plotH = chartH - padY * 2;
+    var svgMin = Math.max(0, Math.min.apply(null, scores) - 10);
+    var svgMax = Math.min(100, Math.max.apply(null, scores) + 10);
+    if (svgMax === svgMin) svgMax = svgMin + 1;
+
+    var points = scores.map(function(s, i){
+      var x = padX + (i / Math.max(scores.length - 1, 1)) * plotW;
+      var y = padY + plotH - ((s - svgMin) / (svgMax - svgMin)) * plotH;
+      return x + ',' + y;
+    }).join(' ');
+
+    var dotsHtml = scores.map(function(s, i){
+      var x = padX + (i / Math.max(scores.length - 1, 1)) * plotW;
+      var y = padY + plotH - ((s - svgMin) / (svgMax - svgMin)) * plotH;
+      var isLast = (i === scores.length - 1);
+      return '<circle cx="' + x + '" cy="' + y + '" r="' + (isLast ? 5 : 3) + '" fill="' + (isLast ? '#007AFF' : '#5B9BD5') + '" opacity="' + (isLast ? 1 : 0.6) + '"/>' +
+        (isLast ? '<text x="' + x + '" y="' + (y - 10) + '" text-anchor="middle" fill="#007AFF" font-size="12" font-weight="700">' + s + '</text>' : '');
+    }).join('');
+
+    // 里程碑
+    var badges = [];
+    if (totalTests >= 1) badges.push({ icon: '🎯', label: '首次诊断' });
+    if (totalTests >= 3) badges.push({ icon: '🔥', label: '三次诊断' });
+    if (totalTests >= 5) badges.push({ icon: '⭐', label: '五次诊断' });
+    if (totalTests >= 10) badges.push({ icon: '💎', label: '十次诊断' });
+    if (maxScore >= 60) badges.push({ icon: '🥉', label: '突破60' });
+    if (maxScore >= 75) badges.push({ icon: '🥈', label: '突破75' });
+    if (maxScore >= 90) badges.push({ icon: '🥇', label: '突破90' });
+    if (maxScore >= 95) badges.push({ icon: '👑', label: '接近满分' });
+    if (prev && latest.score > prev.score) badges.push({ icon: '📈', label: '进步之星' });
+
+    var badgeHtml = badges.map(function(b){
+      return '<div style="text-align:center;min-width:56px"><div style="font-size:22px">' + b.icon + '</div><div style="font-size:10px;color:var(--tx2);margin-top:2px">' + b.label + '</div></div>';
+    }).join('');
+
+    // 历史列表
+    var histHtml = sessions.slice(0, 10).map(function(s, i){
+      var d = s.date ? new Date(s.date).toLocaleDateString('zh-CN', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+      var sc = s.score >= 70 ? 'var(--gr)' : s.score >= 50 ? 'var(--ye)' : 'var(--rd)';
+      var trend = '';
+      if (i < sessions.length - 1) {
+        var d2 = s.score - sessions[i+1].score;
+        trend = d2 > 0 ? ' <span style="color:var(--gr);font-size:10px">↑' + d2 + '</span>' : d2 < 0 ? ' <span style="color:var(--rd);font-size:10px">↓' + Math.abs(d2) + '</span>' : '';
+      }
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd2)">' +
+        '<div><div style="font-size:13px;color:var(--tx)">第 ' + (sessions.length - i) + ' 次诊断</div><div style="font-size:11px;color:var(--tx2)">' + d + '</div></div>' +
+        '<div style="text-align:right"><span style="font-size:18px;font-weight:700;color:' + sc + '">' + s.score + '</span><span style="font-size:11px;color:var(--tx2)">分</span>' + trend + '</div></div>';
+    }).join('');
+
+    container.innerHTML =
+      // 顶部：最近一次
+      '<div style="text-align:center;padding:20px 0 8px">' +
+        '<div style="font-size:48px;font-weight:800;color:var(--acc)">' + latest.score + '<span style="font-size:16px;color:var(--tx2)">分</span></div>' +
+        '<div style="font-size:12px;color:var(--tx2);margin-top:2px">最近一次 · ' + (latest.date ? new Date(latest.date).toLocaleDateString('zh-CN') : '') + '</div>' +
+        '<div style="margin-top:6px">' + diffHtml + '</div>' +
+      '</div>' +
+      // 统计卡片
+      '<div style="display:flex;gap:8px;padding:12px 0;flex-wrap:wrap">' +
+        '<div style="flex:1;min-width:70px;background:var(--acc2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--acc)">' + totalTests + '</div><div style="font-size:11px;color:var(--tx2)">总诊断</div></div>' +
+        '<div style="flex:1;min-width:70px;background:rgba(52,199,89,0.1);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--gr)">' + maxScore + '</div><div style="font-size:11px;color:var(--tx2)">最高分</div></div>' +
+        '<div style="flex:1;min-width:70px;background:rgba(255,204,0,0.1);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#B8860B">' + avgScore + '</div><div style="font-size:11px;color:var(--tx2)">平均分</div></div>' +
+        (masteredCount > 0 ? '<div style="flex:1;min-width:70px;background:rgba(155,89,182,0.1);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#9B59B6">' + masteredCount + '</div><div style="font-size:11px;color:var(--tx2)">已掌握</div></div>' : '') +
+      '</div>' +
+      // 趋势图
+      '<div style="margin:16px 0"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📈 分数趋势</div>' +
+      '<div style="background:var(--card);border-radius:10px;padding:8px;overflow-x:auto;-webkit-overflow-scrolling:touch">' +
+      '<svg width="' + chartW + '" height="' + chartH + '" style="display:block;margin:0 auto">' +
+        '<line x1="' + padX + '" y1="' + (chartH - padY) + '" x2="' + (chartW - padX) + '" y2="' + (chartH - padY) + '" stroke="#ddd" stroke-width="0.5"/>' +
+        '<line x1="' + padX + '" y1="' + padY + '" x2="' + padX + '" y2="' + (chartH - padY) + '" stroke="#ddd" stroke-width="0.5"/>' +
+        '<text x="' + (padX - 5) + '" y="' + (padY + 4) + '" text-anchor="end" fill="#aaa" font-size="9">' + svgMax + '</text>' +
+        '<text x="' + (padX - 5) + '" y="' + (chartH - padY + 4) + '" text-anchor="end" fill="#aaa" font-size="9">' + svgMin + '</text>' +
+        '<polyline points="' + points + '" fill="none" stroke="#007AFF" stroke-width="2" stroke-linejoin="round"/>' +
+        dotsHtml +
+      '</svg></div></div>' +
+      // 里程碑
+      (badges.length > 0 ? '<div style="margin:16px 0"><div style="font-size:13px;font-weight:600;margin-bottom:8px">🏆 里程碑</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:8px 0">' + badgeHtml + '</div></div>' : '') +
+      // 历史记录
+      '<div style="margin:16px 0"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📋 历次记录</div>' + histHtml + '</div>';
+  }
+
+  // 加载数据
+  var token = localStorage.getItem('kgds_token');
+  if (token) {
+    fetch(API + '/api/sessions', { headers: authHeaders() })
+      .then(function(r){ return r.json(); })
+      .then(function(sessions){
+        if (Array.isArray(sessions) && sessions.length > 0) { render(sessions); return; }
+        throw new Error('empty');
+      })
+      .catch(function(){
+        var h = JSON.parse(localStorage.getItem('kgds_history') || '[]');
+        render(h);
+      });
+  } else {
+    var h = JSON.parse(localStorage.getItem('kgds_history') || '[]');
+    render(h);
+  }
+}
+
 function retakeTest() {
   state.questions=[]; state.answers={}; state.currentQ=0; state.report=null;
   state.graphMode = 'full';
+  state.internalCategory = null;
+  updateInternalUI();
   var btn = document.getElementById('btn-full-graph');
   if (btn) { btn.style.display = 'none'; btn.classList.remove('active'); }
   document.getElementById('report-section').innerHTML = '';
@@ -708,4 +1017,9 @@ document.addEventListener('keydown', function(e) {
 });
 
 window.handleAuth = handleAuth;
-window.handleLogin = handleLogin;
+window.showProgress = showProgress;
+window.selectInternal = selectInternal;
+window.updateInternalUI = updateInternalUI;
+window.hideProgress = hideProgress;
+window.renderProgress = renderProgress;
+window.toggleGraphMode = toggleGraphMode;

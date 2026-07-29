@@ -93,6 +93,25 @@ def init_db():
         );
         CREATE INDEX IF NOT EXISTS idx_sessions_user ON test_sessions(user_id);
         CREATE INDEX IF NOT EXISTS idx_sessions_created ON test_sessions(created_at);
+          CREATE TABLE IF NOT EXISTS internal_questions (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              category TEXT NOT NULL DEFAULT '基础知识',
+              question TEXT NOT NULL,
+              options TEXT NOT NULL,
+              correct_index INTEGER NOT NULL,
+              difficulty INTEGER DEFAULT 2,
+              source_doc_id INTEGER,
+              source_paragraph TEXT,
+              created_at TEXT DEFAULT (datetime('now','localtime'))
+          );
+          CREATE TABLE IF NOT EXISTS internal_documents (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              category TEXT NOT NULL,
+              filename TEXT NOT NULL,
+              content TEXT,
+              version INTEGER DEFAULT 1,
+              created_at TEXT DEFAULT (datetime('now','localtime'))
+          );
         CREATE TABLE IF NOT EXISTS arena_episode_sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -716,6 +735,7 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             role = data.get("role", "insurance-agent")
             levels = data.get("levels")
             foundation_size = data.get("foundation_size", "compact")  # compact=51 / full=81
+            internal_category = data.get("internal_category")  # 内部知识类别
             node_filter = None
             if levels:
                 nodes_path = ROLE_DIR / role / "nodes.json"
@@ -758,6 +778,48 @@ class KGDSHandler(SimpleHTTPRequestHandler):
                     for i, q in enumerate(raw): q["id"] = f"raw_{i}"
                     return self._send_json({"questions": raw, "total": len(raw)})
                 return self._send_json({"error": str(e)}, 500)
+
+        # ── 学习推荐 API (POST) ──
+        if path == "/api/learning-tips":
+            user = get_user_by_token(self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            node_ids = data.get("node_ids", [])
+            shown = data.get("shown", {})
+            tips_path = BASE_DIR / "data" / "roles" / "insurance-agent" / "learning_tips.json"
+            try:
+                with open(tips_path, 'r', encoding='utf-8') as f:
+                    all_tips = json.load(f)
+            except:
+                all_tips = {}
+            result = {}
+            for nid in node_ids:
+                pool = all_tips.get(nid, [])
+                if not pool:
+                    continue
+                shown_indices = shown.get(nid, [])
+                chosen = None
+                for idx, tip in enumerate(pool):
+                    if idx not in shown_indices:
+                        chosen = tip
+                        shown_indices.append(idx)
+                        break
+                if chosen is None:
+                    shown_indices = [0]
+                    chosen = pool[0]
+                result[nid] = {"tip": chosen, "shown_indices": shown_indices}
+            return self._send_json({"tips": result})
+
+        # ── 内部知识类别查询 (POST) ──
+        if path == "/api/internal/categories":
+            user = get_user_by_token(self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            cats = []
+            for cat in ["基础知识", "产品知识", "合规知识"]:
+                count = get_db().execute(
+                    "SELECT COUNT(*) FROM internal_questions WHERE category = ?", (cat,)
+                ).fetchone()[0]
+                cats.append({"name": cat, "question_count": count})
+            return self._send_json({"categories": cats})
 
         if path == "/api/submit":
             answers = data.get("answers", {})
