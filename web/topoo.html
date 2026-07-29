@@ -501,6 +501,8 @@ async function fetchBookRanking(){
 /* ═══════ 单期打擂 ═══════ */
 async function openEpisodeQuiz(epNo){
   quizEp = epNo; quizIdx = 0; quizAnswers = {}; quizPhase = 'reading';
+  stopListen();
+  readingEp = epNo;  // 让听书按钮知道当前是哪一期
 
   // 先展示伴读内容
   const ep = EPISODES.episodes[epNo-1];
@@ -513,8 +515,16 @@ async function openEpisodeQuiz(epNo){
       <button class="btn-ghost" style="width:auto;flex:0;margin:0;padding:6px 12px;font-size:13px" onclick="switchTab('today')">🏠 首页</button>
     </div>
     <div class="card" style="padding:22px 18px">
-      <div style="font-size:18px;font-weight:700;line-height:1.35;margin-bottom:4px">${ep.title}</div>
-      <div style="font-size:13px;color:var(--blue);font-weight:600;margin-bottom:16px">核心概念 · ${ep.concept}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-size:18px;font-weight:700;line-height:1.35;margin-bottom:4px">${ep.title}</div>
+          <div style="font-size:13px;color:var(--blue);font-weight:600">核心概念 · ${ep.concept}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn-ghost" style="width:auto;margin:0;padding:6px 10px;font-size:12px" onclick="toggleLocalListen()">📱 速读</button>
+          <button class="btn-ghost" style="width:auto;margin:0;padding:6px 10px;font-size:12px" onclick="toggleListen()">🔊 精读</button>
+        </div>
+      </div>
       <div class="r-sec" style="margin-bottom:18px">
         ${para(s.hook)}
       </div>
@@ -758,7 +768,7 @@ async function fetchEpisodeRanking(epNo){
 var SHARE_POSTER = {
   bookCover: null,
   qrImage: null,
-  coverUrl: 'https://img2.doubanio.com/view/subject/l/public/s29151681.jpg',
+  coverUrl: '/img/thinking-fast-slow-cover.jpg',
   qrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://chunrg.cn/arena'
 };
 
