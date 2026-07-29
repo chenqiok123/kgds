@@ -140,12 +140,11 @@ button{font-family:var(--font);border:none;cursor:pointer;background:none;color:
 .cmt-submit:active{opacity:0.8}
 
 /* 分享海报 */
-.share-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.share-card{background:#1C1C1E;border-radius:20px;padding:32px 24px;text-align:center;color:#fff;max-width:320px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.4)}
-.share-card .s-book{font-size:15px;opacity:0.7;margin-bottom:6px}
-.share-card .s-ep{font-size:14px;opacity:0.5;margin-bottom:14px}
-.share-card .s-score{font-size:48px;font-weight:700;margin:10px 0}
-.share-card .s-cta{font-size:13px;opacity:0.6;margin-top:16px}
+.poster-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:10px;-webkit-overflow-scrolling:touch}
+.poster-overlay img{max-width:100%;height:auto;display:block}
+/* 登录弹窗（复用 overlay 结构，深色卡片风格） */
+.login-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-overlay .share-card{background:#1C1C1E;border-radius:20px;padding:32px 24px;text-align:center;color:#fff;max-width:320px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.4)}
 .ep-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .ep-grid .ep-card{padding:12px;margin-bottom:0}
 .ep-grid .ep-card-num{width:32px;height:32px;font-size:12px}
@@ -755,21 +754,170 @@ async function fetchEpisodeRanking(epNo){
   }
 }
 
-/* ═══════ 分享 ═══════ */
+/* ═══════ 分享海报 — Canvas 绘制 ═══════ */
+var SHARE_POSTER = {
+  bookCover: null,
+  qrImage: null,
+  coverUrl: 'https://img2.doubanio.com/view/subject/l/public/s29151681.jpg',
+  qrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://chunrg.cn/arena'
+};
+
+// 预加载封面和二维码图片
+(function preloadShareImages(){
+  var cv = new Image(); cv.crossOrigin='anonymous';
+  cv.onload = function(){ SHARE_POSTER.bookCover = cv; };
+  cv.onerror = function(){ SHARE_POSTER.bookCover = null; };
+  cv.src = SHARE_POSTER.coverUrl;
+  var qr = new Image(); qr.crossOrigin='anonymous';
+  qr.onload = function(){ SHARE_POSTER.qrImage = qr; };
+  qr.onerror = function(){ SHARE_POSTER.qrImage = null; };
+  qr.src = SHARE_POSTER.qrUrl;
+})();
+
 function showShare(epNo, score){
-  const ep = EPISODES.episodes[epNo-1];
-  const overlay = document.createElement('div');
-  overlay.className = 'share-overlay';
-  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
-  overlay.innerHTML = `
-    <div class="share-card" onclick="event.stopPropagation()">
-      <div class="s-book">📖 《思考，快与慢》</div>
-      <div class="s-ep">第${epNo}期 · ${ep.concept}</div>
-      <div class="s-score" style="color:${score>=80?'#34C759':score>=50?'#FF9500':'#FF3B30'}">${score}%</div>
-      <div style="font-size:13px;opacity:0.5">${score>=80?'已掌权此概念 🎉':score>=50?'初窥门径，继续加油':'再接再厉 📚'}</div>
-      <div class="s-cta">扫码来打擂 → 兔扑 topoo</div>
-    </div>`;
+  var ep = EPISODES.episodes[epNo-1];
+  var W = 750, H = 1334;
+  var canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  // 1. 白底
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, W, H);
+
+  // 2. 淡化封面作为背景（铺满画布，opacity 0.12）
+  if (SHARE_POSTER.bookCover) {
+    ctx.globalAlpha = 0.12;
+    ctx.drawImage(SHARE_POSTER.bookCover, 0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+
+  // 3. 顶部品牌栏
+  ctx.fillStyle = '#F5F5F7';
+  roundRect(ctx, 40, 60, W-80, 80, 16);
+  ctx.fill();
+  ctx.fillStyle = '#1C1C1E';
+  ctx.font = 'bold 28px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('🧠 KGDS 知识诊断擂台', 80, 112);
+
+  // 4. 中央卡片区域
+  var cardX = 50, cardY = 180, cardW = W-100, cardH = 560;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = 'rgba(0,0,0,0.08)';
+  ctx.shadowBlur = 30;
+  ctx.shadowOffsetY = 8;
+  roundRect(ctx, cardX, cardY, cardW, cardH, 20);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // 5. 书籍信息
+  ctx.fillStyle = '#8E8E93';
+  ctx.font = '22px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('📖 《思考，快与慢》', W/2, cardY + 60);
+
+  ctx.fillStyle = '#1C1C1E';
+  ctx.font = 'bold 32px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('第 ' + epNo + ' 期 · ' + (ep.concept||''), W/2, cardY + 115);
+
+  // 6. 分数大数字
+  var sc = score||0;
+  var scoreColor = sc>=80?'#34C759':(sc>=50?'#FF9500':'#FF3B30');
+  ctx.fillStyle = scoreColor;
+  ctx.font = 'bold 96px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText(sc + '%', W/2, cardY + 240);
+
+  // 7. 评语
+  ctx.fillStyle = '#8E8E93';
+  ctx.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText(sc>=80?'🎉 已掌握此概念':(sc>=50?'📚 初窥门径，继续加油':'💪 再接再厉'), W/2, cardY + 290);
+
+  // 8. 分隔线
+  ctx.strokeStyle = '#E5E5EA';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cardX+30, cardY+330);
+  ctx.lineTo(cardX+cardW-30, cardY+330);
+  ctx.stroke();
+
+  // 9. 底部 CTA
+  ctx.fillStyle = '#1C1C1E';
+  ctx.font = 'bold 26px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('扫码来打擂，看看你能排第几', W/2, cardY + 385);
+
+  // 10. 二维码
+  if (SHARE_POSTER.qrImage) {
+    var qrSize = 180, qrX = W/2 - qrSize/2, qrY = cardY + 410;
+    // 白底
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(qrX-10, qrY-10, qrSize+20, qrSize+20);
+    ctx.drawImage(SHARE_POSTER.qrImage, qrX, qrY, qrSize, qrSize);
+    // 二维码下方文字
+    ctx.fillStyle = '#8E8E93';
+    ctx.font = '18px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('chunrg.cn/arena', W/2, qrY + qrSize + 35);
+  } else {
+    // 二维码加载失败时显示文字
+    ctx.fillStyle = '#8E8E93';
+    ctx.font = '20px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('chunrg.cn/arena', W/2, cardY + 460);
+  }
+
+  // 11. 底部提示
+  ctx.fillStyle = '#C7C7CC';
+  ctx.font = '20px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('长按图片保存 · 分享给朋友一起来打擂', W/2, H - 80);
+
+  // ── 显示海报弹窗 ──
+  var overlay = document.createElement('div');
+  overlay.className = 'poster-overlay';
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+
+  var displayW = Math.min(window.innerWidth * 0.9, 375);
+  var displayH = displayW * (H/W);
+  var img = new Image();
+  img.src = canvas.toDataURL('image/png');
+  img.style.width = displayW + 'px';
+  img.style.height = displayH + 'px';
+  img.style.borderRadius = '16px';
+  img.style.boxShadow = '0 10px 40px rgba(0,0,0,0.2)';
+  img.onclick = function(e){ e.stopPropagation(); };
+
+  var container = document.createElement('div');
+  container.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:16px;max-height:90vh;overflow-y:auto;padding:20px';
+  container.appendChild(img);
+
+  var tip = document.createElement('div');
+  tip.style.cssText = 'color:#8E8E93;font-size:14px;text-align:center';
+  tip.textContent = '长按上方图片，选择「保存图片」即可分享到朋友圈';
+  container.appendChild(tip);
+
+  var closeBtn = document.createElement('button');
+  closeBtn.textContent = '✕ 关闭';
+  closeBtn.style.cssText = 'background:#F5F5F7;border:none;padding:12px 32px;border-radius:24px;font-size:16px;color:#1C1C1E;cursor:pointer;font-family:var(--font)';
+  closeBtn.onclick = function(){ overlay.remove(); };
+  container.appendChild(closeBtn);
+
+  overlay.appendChild(container);
   document.body.appendChild(overlay);
+}
+
+// 辅助函数：圆角矩形
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
 }
 
 /* ═══════ 登录 ═══════ */
@@ -779,7 +927,7 @@ function showLogin(){
   if(old) old.remove();
 
   const overlay = document.createElement('div');
-  overlay.className = 'share-overlay login-overlay';
+  overlay.className = 'login-overlay';
   overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
   overlay.innerHTML = `
     <div class="share-card" onclick="event.stopPropagation()" style="padding:30px 22px;text-align:center">
