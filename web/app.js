@@ -9,7 +9,6 @@ var state = {
   foundationSize: 'compact',  // 'compact' | 'full'
   graphMode: 'report'  // 'report' | 'full' — 图谱着色模式
 };
-};
 
 // ── Init ──
 (function init() {
