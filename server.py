@@ -611,6 +611,8 @@ class KGDSHandler(SimpleHTTPRequestHandler):
               ".mp3":"audio/mpeg",".wav":"audio/wav",".webmanifest":"application/manifest+json"}
         ctype = ct.get(path.suffix, "application/octet-stream")
         self.send_header("Content-Type", f"{ctype}; charset=utf-8")
+        # 内测期禁用静态缓存：浏览器缓存旧版 app.html/app.js 曾导致「产品选择项不可见」
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         body = path.read_bytes()
         self.send_header("Content-Length", len(body))
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -840,8 +842,9 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             questions = []
             quota = {}
 
-            # ── 内部知识路径（如「产品知识」）：internal_questions 表抽题 ──
+            # ── 题库隔离：内部知识 与 市场竞争 二选一（各自内部选题逻辑独立，互不干扰）──
             if internal_category:
+                # ── 内部知识路径：internal_questions 表（完整题集，不经过市场调度器）──
                 internal_qs = load_internal_questions(internal_category)
                 if not internal_qs:
                     return self._send_json({"error": f"内部知识题库「{internal_category}」暂无题目，请管理员上传文档后生成"}, 400)
@@ -854,8 +857,8 @@ class KGDSHandler(SimpleHTTPRequestHandler):
                         return self._send_json({"error": "请至少选择 1 个产品"}, 400)
                 questions.extend(internal_qs)
 
-            # ── 市场竞争路径：四重调度器（仅在选择了层级时执行）──
-            if levels:
+            elif levels:
+                # ── 市场竞争路径：四重调度器（仅在选择了层级时执行）──
                 try:
                     # 四重调度器：配额 51/38/30 + 未测70/已测30 + 薄弱优先 + 节点均衡
                     selected = select_questions(role=role, levels=levels,

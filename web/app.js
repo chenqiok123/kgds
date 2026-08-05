@@ -246,13 +246,19 @@ function selectInternal(category) {
   } else {
     state.internalCategory = category;
   }
-  // 产品知识 → 显示产品多选区；默认全选
+  // 题库隔离：选择内部知识 → 自动清空市场竞争层级（两个题库互斥，各自内部选题逻辑独立）
+  if (state.internalCategory) {
+    state.selectedLevels = [];
+    ['foundation','advanced','transcendent'].forEach(function(l){
+      var cb = document.getElementById('cb-' + l);
+      if (cb) cb.classList.remove('checked');
+    });
+    updateLevelInfo();
+  }
+  // 产品知识 → 显示产品多选区（默认不选，用户自行单选/复选产品）
   var ps = document.getElementById('product-selector');
   if (ps) ps.style.display = (state.internalCategory === '产品知识') ? 'block' : 'none';
-  if (state.internalCategory === '产品知识' && state.selectedProducts.length === 0) {
-    selectAllProducts(true);
-  }
-  updateInternalUI();
+  updateProductUI();  // 同步产品复选 checked 状态 + 刷新题数（内部会调 updateInternalUI/updateStartBtn）
 }
 
 // ── 产品知识：产品复选 ──
@@ -299,9 +305,9 @@ function updateInternalUI() {
     if (state.internalCategory === '产品知识') {
       var n = state.selectedProducts.length;
       var label = document.getElementById('product-selector-label');
-      if (label) label.textContent = '已选 ' + n + ' 个产品 · 共 ' + (n * 12) + ' 题';
-      info.textContent = '已选：产品知识 · 共 ' + (n * 12) + ' 题';
-      info.style.color = 'var(--tx)';
+      if (label) label.textContent = n === 0 ? '请选择 1 个或多个产品（每产品 12 题）' : ('已选 ' + n + ' 个产品 · 共 ' + (n * 12) + ' 题');
+      info.textContent = n === 0 ? '已选：产品知识 · 请先选择产品' : ('已选：产品知识 · 共 ' + (n * 12) + ' 题');
+      info.style.color = n === 0 ? 'var(--tx2)' : 'var(--tx)';
     } else if (state.internalCategory) {
       // 获取该类别题目数
       var cnt = state.internalCounts[state.internalCategory] || 0;
@@ -333,7 +339,8 @@ function updateStartBtn() {
   if (state.internalCategory) parts.push('内部' + internalTotal + '题');
   var total = marketTotal + internalTotal;
   if (total === 0) {
-    btn.textContent = '🚀 请先选择诊断范围';
+    if (state.internalCategory === '产品知识') btn.textContent = '🚀 请先选择产品';
+    else btn.textContent = '🚀 请先选择诊断范围';
     btn.disabled = true;
   } else {
     btn.textContent = '🚀 开始诊断（共 ' + total + ' 题：' + parts.join(' + ') + '）';
@@ -346,6 +353,13 @@ function toggleLevel(level) {
   // 允许取消到 0 个层级：内部知识可单独作答（无需市场竞争层级）
   if (idx >= 0) state.selectedLevels.splice(idx, 1);
   else state.selectedLevels.push(level);
+  // 题库隔离：选择市场竞争 → 自动取消内部知识（两个题库互斥，选题逻辑互不干扰）
+  if (state.selectedLevels.length > 0 && state.internalCategory) {
+    state.internalCategory = null;
+    var ps = document.getElementById('product-selector');
+    if (ps) ps.style.display = 'none';
+    updateInternalUI();
+  }
   updateLevelInfo();
   ['foundation','advanced','transcendent'].forEach(function(l){
     var cb = document.getElementById('cb-' + l);
