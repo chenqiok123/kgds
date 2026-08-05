@@ -840,13 +840,18 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             questions = []
             quota = {}
 
-            # ── 内部知识路径（如「产品知识」）：internal_questions 表均衡抽题 ──
+            # ── 内部知识路径（如「产品知识」）：internal_questions 表抽题 ──
             if internal_category:
                 internal_qs = load_internal_questions(internal_category)
                 if not internal_qs:
                     return self._send_json({"error": f"内部知识题库「{internal_category}」暂无题目，请管理员上传文档后生成"}, 400)
                 if internal_category == "产品知识":
-                    internal_qs = pick_internal_questions(internal_qs, per_product=2, seed=data.get("seed"))
+                    # 按所选产品过滤；每个产品返回完整 12 题（复选 N 个产品 = N×12 题）
+                    products = data.get("products") or []
+                    if products:
+                        internal_qs = [q for q in internal_qs if q.get("product") in products]
+                    if not internal_qs:
+                        return self._send_json({"error": "请至少选择 1 个产品"}, 400)
                 questions.extend(internal_qs)
 
             # ── 市场竞争路径：四重调度器（仅在选择了层级时执行）──

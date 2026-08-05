@@ -10,8 +10,27 @@ var state = {
   graphMode: 'report', // 'report' | 'full' — 图谱着色模式
   internalCategory: null,  // 内部知识单选
   internalCounts: {},      // 内部知识各方向题数: {方向: 数量}
+  selectedProducts: [],    // 产品知识-复选的产品名列表
   learningShown: {}        // 学习推荐去重: {node_id: [tip_indices]}
 };
+
+// ── 产品知识：14 款产品（与 product_tests.json / 图谱 PROD 节点一致）──
+var PRODUCTS = [
+  {name:'优医保2.0', cat:'医疗险'},
+  {name:'百万能量守护星', cat:'医疗险'},
+  {name:'如意东风', cat:'重疾险'},
+  {name:'润泽恒赢', cat:'年金险'},
+  {name:'心裕人生', cat:'年金险'},
+  {name:'心赢人生', cat:'年金险'},
+  {name:'聚盈宝', cat:'年金险'},
+  {name:'聚能宝', cat:'年金险'},
+  {name:'隽永世家', cat:'终身寿险'},
+  {name:'传世金樽', cat:'终身寿险'},
+  {name:'鎏金世家', cat:'终身寿险'},
+  {name:'勿忘我惠享版2025', cat:'护理险'},
+  {name:'勿忘我爱永驻', cat:'护理险'},
+  {name:'活力腾腾', cat:'意外险'}
+];
 
 // ── Init ──
 (function init() {
@@ -227,6 +246,38 @@ function selectInternal(category) {
   } else {
     state.internalCategory = category;
   }
+  // 产品知识 → 显示产品多选区；默认全选
+  var ps = document.getElementById('product-selector');
+  if (ps) ps.style.display = (state.internalCategory === '产品知识') ? 'block' : 'none';
+  if (state.internalCategory === '产品知识' && state.selectedProducts.length === 0) {
+    selectAllProducts(true);
+  }
+  updateInternalUI();
+}
+
+// ── 产品知识：产品复选 ──
+function toggleProduct(name) {
+  var i = state.selectedProducts.indexOf(name);
+  if (i >= 0) state.selectedProducts.splice(i, 1);
+  else state.selectedProducts.push(name);
+  updateProductUI();
+}
+
+function selectAllProducts(silent) {
+  state.selectedProducts = PRODUCTS.map(function(p){ return p.name; });
+  if (!silent) updateProductUI();
+}
+
+function clearProducts() {
+  state.selectedProducts = [];
+  updateProductUI();
+}
+
+function updateProductUI() {
+  PRODUCTS.forEach(function(p){
+    var cb = document.getElementById('cb-prod-' + p.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_'));
+    if (cb) cb.classList.toggle('checked', state.selectedProducts.indexOf(p.name) >= 0);
+  });
   updateInternalUI();
 }
 
@@ -245,7 +296,13 @@ function updateInternalUI() {
   });
   var info = document.getElementById('internal-info');
   if (info) {
-    if (state.internalCategory) {
+    if (state.internalCategory === '产品知识') {
+      var n = state.selectedProducts.length;
+      var label = document.getElementById('product-selector-label');
+      if (label) label.textContent = '已选 ' + n + ' 个产品 · 共 ' + (n * 12) + ' 题';
+      info.textContent = '已选：产品知识 · 共 ' + (n * 12) + ' 题';
+      info.style.color = 'var(--tx)';
+    } else if (state.internalCategory) {
       // 获取该类别题目数
       var cnt = state.internalCounts[state.internalCategory] || 0;
       info.textContent = '已选：' + state.internalCategory + ' · 共 ' + cnt + ' 题';
@@ -259,18 +316,24 @@ function updateInternalUI() {
 }
 
 function updateStartBtn() {
-  var btn = document.querySelector('.btn-block');
+  // 必须匹配 profile 页的开始按钮（登录页 btn-auth 也是 .btn-block，需排除）
+  var btn = document.querySelector('#phase-profile .btn-primary');
   if (!btn) return;
   var marketTotal = 0;
   var counts = { foundation: 51, advanced: 38, transcendent: 30 };
   state.selectedLevels.forEach(function(l){ marketTotal += counts[l]; });
-  var internalTotal = state.internalCategory ? (state.internalCounts[state.internalCategory] || 0) : 0;
+  var internalTotal = 0;
+  if (state.internalCategory === '产品知识') {
+    internalTotal = state.selectedProducts.length * 12;  // 每个产品完整 12 题
+  } else if (state.internalCategory) {
+    internalTotal = state.internalCounts[state.internalCategory] || 0;
+  }
   var parts = [];
   if (marketTotal > 0) parts.push('市场' + marketTotal + '题');
   if (state.internalCategory) parts.push('内部' + internalTotal + '题');
   var total = marketTotal + internalTotal;
   if (total === 0) {
-    btn.textContent = '🚀 请选择诊断范围';
+    btn.textContent = '🚀 请先选择诊断范围';
     btn.disabled = true;
   } else {
     btn.textContent = '🚀 开始诊断（共 ' + total + ' 题：' + parts.join(' + ') + '）';
@@ -280,13 +343,15 @@ function updateStartBtn() {
 
 function toggleLevel(level) {
   var idx = state.selectedLevels.indexOf(level);
-  if (idx >= 0) { if (state.selectedLevels.length > 1) state.selectedLevels.splice(idx, 1); }
+  // 允许取消到 0 个层级：内部知识可单独作答（无需市场竞争层级）
+  if (idx >= 0) state.selectedLevels.splice(idx, 1);
   else state.selectedLevels.push(level);
   updateLevelInfo();
   ['foundation','advanced','transcendent'].forEach(function(l){
     var cb = document.getElementById('cb-' + l);
     if (cb) cb.classList.toggle('checked', state.selectedLevels.indexOf(l) >= 0);
   });
+  updateStartBtn();
 }
 
 function setFoundationSize(size) {
@@ -347,6 +412,18 @@ function initGraph() {
   });
 }
 
+// ── 图谱缩放滑条（手机无滚轮，用于缩小看全景/放大看细节）──
+function setGraphZoom(v) {
+  var g = state.graphInstance;
+  if (!g) return;
+  v = parseFloat(v);
+  if (isNaN(v)) v = 60;
+  var cam = g.camera();
+  var dir = cam.position.clone().normalize();
+  var dist = 30 + (100 - v) * 4;   // v=100 → 30（最近）; v=1 → 426（最远）
+  g.cameraPosition({ x: dir.x * dist, y: dir.y * dist, z: dir.z * dist }, { x: 0, y: 0, z: 0 }, 200);
+}
+
 // ── Test Flow ──
 function startTest() {
   state.profile = {
@@ -361,7 +438,7 @@ function startTest() {
 
   function loadTests() {
     return fetch(API + '/api/generate-test', { method:'POST', headers:authHeaders(),
-      body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, internal_category: state.internalCategory })
+      body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, internal_category: state.internalCategory, products: state.selectedProducts })
     }).then(function(r){ return r.json(); }).then(function(d){ return d.questions; })
     .catch(function(){
       return fetch(API + '/api/tests').then(function(r){ if(!r.ok) throw new Error('no'); return r.json(); })

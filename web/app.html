@@ -100,8 +100,19 @@ body {
 .tab:active { background: var(--bd2); }
 
 /* ── Graph Panel (dark remains) ── */
-#panel-graph { background: var(--graph-bg); }
+#panel-graph { background: var(--graph-bg); position: relative; }
 #graph-container { width: 100%; height: 100%; }
+.graph-zoom {
+  position: absolute; top: 14px; left: 14px; z-index: 20;
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(6,10,20,0.88); border: 1px solid var(--bd);
+  border-radius: 22px; padding: 6px 12px;
+}
+.graph-zoom input[type=range] { width: 110px; height: 4px; accent-color: var(--acc); cursor: pointer; }
+@media (max-width: 600px) {
+  .graph-zoom { top: 10px; left: 10px; padding: 5px 9px; }
+  .graph-zoom input[type=range] { width: 90px; }
+}
 .graph-legend {
   position: absolute; bottom: 16px; left: 16px;
   display: flex; flex-wrap: wrap; gap: 8px; z-index: 10;
@@ -287,6 +298,25 @@ body {
 .spinner { width: 28px; height: 28px; border: 2.5px solid var(--bd); border-top-color: var(--acc); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── 产品知识多选（内部知识） ── */
+.product-selector {
+  margin: 8px 0 6px; padding: 10px;
+  background: var(--card); border: 1px dashed var(--bd2);
+  border-radius: var(--radius-sm);
+}
+.ps-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--tx2); margin-bottom: 8px; }
+.ps-actions a { color: var(--acc); cursor: pointer; text-decoration: underline; margin-left: 4px; }
+.ps-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.ps-item {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 5px 9px; border-radius: 14px;
+  border: 1px solid var(--bd); background: var(--bg); color: var(--tx2);
+  cursor: pointer; user-select: none;
+}
+.ps-item em { font-style: normal; font-size: 9px; color: var(--tx3, #8892b0); }
+.ps-item.checked { border-color: var(--acc); color: var(--tx); background: rgba(100,108,255,0.12); }
+.ps-item.checked em { color: var(--acc); }
+
 /* ── Responsive ── */
 @media (max-width: 600px) {
   #nav-bar { padding: 0 14px; height: 44px; }
@@ -338,6 +368,11 @@ body {
         <div class="item"><div class="dot" style="background:#444466"></div>未选测</div>
       </div>
       <div id="graph-container"></div>
+      <div class="graph-zoom">
+        <span style="font-size:11px;color:var(--tx2)">🔍</span>
+        <input type="range" id="zoom-slider" min="1" max="100" value="60" oninput="setGraphZoom(this.value)">
+        <span style="font-size:15px;color:var(--tx2)">🔎</span>
+      </div>
       <button class="graph-toggle" id="btn-full-graph" onclick="toggleGraphMode()" style="display:none" title="切换为默认完整图谱">🗺️ 完整图谱</button>
     </div>
 
@@ -447,6 +482,28 @@ body {
             <div class="cnt">暂无题库</div>
           </div>
         </div>
+        <div class="product-selector" id="product-selector" style="display:none">
+          <div class="ps-head">
+            <span id="product-selector-label">已选 0 个产品 · 共 0 题</span>
+            <span class="ps-actions"><a onclick="selectAllProducts()">全选</a> / <a onclick="clearProducts()">清空</a></span>
+          </div>
+          <div class="ps-grid">
+            <div class="ps-item checked" id="cb-prod_优医保2_0" onclick="toggleProduct('优医保2.0')">🩺 优医保2.0<em>医疗险</em></div>
+            <div class="ps-item checked" id="cb-prod_百万能量守护星" onclick="toggleProduct('百万能量守护星')">🏥 百万能量守护星<em>医疗险</em></div>
+            <div class="ps-item checked" id="cb-prod_如意东风" onclick="toggleProduct('如意东风')">💪 如意东风<em>重疾险</em></div>
+            <div class="ps-item checked" id="cb-prod_润泽恒赢" onclick="toggleProduct('润泽恒赢')">💰 润泽恒赢<em>年金险</em></div>
+            <div class="ps-item checked" id="cb-prod_心裕人生" onclick="toggleProduct('心裕人生')">❤️ 心裕人生<em>年金险</em></div>
+            <div class="ps-item checked" id="cb-prod_心赢人生" onclick="toggleProduct('心赢人生')">❤️ 心赢人生<em>年金险</em></div>
+            <div class="ps-item checked" id="cb-prod_聚盈宝" onclick="toggleProduct('聚盈宝')">💎 聚盈宝<em>年金险</em></div>
+            <div class="ps-item checked" id="cb-prod_聚能宝" onclick="toggleProduct('聚能宝')">💎 聚能宝<em>年金险</em></div>
+            <div class="ps-item checked" id="cb-prod_隽永世家" onclick="toggleProduct('隽永世家')">🏛️ 隽永世家<em>终身寿险</em></div>
+            <div class="ps-item checked" id="cb-prod_传世金樽" onclick="toggleProduct('传世金樽')">🏛️ 传世金樽<em>终身寿险</em></div>
+            <div class="ps-item checked" id="cb-prod_鎏金世家" onclick="toggleProduct('鎏金世家')">🏛️ 鎏金世家<em>终身寿险</em></div>
+            <div class="ps-item checked" id="cb-prod_勿忘我惠享版2025" onclick="toggleProduct('勿忘我惠享版2025')">🌼 勿忘我惠享版2025<em>护理险</em></div>
+            <div class="ps-item checked" id="cb-prod_勿忘我爱永驻" onclick="toggleProduct('勿忘我爱永驻')">🌼 勿忘我爱永驻<em>护理险</em></div>
+            <div class="ps-item checked" id="cb-prod_活力腾腾" onclick="toggleProduct('活力腾腾')">⚡ 活力腾腾<em>意外险</em></div>
+          </div>
+        </div>
         <div class="lvl-info" id="internal-info" style="margin-bottom:4px;color:var(--tx2);font-size:11px">未选择内部知识方向</div>
         <div style="display:flex;gap:10px;margin-top:4px">
           <button class="btn btn-secondary" style="flex:0 0 auto;padding:12px 16px" onclick="showProgress()">📊 我的进步</button>
@@ -515,7 +572,7 @@ body {
 #progress-overlay.show { display: flex !important; }
 </style>
 
-<script src="app.js"></script>
+<script src="app.js?v=20260805b"></script>
 <script>
 // PWA: 注册 Service Worker（离线缓存）
 if ('serviceWorker' in navigator) {
