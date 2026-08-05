@@ -1,0 +1,8 @@
+{
+  "build": {
+    "command": ""
+  },
+  "run": {
+    "command": "python server.py"
+  }
+}

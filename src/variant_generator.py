@@ -242,6 +242,67 @@ def _make_llm_variant(original: dict) -> Optional[dict]:
     }
 
 
+def _generate_variants_core(originals: List[dict], variant_ratio: float, seed: Optional[int], use_llm: bool) -> List[dict]:
+    """核心：对 originals 列表生成变体（保留 qid），返回打乱后的完整试题列表"""
+    if seed is not None:
+        random.seed(seed)
+    total = len(originals)
+    variant_count = max(1, int(total * variant_ratio))
+
+    # 随机选择 variant_count 道题做变体
+    indices = list(range(total))
+    random.shuffle(indices)
+    variant_indices = set(indices[:variant_count])
+
+    # 预检 LLM 可用性（无 Key 直接全规则，不浪费每题的超时等待）
+    llm_ok = use_llm and llm_available()
+
+    result = []
+    for i, q in enumerate(originals):
+        if i in variant_indices:
+            qv = None
+            # 按层级概率决定是否尝试 LLM
+            if llm_ok:
+                layer = _node_layer(q.get("node_id", ""))
+                if random.random() < LLM_LAYER_PROB.get(layer, 0.0):
+                    qv = _make_llm_variant(q)
+            # LLM 未启用或失败 → 规则引擎兜底
+            if qv is None:
+                qv = generate_variant(q)
+                qv["variant_source"] = "rule"
+            qv["id"] = f"v_{i}"
+            if q.get("qid"):
+                qv["qid"] = q["qid"]  # 变体继承原题 qid（追踪单位=知识点）
+            result.append(qv)
+        else:
+            q_copy = dict(q)
+            q_copy["is_variant"] = False
+            q_copy["id"] = f"q_{i}"
+            if not q_copy.get("qid"):
+                q_copy["qid"] = f"{q.get('node_id','')}#{i}"
+            result.append(q_copy)
+
+    random.shuffle(result)
+    return result
+
+
+def generate_variants_for(selected: List[dict], variant_ratio: float = 1/3,
+                          seed: Optional[int] = None, use_llm: bool = True) -> List[dict]:
+    """
+    对已选中的原始题列表生成变体（调度器入口）。
+    保留每题的 qid，便于历史追踪。
+
+    Args:
+        selected: 调度器选出的原始题列表（含 qid）
+        variant_ratio: 变体比例，默认 1/3
+        seed: 随机种子
+        use_llm: 是否启用 LLM 变体
+    """
+    if not selected:
+        return []
+    return _generate_variants_core(selected, variant_ratio, seed, use_llm)
+
+
 def generate_test_with_variants(
     role: str = "insurance-agent",
     variant_ratio: float = 1/3,
@@ -271,40 +332,8 @@ def generate_test_with_variants(
     # 按 node_id 过滤
     if node_filter:
         originals = [q for q in originals if q.get("node_id") in node_filter]
-    total = len(originals)
-    variant_count = max(1, int(total * variant_ratio))
 
-    # 随机选择 variant_count 道题做变体
-    indices = list(range(total))
-    random.shuffle(indices)
-    variant_indices = set(indices[:variant_count])
-
-    # 预检 LLM 可用性（无 Key 直接全规则，不浪费每题的超时等待）
-    llm_ok = use_llm and llm_available()
-
-    result = []
-    for i, q in enumerate(originals):
-        if i in variant_indices:
-            qv = None
-            # 按层级概率决定是否尝试 LLM
-            if llm_ok:
-                layer = _node_layer(q.get("node_id", ""))
-                if random.random() < LLM_LAYER_PROB.get(layer, 0.0):
-                    qv = _make_llm_variant(q)
-            # LLM 未启用或失败 → 规则引擎兜底
-            if qv is None:
-                qv = generate_variant(q)
-                qv["variant_source"] = "rule"
-            qv["id"] = f"v_{i}"
-            result.append(qv)
-        else:
-            q_copy = dict(q)
-            q_copy["is_variant"] = False
-            q_copy["id"] = f"q_{i}"
-            result.append(q_copy)
-
-    random.shuffle(result)
-    return result
+    return _generate_variants_core(originals, variant_ratio, seed, use_llm)
 
 
 # ── 测试入口 ──

@@ -6,7 +6,7 @@ var state = {
   profile:{}, questions:[], answers:{}, currentQ:0,
   nodes:[], edges:[], report:null, graphInstance:null,
   blinkTimer: null, selectedLevels: ['foundation','advanced'],
-  foundationSize: 'compact',  // 'compact' | 'full'
+  foundationSize: 'compact',  // 兼容旧字段，配额已固定 51/38/30
   graphMode: 'report', // 'report' | 'full' — 图谱着色模式
   internalCategory: null,  // 内部知识单选
   learningShown: {}        // 学习推荐去重: {node_id: [tip_indices]}
@@ -241,7 +241,7 @@ function updateStartBtn() {
   var btn = document.querySelector('.btn-block');
   if (!btn) return;
   var marketTotal = 0;
-  var counts = { foundation: state.foundationSize === 'compact' ? 51 : 81, advanced: 38, transcendent: 30 };
+  var counts = { foundation: 51, advanced: 38, transcendent: 30 };
   state.selectedLevels.forEach(function(l){ marketTotal += counts[l]; });
   var internalTotal = 0; // 待服务端返回
   var parts = [];
@@ -261,9 +261,6 @@ function toggleLevel(level) {
   var idx = state.selectedLevels.indexOf(level);
   if (idx >= 0) { if (state.selectedLevels.length > 1) state.selectedLevels.splice(idx, 1); }
   else state.selectedLevels.push(level);
-  // Show/hide foundation size toggle
-  var sz = document.getElementById('foundation-sz');
-  if (sz) sz.style.display = (state.selectedLevels.indexOf('foundation') >= 0) ? 'inline-flex' : 'none';
   updateLevelInfo();
   ['foundation','advanced','transcendent'].forEach(function(l){
     var cb = document.getElementById('cb-' + l);
@@ -272,16 +269,12 @@ function toggleLevel(level) {
 }
 
 function setFoundationSize(size) {
-  state.foundationSize = size;
-  document.getElementById('sz-compact').classList.toggle('active', size === 'compact');
-  document.getElementById('sz-full').classList.toggle('active', size === 'full');
-  document.getElementById('foundation-cnt').textContent = (size === 'compact' ? '51题' : '81题') + ' · 产品知识·合规';
-  updateLevelInfo();
+  // 配额已固定 51/38/30，此函数保留为空兼容旧调用
 }
 
 function updateLevelInfo() {
   var names = { foundation:'基础', advanced:'提升', transcendent:'升华' };
-  var counts = { foundation: state.foundationSize === 'compact' ? 51 : 81, advanced: 38, transcendent: 30 };
+  var counts = { foundation: 51, advanced: 38, transcendent: 30 };
   var total = 0;
   state.selectedLevels.forEach(function(l){ total += counts[l]; });
   document.getElementById('level-info').textContent = '已选：' + state.selectedLevels.map(function(l){ return names[l]; }).join('+') + ' · 共 ' + total + ' 题';
@@ -347,7 +340,7 @@ function startTest() {
 
   function loadTests() {
     return fetch(API + '/api/generate-test', { method:'POST', headers:authHeaders(),
-      body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, foundation_size:state.foundationSize, internal_category: state.internalCategory })
+      body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, internal_category: state.internalCategory })
     }).then(function(r){ return r.json(); }).then(function(d){ return d.questions; })
     .catch(function(){
       return fetch(API + '/api/tests').then(function(r){ if(!r.ok) throw new Error('no'); return r.json(); })

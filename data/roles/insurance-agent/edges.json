@@ -604,5 +604,29 @@
   "target": "L1-17",
   "strength": 0.5,
   "label": "如实告知边界"
+ },
+ {
+  "source": "L1-08",
+  "target": "L1-06",
+  "strength": 0.8,
+  "label": "合规义务同源"
+ },
+ {
+  "source": "L1-08",
+  "target": "L1-07",
+  "strength": 0.7,
+  "label": "销售环节合规"
+ },
+ {
+  "source": "L1-08",
+  "target": "L3-04",
+  "strength": 0.6,
+  "label": "企业主大额资金审查"
+ },
+ {
+  "source": "L1-08",
+  "target": "L2-08",
+  "strength": 0.5,
+  "label": "大额保单反洗钱"
  }
 ]

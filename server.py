@@ -48,9 +48,10 @@ DB_PATH = Path(_KGDS_DATA_DIR) / "kgds.db"
 os.environ.setdefault("KGDS_DATA_DIR", str(_KGDS_DATA_DIR))
 
 sys.path.insert(0, str(SRC_DIR))
-from variant_generator import generate_test_with_variants
+from variant_generator import generate_test_with_variants, generate_variants_for
 from test_engine import TestEngine, TestSession, Question
 from flywheel import FlywheelEngine, FlywheelScheduler
+from selector import select_questions, extract_tested_qids, extract_node_confidence, QUOTAS
 
 _flywheel = FlywheelEngine()  # 三飞轮引擎实例
 _scheduler = FlywheelScheduler(_flywheel, min_new=10)  # 自动触发调度器
@@ -734,48 +735,43 @@ class KGDSHandler(SimpleHTTPRequestHandler):
         if path == "/api/generate-test":
             role = data.get("role", "insurance-agent")
             levels = data.get("levels")
-            foundation_size = data.get("foundation_size", "compact")  # compact=51 / full=81
             internal_category = data.get("internal_category")  # 内部知识类别
-            node_filter = None
-            if levels:
-                nodes_path = ROLE_DIR / role / "nodes.json"
-                if nodes_path.exists():
-                    all_nodes = json.loads(nodes_path.read_text(encoding="utf-8"))
-                    ls = set(levels)
-                    node_filter = {n["id"] for n in all_nodes if n.get("layer") in ls}
 
-            # 基础层限量：compact 每节点随机保留 2 题(约50题) / full 全量(81题)
-            def limit_foundation(questions):
-                if not levels or "foundation" not in ls:
-                    return questions
-                import random as _rnd
-                _rng = _rnd.Random(data.get("seed"))
-                if foundation_size == "full":
-                    return questions  # 全量不限制
-                # compact: L1 每节点最多保留 2 题
-                _by_node, _rest = {}, []
-                for q in questions:
-                    nid = q.get("node_id", "")
-                    if nid.startswith("L1"):
-                        _by_node.setdefault(nid, []).append(q)
-                    else:
-                        _rest.append(q)
-                for nid, qs in _by_node.items():
-                    _rest.extend(_rng.sample(qs, min(len(qs), 2)))
-                return _rest
+            # 历史感知：读取该用户的已测 qid + 节点掌握度（四重调度器输入）
+            token = data.get("token") or self._auth_header()
+            user = get_user_by_token(token) if token else None
+            tested_qids, node_conf = None, None
+            if user:
+                try:
+                    sessions = get_user_sessions(user["id"], limit=50)
+                    tested_qids = extract_tested_qids(sessions)
+                    node_conf = extract_node_confidence(sessions)
+                except Exception as e:
+                    sys.stderr.write(f"History read error: {e}\n")
 
             try:
-                questions = generate_test_with_variants(role=role, variant_ratio=data.get("variant_ratio", 1/3),
-                                                        seed=data.get("seed"), node_filter=node_filter, use_llm=True)
-                questions = limit_foundation(questions)
-                return self._send_json({"questions": questions, "total": len(questions)})
+                # 四重调度器：配额 51/38/30 + 未测70/已测30 + 薄弱优先 + 节点均衡
+                selected = select_questions(role=role, levels=levels,
+                                            tested_qids=tested_qids,
+                                            node_confidence=node_conf,
+                                            seed=data.get("seed"))
+                if not selected:
+                    # 降级：旧路径全量
+                    selected = generate_test_with_variants(role=role, variant_ratio=data.get("variant_ratio", 1/3),
+                                                           seed=data.get("seed"), node_filter=None, use_llm=True)
+                    return self._send_json({"questions": selected, "total": len(selected)})
+                # 变体生成（1/3 变体，保留 qid）
+                questions = generate_variants_for(selected, variant_ratio=data.get("variant_ratio", 1/3),
+                                                  seed=data.get("seed"), use_llm=True)
+                return self._send_json({"questions": questions, "total": len(questions),
+                                        "quota": {k: QUOTAS[k] for k in (levels or list(QUOTAS.keys()))}})
             except Exception as e:
                 tests_path = ROLE_DIR / role / "tests.json"
                 if tests_path.exists():
                     raw = json.loads(tests_path.read_text(encoding="utf-8"))
-                    if node_filter: raw = [q for q in raw if q.get("node_id") in node_filter]
-                    raw = limit_foundation(raw)
-                    for i, q in enumerate(raw): q["id"] = f"raw_{i}"
+                    for i, q in enumerate(raw):
+                        q["id"] = f"raw_{i}"
+                        q.setdefault("qid", f"{q.get('node_id','')}#{i}")
                     return self._send_json({"questions": raw, "total": len(raw)})
                 return self._send_json({"error": str(e)}, 500)
 
@@ -866,7 +862,7 @@ class KGDSHandler(SimpleHTTPRequestHandler):
 
             user = get_user_by_token(token) if token else None
             if user:
-                qsummary = [{"id":q.get("id"),"node_id":q.get("node_id"),"type":q.get("type"),"is_variant":q.get("is_variant")} for q in questions if isinstance(q,dict)]
+                qsummary = [{"id":q.get("id"),"qid":q.get("qid"),"node_id":q.get("node_id"),"type":q.get("type"),"is_variant":q.get("is_variant")} for q in questions if isinstance(q,dict)]
                 try:
                     sid = save_session(user["id"], profile, answers, node_st, qsummary, report["total_score"], tc, ta,
                                       profile.get("levels",[]) if isinstance(profile,dict) else [])
