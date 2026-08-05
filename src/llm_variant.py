@@ -56,6 +56,18 @@ def _api_key() -> str:
     return ""
 
 
+def _sanitize_json(text: str) -> str:
+    """清洗 LLM 输出中的非法 JSON 片段：去掉尾逗号、注释、多余空白"""
+    import re as _re
+    t = text.strip()
+    # 去掉 // 与 /* */ 注释
+    t = _re.sub(r"/\*.*?\*/", "", t, flags=_re.S)
+    t = _re.sub(r"//[^\n]*", "", t)
+    # 去掉对象/数组末尾的逗号: ,} -> }  ,] -> ]
+    t = _re.sub(r",\s*([}\]])", r"\1", t)
+    return t
+
+
 def _content_hash(question: dict) -> str:
     """原题内容哈希，作为缓存键"""
     raw = question.get("question", "") + "|" + "|".join(question.get("options", []))
@@ -128,7 +140,12 @@ def _call_deepseek(original: dict) -> list:
         with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
             body = json.loads(resp.read().decode("utf-8"))
         content = body["choices"][0]["message"]["content"]
-        data = json.loads(content)
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            # 容错：LLM 常输出非法尾逗号/注释，清洗后重试一次
+            cleaned = _sanitize_json(content)
+            data = json.loads(cleaned)
         variants = data.get("variants", [])
         # 校验结构完整性
         valid = []

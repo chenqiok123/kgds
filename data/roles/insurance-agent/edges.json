@@ -1,542 +1,608 @@
 [
-  {
-    "source": "L1-01",
-    "target": "L1-02",
-    "strength": 0.8,
-    "label": "产品线互补"
-  },
-  {
-    "source": "L1-01",
-    "target": "L1-04",
-    "strength": 0.8,
-    "label": "保障vs储蓄"
-  },
-  {
-    "source": "L1-01",
-    "target": "L2-07",
-    "strength": 0.9,
-    "label": "寿险→分红险进阶"
-  },
-  {
-    "source": "L1-02",
-    "target": "L1-20",
-    "strength": 0.6,
-    "label": "健康险赔付免税"
-  },
-  {
-    "source": "L1-02",
-    "target": "L1-22",
-    "strength": 0.8,
-    "label": "核保决定承保"
-  },
-  {
-    "source": "L1-03",
-    "target": "L1-02",
-    "strength": 0.5,
-    "label": "保障体系互补"
-  },
-  {
-    "source": "L1-04",
-    "target": "L2-07",
-    "strength": 0.9,
-    "label": "年金→分红进阶"
-  },
-  {
-    "source": "L1-04",
-    "target": "L2-08",
-    "strength": 0.9,
-    "label": "年金→万能进阶"
-  },
-  {
-    "source": "L1-04",
-    "target": "L2-09",
-    "strength": 0.7,
-    "label": "IRR需投资基础"
-  },
-  {
-    "source": "L1-05",
-    "target": "L1-06",
-    "strength": 0.9,
-    "label": "法规→合规执行"
-  },
-  {
-    "source": "L1-05",
-    "target": "L1-17",
-    "strength": 0.9,
-    "label": "法规定义红线"
-  },
-  {
-    "source": "L1-05",
-    "target": "L2-06",
-    "strength": 0.7,
-    "label": "保险法→继承法"
-  },
-  {
-    "source": "L1-06",
-    "target": "L1-07",
-    "strength": 0.8,
-    "label": "合规体系"
-  },
-  {
-    "source": "L1-07",
-    "target": "L2-03",
-    "strength": 0.7,
-    "label": "适当性→客户画像"
-  },
-  {
-    "source": "L1-07",
-    "target": "L2-17",
-    "strength": 0.6,
-    "label": "投连险需适当性"
-  },
-  {
-    "source": "L1-09",
-    "target": "L1-19",
-    "strength": 0.9,
-    "label": "获客→名单管理"
-  },
-  {
-    "source": "L1-09",
-    "target": "L2-11",
-    "strength": 0.8,
-    "label": "转介绍进阶"
-  },
-  {
-    "source": "L1-10",
-    "target": "L1-11",
-    "strength": 0.9,
-    "label": "面谈→唤醒"
-  },
-  {
-    "source": "L1-10",
-    "target": "L2-04",
-    "strength": 0.8,
-    "label": "进阶场景化"
-  },
-  {
-    "source": "L1-11",
-    "target": "L1-12",
-    "strength": 0.9,
-    "label": "唤醒→呈现"
-  },
-  {
-    "source": "L1-11",
-    "target": "L2-01",
-    "strength": 0.8,
-    "label": "风险唤醒→财务诊断"
-  },
-  {
-    "source": "L1-12",
-    "target": "L2-18",
-    "strength": 0.7,
-    "label": "呈现需竞品对比"
-  },
-  {
-    "source": "L1-13",
-    "target": "L1-14",
-    "strength": 0.9,
-    "label": "异议→促成"
-  },
-  {
-    "source": "L1-14",
-    "target": "L1-15",
-    "strength": 0.8,
-    "label": "促成→服务"
-  },
-  {
-    "source": "L1-15",
-    "target": "L2-10",
-    "strength": 0.7,
-    "label": "服务需分层"
-  },
-  {
-    "source": "L1-16",
-    "target": "L1-09",
-    "strength": 0.8,
-    "label": "活动量→获客"
-  },
-  {
-    "source": "L1-16",
-    "target": "L2-10",
-    "strength": 0.6,
-    "label": "量→质的转化"
-  },
-  {
-    "source": "L1-18",
-    "target": "L1-17",
-    "strength": 0.8,
-    "label": "道德约束行为"
-  },
-  {
-    "source": "L1-19",
-    "target": "L2-10",
-    "strength": 0.8,
-    "label": "名单→分层"
-  },
-  {
-    "source": "L1-20",
-    "target": "L2-05",
-    "strength": 0.9,
-    "label": "保险税务→个税深入"
-  },
-  {
-    "source": "L1-21",
-    "target": "L2-10",
-    "strength": 0.6,
-    "label": "续期→客户关系"
-  },
-  {
-    "source": "L1-22",
-    "target": "L2-03",
-    "strength": 0.6,
-    "label": "核保→客户分层"
-  },
-  {
-    "source": "L2-01",
-    "target": "L2-02",
-    "strength": 0.9,
-    "label": "诊断→量化"
-  },
-  {
-    "source": "L2-01",
-    "target": "L3-01",
-    "strength": 0.8,
-    "label": "财务诊断→资产配置"
-  },
-  {
-    "source": "L2-02",
-    "target": "L2-04",
-    "strength": 0.8,
-    "label": "量化→场景唤醒"
-  },
-  {
-    "source": "L2-03",
-    "target": "L2-10",
-    "strength": 0.9,
-    "label": "画像→分层管理"
-  },
-  {
-    "source": "L2-03",
-    "target": "L3-06",
-    "strength": 0.8,
-    "label": "画像→高客分层"
-  },
-  {
-    "source": "L2-04",
-    "target": "L3-07",
-    "strength": 0.7,
-    "label": "场景唤醒→高客面谈"
-  },
-  {
-    "source": "L2-05",
-    "target": "L3-02",
-    "strength": 0.9,
-    "label": "个税→税务筹划"
-  },
-  {
-    "source": "L2-06",
-    "target": "L3-03",
-    "strength": 0.9,
-    "label": "继承法→财富传承"
-  },
-  {
-    "source": "L2-07",
-    "target": "L2-08",
-    "strength": 0.8,
-    "label": "分红→万能"
-  },
-  {
-    "source": "L2-07",
-    "target": "L3-04",
-    "strength": 0.6,
-    "label": "分红→企业主规划"
-  },
-  {
-    "source": "L2-08",
-    "target": "L2-09",
-    "strength": 0.8,
-    "label": "万能需投资基础"
-  },
-  {
-    "source": "L2-09",
-    "target": "L3-01",
-    "strength": 0.8,
-    "label": "投资基础→资产配置"
-  },
-  {
-    "source": "L2-10",
-    "target": "L2-11",
-    "strength": 0.8,
-    "label": "分层→转介绍"
-  },
-  {
-    "source": "L2-10",
-    "target": "L2-12",
-    "strength": 0.8,
-    "label": "分层→激活"
-  },
-  {
-    "source": "L2-11",
-    "target": "L2-13",
-    "strength": 0.6,
-    "label": "转介绍→品牌"
-  },
-  {
-    "source": "L2-13",
-    "target": "L2-14",
-    "strength": 0.6,
-    "label": "品牌需CRM"
-  },
-  {
-    "source": "L2-14",
-    "target": "L2-15",
-    "strength": 0.5,
-    "label": "CRM→AI工具"
-  },
-  {
-    "source": "L2-16",
-    "target": "L3-04",
-    "strength": 0.7,
-    "label": "房产保险→企业主"
-  },
-  {
-    "source": "L2-17",
-    "target": "L3-01",
-    "strength": 0.7,
-    "label": "投连→资产配置"
-  },
-  {
-    "source": "L2-18",
-    "target": "L2-03",
-    "strength": 0.6,
-    "label": "对比需画像"
-  },
-  {
-    "source": "L3-01",
-    "target": "L3-02",
-    "strength": 0.8,
-    "label": "配置含税筹"
-  },
-  {
-    "source": "L3-02",
-    "target": "L3-03",
-    "strength": 0.9,
-    "label": "税筹→传承"
-  },
-  {
-    "source": "L3-02",
-    "target": "L3-05",
-    "strength": 0.7,
-    "label": "税务→跨境"
-  },
-  {
-    "source": "L3-03",
-    "target": "L3-04",
-    "strength": 0.8,
-    "label": "传承含企业主"
-  },
-  {
-    "source": "L3-03",
-    "target": "L3-08",
-    "strength": 0.9,
-    "label": "传承→保险金信托"
-  },
-  {
-    "source": "L3-06",
-    "target": "L3-07",
-    "strength": 0.9,
-    "label": "触达→面谈"
-  },
-  {
-    "source": "L3-06",
-    "target": "L3-15",
-    "strength": 0.7,
-    "label": "高客→家族办公室"
-  },
-  {
-    "source": "L3-07",
-    "target": "L3-03",
-    "strength": 0.7,
-    "label": "面谈→传承方案"
-  },
-  {
-    "source": "L3-08",
-    "target": "L3-09",
-    "strength": 0.9,
-    "label": "保险金信托需信托法"
-  },
-  {
-    "source": "L3-08",
-    "target": "L3-03",
-    "strength": 0.8,
-    "label": "信托→传承"
-  },
-  {
-    "source": "L3-10",
-    "target": "L3-11",
-    "strength": 0.9,
-    "label": "增员→培养"
-  },
-  {
-    "source": "L3-11",
-    "target": "L3-12",
-    "strength": 0.9,
-    "label": "培养→绩效"
-  },
-  {
-    "source": "L3-12",
-    "target": "L2-10",
-    "strength": 0.6,
-    "label": "团队管理→客户分层"
-  },
-  {
-    "source": "L3-13",
-    "target": "L3-14",
-    "strength": 0.7,
-    "label": "养老需医疗配套"
-  },
-  {
-    "source": "L3-13",
-    "target": "L2-03",
-    "strength": 0.5,
-    "label": "养老→客户画像"
-  },
-  {
-    "source": "L3-14",
-    "target": "L3-06",
-    "strength": 0.6,
-    "label": "医疗→高客服务"
-  },
-  {
-    "source": "L1-23",
-    "target": "L1-14",
-    "strength": 0.9,
-    "label": "信号→促成执行"
-  },
-  {
-    "source": "L1-23",
-    "target": "L1-13",
-    "strength": 0.7,
-    "label": "信号→异议预判"
-  },
-  {
-    "source": "L1-12",
-    "target": "L1-23",
-    "strength": 0.8,
-    "label": "呈现→信号出现"
-  },
-  {
-    "source": "L1-24",
-    "target": "L1-09",
-    "strength": 0.9,
-    "label": "请求话术→获客方法"
-  },
-  {
-    "source": "L1-24",
-    "target": "L2-11",
-    "strength": 0.8,
-    "label": "请求→系统化转介绍"
-  },
-  {
-    "source": "L1-14",
-    "target": "L1-24",
-    "strength": 0.8,
-    "label": "促成后→请求转介绍"
-  },
-  {
-    "source": "L1-15",
-    "target": "L1-24",
-    "strength": 0.7,
-    "label": "服务→转介绍时机"
-  },
-  {
-    "source": "L1-25",
-    "target": "L1-09",
-    "strength": 0.9,
-    "label": "私域→获客渠道"
-  },
-  {
-    "source": "L1-25",
-    "target": "L2-13",
-    "strength": 0.8,
-    "label": "私域入门→品牌运营"
-  },
-  {
-    "source": "L1-25",
-    "target": "L1-19",
-    "strength": 0.7,
-    "label": "私域→名单管理"
-  },
-  {
-    "source": "L2-19",
-    "target": "L1-14",
-    "strength": 0.9,
-    "label": "心理学→促成技巧"
-  },
-  {
-    "source": "L2-19",
-    "target": "L2-04",
-    "strength": 0.7,
-    "label": "心理学→场景唤醒"
-  },
-  {
-    "source": "L2-19",
-    "target": "L1-23",
-    "strength": 0.8,
-    "label": "心理→信号识别"
-  },
-  {
-    "source": "L2-20",
-    "target": "L1-13",
-    "strength": 0.9,
-    "label": "深层异议→基础话术"
-  },
-  {
-    "source": "L2-20",
-    "target": "L2-04",
-    "strength": 0.7,
-    "label": "异议挖掘→场景唤醒"
-  },
-  {
-    "source": "L2-20",
-    "target": "L2-19",
-    "strength": 0.8,
-    "label": "异议→促成心理"
-  },
-  {
-    "source": "L3-16",
-    "target": "L2-11",
-    "strength": 0.9,
-    "label": "无限连锁→转介绍系统"
-  },
-  {
-    "source": "L3-16",
-    "target": "L3-06",
-    "strength": 0.7,
-    "label": "连锁经营→高客触达"
-  },
-  {
-    "source": "L3-16",
-    "target": "L2-13",
-    "strength": 0.6,
-    "label": "连锁→个人品牌"
-  },
-  {
-    "source": "L3-17",
-    "target": "L2-19",
-    "strength": 0.9,
-    "label": "说服心理学→促成心理"
-  },
-  {
-    "source": "L3-17",
-    "target": "L3-07",
-    "strength": 0.7,
-    "label": "说服→高客面谈"
-  },
-  {
-    "source": "L3-17",
-    "target": "L2-20",
-    "strength": 0.8,
-    "label": "说服→异议处理"
-  }
+ {
+  "source": "L1-01",
+  "target": "L1-02",
+  "strength": 0.8,
+  "label": "产品线互补"
+ },
+ {
+  "source": "L1-01",
+  "target": "L1-04",
+  "strength": 0.8,
+  "label": "保障vs储蓄"
+ },
+ {
+  "source": "L1-01",
+  "target": "L2-07",
+  "strength": 0.9,
+  "label": "寿险→分红险进阶"
+ },
+ {
+  "source": "L1-02",
+  "target": "L1-20",
+  "strength": 0.6,
+  "label": "健康险赔付免税"
+ },
+ {
+  "source": "L1-02",
+  "target": "L1-22",
+  "strength": 0.8,
+  "label": "核保决定承保"
+ },
+ {
+  "source": "L1-03",
+  "target": "L1-02",
+  "strength": 0.5,
+  "label": "保障体系互补"
+ },
+ {
+  "source": "L1-04",
+  "target": "L2-07",
+  "strength": 0.9,
+  "label": "年金→分红进阶"
+ },
+ {
+  "source": "L1-04",
+  "target": "L2-08",
+  "strength": 0.9,
+  "label": "年金→万能进阶"
+ },
+ {
+  "source": "L1-04",
+  "target": "L2-09",
+  "strength": 0.7,
+  "label": "IRR需投资基础"
+ },
+ {
+  "source": "L1-05",
+  "target": "L1-06",
+  "strength": 0.9,
+  "label": "法规→合规执行"
+ },
+ {
+  "source": "L1-05",
+  "target": "L1-17",
+  "strength": 0.9,
+  "label": "法规定义红线"
+ },
+ {
+  "source": "L1-05",
+  "target": "L2-06",
+  "strength": 0.7,
+  "label": "保险法→继承法"
+ },
+ {
+  "source": "L1-06",
+  "target": "L1-07",
+  "strength": 0.8,
+  "label": "合规体系"
+ },
+ {
+  "source": "L1-07",
+  "target": "L2-03",
+  "strength": 0.7,
+  "label": "适当性→客户画像"
+ },
+ {
+  "source": "L1-07",
+  "target": "L2-17",
+  "strength": 0.6,
+  "label": "投连险需适当性"
+ },
+ {
+  "source": "L1-09",
+  "target": "L1-19",
+  "strength": 0.9,
+  "label": "获客→名单管理"
+ },
+ {
+  "source": "L1-09",
+  "target": "L2-11",
+  "strength": 0.8,
+  "label": "转介绍进阶"
+ },
+ {
+  "source": "L1-10",
+  "target": "L1-11",
+  "strength": 0.9,
+  "label": "面谈→唤醒"
+ },
+ {
+  "source": "L1-10",
+  "target": "L2-04",
+  "strength": 0.8,
+  "label": "进阶场景化"
+ },
+ {
+  "source": "L1-11",
+  "target": "L1-12",
+  "strength": 0.9,
+  "label": "唤醒→呈现"
+ },
+ {
+  "source": "L1-11",
+  "target": "L2-01",
+  "strength": 0.8,
+  "label": "风险唤醒→财务诊断"
+ },
+ {
+  "source": "L1-12",
+  "target": "L2-18",
+  "strength": 0.7,
+  "label": "呈现需竞品对比"
+ },
+ {
+  "source": "L1-13",
+  "target": "L1-14",
+  "strength": 0.9,
+  "label": "异议→促成"
+ },
+ {
+  "source": "L1-14",
+  "target": "L1-15",
+  "strength": 0.8,
+  "label": "促成→服务"
+ },
+ {
+  "source": "L1-15",
+  "target": "L2-10",
+  "strength": 0.7,
+  "label": "服务需分层"
+ },
+ {
+  "source": "L1-16",
+  "target": "L1-09",
+  "strength": 0.8,
+  "label": "活动量→获客"
+ },
+ {
+  "source": "L1-16",
+  "target": "L2-10",
+  "strength": 0.6,
+  "label": "量→质的转化"
+ },
+ {
+  "source": "L1-18",
+  "target": "L1-17",
+  "strength": 0.8,
+  "label": "道德约束行为"
+ },
+ {
+  "source": "L1-19",
+  "target": "L2-10",
+  "strength": 0.8,
+  "label": "名单→分层"
+ },
+ {
+  "source": "L1-20",
+  "target": "L2-05",
+  "strength": 0.9,
+  "label": "保险税务→个税深入"
+ },
+ {
+  "source": "L1-21",
+  "target": "L2-10",
+  "strength": 0.6,
+  "label": "续期→客户关系"
+ },
+ {
+  "source": "L1-22",
+  "target": "L2-03",
+  "strength": 0.6,
+  "label": "核保→客户分层"
+ },
+ {
+  "source": "L2-01",
+  "target": "L2-02",
+  "strength": 0.9,
+  "label": "诊断→量化"
+ },
+ {
+  "source": "L2-01",
+  "target": "L3-01",
+  "strength": 0.8,
+  "label": "财务诊断→资产配置"
+ },
+ {
+  "source": "L2-02",
+  "target": "L2-04",
+  "strength": 0.8,
+  "label": "量化→场景唤醒"
+ },
+ {
+  "source": "L2-03",
+  "target": "L2-10",
+  "strength": 0.9,
+  "label": "画像→分层管理"
+ },
+ {
+  "source": "L2-03",
+  "target": "L3-06",
+  "strength": 0.8,
+  "label": "画像→高客分层"
+ },
+ {
+  "source": "L2-04",
+  "target": "L3-07",
+  "strength": 0.7,
+  "label": "场景唤醒→高客面谈"
+ },
+ {
+  "source": "L2-05",
+  "target": "L3-02",
+  "strength": 0.9,
+  "label": "个税→税务筹划"
+ },
+ {
+  "source": "L2-06",
+  "target": "L3-03",
+  "strength": 0.9,
+  "label": "继承法→财富传承"
+ },
+ {
+  "source": "L2-07",
+  "target": "L2-08",
+  "strength": 0.8,
+  "label": "分红→万能"
+ },
+ {
+  "source": "L2-07",
+  "target": "L3-04",
+  "strength": 0.6,
+  "label": "分红→企业主规划"
+ },
+ {
+  "source": "L2-08",
+  "target": "L2-09",
+  "strength": 0.8,
+  "label": "万能需投资基础"
+ },
+ {
+  "source": "L2-09",
+  "target": "L3-01",
+  "strength": 0.8,
+  "label": "投资基础→资产配置"
+ },
+ {
+  "source": "L2-10",
+  "target": "L2-11",
+  "strength": 0.8,
+  "label": "分层→转介绍"
+ },
+ {
+  "source": "L2-10",
+  "target": "L2-12",
+  "strength": 0.8,
+  "label": "分层→激活"
+ },
+ {
+  "source": "L2-11",
+  "target": "L2-13",
+  "strength": 0.6,
+  "label": "转介绍→品牌"
+ },
+ {
+  "source": "L2-13",
+  "target": "L2-14",
+  "strength": 0.6,
+  "label": "品牌需CRM"
+ },
+ {
+  "source": "L2-14",
+  "target": "L2-15",
+  "strength": 0.5,
+  "label": "CRM→AI工具"
+ },
+ {
+  "source": "L2-16",
+  "target": "L3-04",
+  "strength": 0.7,
+  "label": "房产保险→企业主"
+ },
+ {
+  "source": "L2-17",
+  "target": "L3-01",
+  "strength": 0.7,
+  "label": "投连→资产配置"
+ },
+ {
+  "source": "L2-18",
+  "target": "L2-03",
+  "strength": 0.6,
+  "label": "对比需画像"
+ },
+ {
+  "source": "L3-01",
+  "target": "L3-02",
+  "strength": 0.8,
+  "label": "配置含税筹"
+ },
+ {
+  "source": "L3-02",
+  "target": "L3-03",
+  "strength": 0.9,
+  "label": "税筹→传承"
+ },
+ {
+  "source": "L3-02",
+  "target": "L3-05",
+  "strength": 0.7,
+  "label": "税务→跨境"
+ },
+ {
+  "source": "L3-03",
+  "target": "L3-04",
+  "strength": 0.8,
+  "label": "传承含企业主"
+ },
+ {
+  "source": "L3-03",
+  "target": "L3-08",
+  "strength": 0.9,
+  "label": "传承→保险金信托"
+ },
+ {
+  "source": "L3-06",
+  "target": "L3-07",
+  "strength": 0.9,
+  "label": "触达→面谈"
+ },
+ {
+  "source": "L3-06",
+  "target": "L3-15",
+  "strength": 0.7,
+  "label": "高客→家族办公室"
+ },
+ {
+  "source": "L3-07",
+  "target": "L3-03",
+  "strength": 0.7,
+  "label": "面谈→传承方案"
+ },
+ {
+  "source": "L3-08",
+  "target": "L3-09",
+  "strength": 0.9,
+  "label": "保险金信托需信托法"
+ },
+ {
+  "source": "L3-08",
+  "target": "L3-03",
+  "strength": 0.8,
+  "label": "信托→传承"
+ },
+ {
+  "source": "L3-10",
+  "target": "L3-11",
+  "strength": 0.9,
+  "label": "增员→培养"
+ },
+ {
+  "source": "L3-11",
+  "target": "L3-12",
+  "strength": 0.9,
+  "label": "培养→绩效"
+ },
+ {
+  "source": "L3-12",
+  "target": "L2-10",
+  "strength": 0.6,
+  "label": "团队管理→客户分层"
+ },
+ {
+  "source": "L3-13",
+  "target": "L3-14",
+  "strength": 0.7,
+  "label": "养老需医疗配套"
+ },
+ {
+  "source": "L3-13",
+  "target": "L2-03",
+  "strength": 0.5,
+  "label": "养老→客户画像"
+ },
+ {
+  "source": "L3-14",
+  "target": "L3-06",
+  "strength": 0.6,
+  "label": "医疗→高客服务"
+ },
+ {
+  "source": "L1-23",
+  "target": "L1-14",
+  "strength": 0.9,
+  "label": "信号→促成执行"
+ },
+ {
+  "source": "L1-23",
+  "target": "L1-13",
+  "strength": 0.7,
+  "label": "信号→异议预判"
+ },
+ {
+  "source": "L1-12",
+  "target": "L1-23",
+  "strength": 0.8,
+  "label": "呈现→信号出现"
+ },
+ {
+  "source": "L1-24",
+  "target": "L1-09",
+  "strength": 0.9,
+  "label": "请求话术→获客方法"
+ },
+ {
+  "source": "L1-24",
+  "target": "L2-11",
+  "strength": 0.8,
+  "label": "请求→系统化转介绍"
+ },
+ {
+  "source": "L1-14",
+  "target": "L1-24",
+  "strength": 0.8,
+  "label": "促成后→请求转介绍"
+ },
+ {
+  "source": "L1-15",
+  "target": "L1-24",
+  "strength": 0.7,
+  "label": "服务→转介绍时机"
+ },
+ {
+  "source": "L1-25",
+  "target": "L1-09",
+  "strength": 0.9,
+  "label": "私域→获客渠道"
+ },
+ {
+  "source": "L1-25",
+  "target": "L2-13",
+  "strength": 0.8,
+  "label": "私域入门→品牌运营"
+ },
+ {
+  "source": "L1-25",
+  "target": "L1-19",
+  "strength": 0.7,
+  "label": "私域→名单管理"
+ },
+ {
+  "source": "L2-19",
+  "target": "L1-14",
+  "strength": 0.9,
+  "label": "心理学→促成技巧"
+ },
+ {
+  "source": "L2-19",
+  "target": "L2-04",
+  "strength": 0.7,
+  "label": "心理学→场景唤醒"
+ },
+ {
+  "source": "L2-19",
+  "target": "L1-23",
+  "strength": 0.8,
+  "label": "心理→信号识别"
+ },
+ {
+  "source": "L2-20",
+  "target": "L1-13",
+  "strength": 0.9,
+  "label": "深层异议→基础话术"
+ },
+ {
+  "source": "L2-20",
+  "target": "L2-04",
+  "strength": 0.7,
+  "label": "异议挖掘→场景唤醒"
+ },
+ {
+  "source": "L2-20",
+  "target": "L2-19",
+  "strength": 0.8,
+  "label": "异议→促成心理"
+ },
+ {
+  "source": "L3-16",
+  "target": "L2-11",
+  "strength": 0.9,
+  "label": "无限连锁→转介绍系统"
+ },
+ {
+  "source": "L3-16",
+  "target": "L3-06",
+  "strength": 0.7,
+  "label": "连锁经营→高客触达"
+ },
+ {
+  "source": "L3-16",
+  "target": "L2-13",
+  "strength": 0.6,
+  "label": "连锁→个人品牌"
+ },
+ {
+  "source": "L3-17",
+  "target": "L2-19",
+  "strength": 0.9,
+  "label": "说服心理学→促成心理"
+ },
+ {
+  "source": "L3-17",
+  "target": "L3-07",
+  "strength": 0.7,
+  "label": "说服→高客面谈"
+ },
+ {
+  "source": "L3-17",
+  "target": "L2-20",
+  "strength": 0.8,
+  "label": "说服→异议处理"
+ },
+ {
+  "source": "L1-26",
+  "target": "L1-01",
+  "strength": 0.9,
+  "label": "寿险子类"
+ },
+ {
+  "source": "L1-26",
+  "target": "L1-04",
+  "strength": 0.7,
+  "label": "储蓄替代竞争"
+ },
+ {
+  "source": "L1-27",
+  "target": "L1-02",
+  "strength": 0.9,
+  "label": "健康险子类"
+ },
+ {
+  "source": "L1-27",
+  "target": "L2-16",
+  "strength": 0.6,
+  "label": "就医场景联动"
+ },
+ {
+  "source": "L2-21",
+  "target": "L2-07",
+  "strength": 0.95,
+  "label": "分红险核心指标"
+ },
+ {
+  "source": "L2-21",
+  "target": "L2-09",
+  "strength": 0.6,
+  "label": "投资能力决定分红"
+ },
+ {
+  "source": "L2-22",
+  "target": "L1-04",
+  "strength": 0.8,
+  "label": "养老储蓄税收工具"
+ },
+ {
+  "source": "L2-22",
+  "target": "L2-05",
+  "strength": 0.8,
+  "label": "个税联动"
+ },
+ {
+  "source": "L2-22",
+  "target": "L3-13",
+  "strength": 0.7,
+  "label": "养老产业联动"
+ },
+ {
+  "source": "L1-26",
+  "target": "L2-08",
+  "strength": 0.6,
+  "label": "利率敏感型产品"
+ },
+ {
+  "source": "L1-27",
+  "target": "L1-17",
+  "strength": 0.5,
+  "label": "如实告知边界"
+ }
 ]

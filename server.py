@@ -30,7 +30,7 @@ KGDS API Server v3 — 管理后台版
 import json, os, sys, sqlite3, hashlib, secrets, re, shutil
 from pathlib import Path
 from datetime import datetime
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 ROOT = Path(__file__).parent
@@ -1156,7 +1156,7 @@ class KGDSHandler(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     init_db()
     port = int(os.environ.get("PORT", sys.argv[2] if len(sys.argv) > 2 and sys.argv[1] == "--port" else 8081))
-    server = HTTPServer(("0.0.0.0", port), KGDSHandler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), KGDSHandler)
     print(f"[KGDS] Server v3 running on port {port}")
     print(f"[KGDS] Admin: http://localhost:{port}/admin")
     print(f"[KGDS] SQLite: {DB_PATH}")
