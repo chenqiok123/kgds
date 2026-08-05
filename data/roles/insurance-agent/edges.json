@@ -628,5 +628,173 @@
   "target": "L2-08",
   "strength": 0.5,
   "label": "大额保单反洗钱"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-01",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-01",
+  "target": "L1-27",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-02",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-02",
+  "target": "L1-27",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-03",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-03",
+  "target": "L1-02",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-04",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-04",
+  "target": "L1-04",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-05",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-05",
+  "target": "L1-04",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-06",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-06",
+  "target": "L1-04",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-07",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-07",
+  "target": "L1-04",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-08",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-08",
+  "target": "L1-04",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-09",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-09",
+  "target": "L1-01",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-10",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-10",
+  "target": "L1-26",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-11",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-11",
+  "target": "L1-26",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-12",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-12",
+  "target": "L1-02",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-13",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-13",
+  "target": "L1-02",
+  "strength": 0.7,
+  "label": "同类险种"
+ },
+ {
+  "source": "INT-PROD",
+  "target": "PROD-14",
+  "strength": 0.9,
+  "label": "包含产品"
+ },
+ {
+  "source": "PROD-14",
+  "target": "L1-03",
+  "strength": 0.7,
+  "label": "同类险种"
  }
 ]

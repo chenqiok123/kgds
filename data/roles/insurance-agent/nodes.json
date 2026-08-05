@@ -592,5 +592,140 @@
   "weight": 4,
   "color": "#4A90E2",
   "content": "第三支柱：年缴上限12000元，EET递延纳税——缴费税前扣除、投资收益暂不征税、领取单独按3%计税。封闭运行至法定领取条件。对边际税率≥3%人群省税+强制储蓄+养老现金流三合一；税率<3%者反而吃亏。"
+ },
+ {
+  "id": "INT-PROD",
+  "layer": "internal",
+  "label": "内部知识·产品知识",
+  "confidence": 0.95,
+  "weight": 12,
+  "color": "#16A085",
+  "content": "公司自有产品知识（内部知识域）：14 款民生人寿产品 × 12 题/款 = 168 道反盲选产品题，覆盖医疗险/重疾险/年金险/终身寿险/护理险/意外险六大类。考核业务员对本公司产品的真实掌握，防止话术背稿、概念混淆。"
+ },
+ {
+  "id": "PROD-01",
+  "layer": "internal",
+  "label": "优医保2.0",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 医疗险：优医保2.0（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-02",
+  "layer": "internal",
+  "label": "百万能量(守护星)",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 医疗险：百万能量(守护星)（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-03",
+  "layer": "internal",
+  "label": "如意东风",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 重疾险：如意东风（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-04",
+  "layer": "internal",
+  "label": "润泽恒赢",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 年金险：润泽恒赢（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-05",
+  "layer": "internal",
+  "label": "心裕人生",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 年金险：心裕人生（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-06",
+  "layer": "internal",
+  "label": "心赢人生",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 年金险：心赢人生（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-07",
+  "layer": "internal",
+  "label": "聚盈宝(2025)",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 年金险：聚盈宝(2025)（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-08",
+  "layer": "internal",
+  "label": "聚能宝(2025)",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 年金险：聚能宝(2025)（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-09",
+  "layer": "internal",
+  "label": "隽永世家",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 终身寿险：隽永世家（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-10",
+  "layer": "internal",
+  "label": "传世金樽",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 终身寿险：传世金樽（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-11",
+  "layer": "internal",
+  "label": "鎏金世家",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 终身寿险：鎏金世家（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-12",
+  "layer": "internal",
+  "label": "勿忘我惠享版2025",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 护理险：勿忘我惠享版2025（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-13",
+  "layer": "internal",
+  "label": "勿忘我爱永驻",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 护理险：勿忘我爱永驻（民生人寿）12 道反盲选题（含场景/参数/判断）。"
+ },
+ {
+  "id": "PROD-14",
+  "layer": "internal",
+  "label": "活力腾腾",
+  "confidence": 0.9,
+  "weight": 6,
+  "color": "#16A085",
+  "content": "内部知识·产品知识 | 意外险：活力腾腾（民生人寿）12 道反盲选题（含场景/参数/判断）。"
  }
 ]

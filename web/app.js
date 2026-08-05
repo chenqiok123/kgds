@@ -9,6 +9,7 @@ var state = {
   foundationSize: 'compact',  // 兼容旧字段，配额已固定 51/38/30
   graphMode: 'report', // 'report' | 'full' — 图谱着色模式
   internalCategory: null,  // 内部知识单选
+  internalCounts: {},      // 内部知识各方向题数: {方向: 数量}
   learningShown: {}        // 学习推荐去重: {node_id: [tip_indices]}
 };
 
@@ -19,8 +20,27 @@ var state = {
     try { state.user = JSON.parse(stored); } catch(e) {}
   }
   updateHeader();
-  if (state.user) showPhase('profile');
+  if (state.user) {
+    showPhase('profile');
+    loadInternalCategories();
+  }
 })();
+
+// ── 内部知识方向题数 ──
+function loadInternalCategories() {
+  if (!state.user) return;
+  fetch(API + '/api/internal/categories', { method: 'POST', headers: authHeaders(), body: '{}' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.categories) {
+        state.internalCounts = {};
+        d.categories.forEach(function(c){ state.internalCounts[c.name] = c.question_count; });
+        updateInternalUI();
+        updateStartBtn();
+      }
+    })
+    .catch(function(e){ console.error('loadInternalCategories:', e); });
+}
 
 // ── Auth ──
 function updateHeader() {
@@ -76,6 +96,7 @@ function handleAuth() {
       localStorage.setItem('kgds_user', JSON.stringify(state.user));
       updateHeader();
       loadLatestSession();  // 加载最新诊断记录（图谱着色用）
+      loadInternalCategories();
       showPhase('profile');
     })
     .catch(function(e) { alert('网络错误，请重试'); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; });
@@ -226,7 +247,7 @@ function updateInternalUI() {
   if (info) {
     if (state.internalCategory) {
       // 获取该类别题目数
-      var cnt = 0;
+      var cnt = state.internalCounts[state.internalCategory] || 0;
       info.textContent = '已选：' + state.internalCategory + ' · 共 ' + cnt + ' 题';
       info.style.color = 'var(--tx)';
     } else {
@@ -243,7 +264,7 @@ function updateStartBtn() {
   var marketTotal = 0;
   var counts = { foundation: 51, advanced: 38, transcendent: 30 };
   state.selectedLevels.forEach(function(l){ marketTotal += counts[l]; });
-  var internalTotal = 0; // 待服务端返回
+  var internalTotal = state.internalCategory ? (state.internalCounts[state.internalCategory] || 0) : 0;
   var parts = [];
   if (marketTotal > 0) parts.push('市场' + marketTotal + '题');
   if (state.internalCategory) parts.push('内部' + internalTotal + '题');
@@ -363,7 +384,7 @@ function renderQuestion() {
   document.getElementById('q-hint').textContent = q.is_variant ? '✨ AI 生成变体题' : '';
   var chosen = state.answers[q.id];
   var optsHTML = q.options.map(function(opt,i){ return '<div class="q-opt'+(chosen===i?' chosen':'')+'" onclick="selectOption('+i+')">'+String.fromCharCode(65+i)+'. '+opt+'</div>'; }).join('');
-  var tl = { knowledge:'概念理解', scenario:'场景判断', application:'实际应用' };
+  var tl = { knowledge:'概念理解', scenario:'场景判断', application:'实际应用', internal:'内部知识', judge:'判断', choice:'单选' };
   var stars = ''; for (var s=0; s<(q.difficulty||2); s++) stars += '★';
   document.getElementById('q-card-area').innerHTML =
     '<div class="q-card"><div class="q-meta">' +

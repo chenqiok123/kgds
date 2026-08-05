@@ -27,7 +27,7 @@ KGDS API Server v3 — 管理后台版
 启动: python server.py [--port 8081]
 """
 
-import json, os, sys, sqlite3, hashlib, secrets, re, shutil
+import json, os, sys, sqlite3, hashlib, secrets, re, shutil, random
 from pathlib import Path
 from datetime import datetime
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
@@ -170,6 +170,94 @@ def init_db():
             print(f"[KGDS]    ⚠️  请立即在 Zeabur 环境变量中设置 ADMIN_PASSWORD，否则重新部署后密码会变！")
 
     conn.close()
+
+# ── 内部知识题库（产品知识）同步与抽取 ──
+PRODUCT_TESTS_PATH = ROLE_DIR / "insurance-agent" / "product_tests.json"
+
+def sync_internal_questions():
+    """把 product_tests.json（唯一真相源）同步到 internal_questions 表（DB 镜像）。
+    幂等：先清空「产品知识」类别旧题再整批插入。启动时调用，云端 Redeploy 后自动恢复。"""
+    if not PRODUCT_TESTS_PATH.exists():
+        return 0
+    try:
+        items = json.loads(PRODUCT_TESTS_PATH.read_text(encoding="utf-8"))
+    except Exception as e:
+        sys.stderr.write(f"[KGDS] product_tests.json 加载失败: {e}\n")
+        return 0
+    conn = get_db()
+    conn.execute("DELETE FROM internal_questions WHERE category = ?", ("产品知识",))
+    n = 0
+    for it in items:
+        if it.get("category") != "产品知识":
+            continue
+        meta = json.dumps({
+            "product_id": it.get("product_id", ""),
+            "product": it.get("product", ""),
+            "product_category": it.get("product_category", ""),
+            "source": it.get("source", ""),
+        }, ensure_ascii=False)
+        conn.execute(
+            "INSERT INTO internal_questions (category, question, options, correct_index, difficulty, source_paragraph) VALUES (?,?,?,?,?,?)",
+            ("产品知识", it["question"],
+             json.dumps(it.get("options", []), ensure_ascii=False),
+             it.get("correct_index", 0),
+             it.get("difficulty", 2),
+             meta))
+        n += 1
+    conn.commit()
+    conn.close()
+    sys.stderr.write(f"[KGDS] internal_questions 同步：产品知识 {n} 题\n")
+    return n
+
+def load_internal_questions(category):
+    """从 internal_questions 表读取某内部知识类别全部题目，转成前端题结构。"""
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, category, question, options, correct_index, difficulty, source_paragraph FROM internal_questions WHERE category = ?",
+        (category,)).fetchall()
+    conn.close()
+    out = []
+    for r in rows:
+        opts = []
+        try:
+            opts = json.loads(r["options"])
+        except Exception:
+            pass
+        meta = {}
+        if r["source_paragraph"]:
+            try:
+                meta = json.loads(r["source_paragraph"])
+            except Exception:
+                meta = {}
+        out.append({
+            "id": f"int_{r['id']}",
+            "qid": f"INT-{r['id']}",
+            "node_id": meta.get("product_id") or f"INT-{r['id']}",
+            "category": r["category"],
+            "question": r["question"],
+            "options": opts,
+            "correct_index": r["correct_index"],
+            "correct": r["correct_index"],
+            "difficulty": r["difficulty"],
+            "type": "internal",
+            "is_variant": False,
+            "layer": "internal",
+            "product": meta.get("product", ""),
+            "product_category": meta.get("product_category", ""),
+            "source": meta.get("source", ""),
+        })
+    return out
+
+def pick_internal_questions(items, per_product=2, seed=None):
+    """产品知识抽题：按产品均衡，每产品抽 per_product 题（默认 2 → 14 产品 = 28 题）。"""
+    rng = random.Random(seed) if seed is not None else random.Random()
+    by_product = {}
+    for q in items:
+        by_product.setdefault(q.get("product", "?"), []).append(q)
+    picked = []
+    for p, qs in by_product.items():
+        picked.extend(rng.sample(qs, min(per_product, len(qs))))
+    return picked
 
 def new_token():
     return secrets.token_hex(16)
@@ -749,31 +837,51 @@ class KGDSHandler(SimpleHTTPRequestHandler):
                 except Exception as e:
                     sys.stderr.write(f"History read error: {e}\n")
 
-            try:
-                # 四重调度器：配额 51/38/30 + 未测70/已测30 + 薄弱优先 + 节点均衡
-                selected = select_questions(role=role, levels=levels,
-                                            tested_qids=tested_qids,
-                                            node_confidence=node_conf,
-                                            seed=data.get("seed"))
-                if not selected:
-                    # 降级：旧路径全量
-                    selected = generate_test_with_variants(role=role, variant_ratio=data.get("variant_ratio", 1/3),
-                                                           seed=data.get("seed"), node_filter=None, use_llm=True)
-                    return self._send_json({"questions": selected, "total": len(selected)})
-                # 变体生成（1/3 变体，保留 qid）
-                questions = generate_variants_for(selected, variant_ratio=data.get("variant_ratio", 1/3),
-                                                  seed=data.get("seed"), use_llm=True)
-                return self._send_json({"questions": questions, "total": len(questions),
-                                        "quota": {k: QUOTAS[k] for k in (levels or list(QUOTAS.keys()))}})
-            except Exception as e:
-                tests_path = ROLE_DIR / role / "tests.json"
-                if tests_path.exists():
-                    raw = json.loads(tests_path.read_text(encoding="utf-8"))
-                    for i, q in enumerate(raw):
-                        q["id"] = f"raw_{i}"
-                        q.setdefault("qid", f"{q.get('node_id','')}#{i}")
-                    return self._send_json({"questions": raw, "total": len(raw)})
-                return self._send_json({"error": str(e)}, 500)
+            questions = []
+            quota = {}
+
+            # ── 内部知识路径（如「产品知识」）：internal_questions 表均衡抽题 ──
+            if internal_category:
+                internal_qs = load_internal_questions(internal_category)
+                if not internal_qs:
+                    return self._send_json({"error": f"内部知识题库「{internal_category}」暂无题目，请管理员上传文档后生成"}, 400)
+                if internal_category == "产品知识":
+                    internal_qs = pick_internal_questions(internal_qs, per_product=2, seed=data.get("seed"))
+                questions.extend(internal_qs)
+
+            # ── 市场竞争路径：四重调度器（仅在选择了层级时执行）──
+            if levels:
+                try:
+                    # 四重调度器：配额 51/38/30 + 未测70/已测30 + 薄弱优先 + 节点均衡
+                    selected = select_questions(role=role, levels=levels,
+                                                tested_qids=tested_qids,
+                                                node_confidence=node_conf,
+                                                seed=data.get("seed"))
+                    if not selected:
+                        # 降级：旧路径全量
+                        selected = generate_test_with_variants(role=role, variant_ratio=data.get("variant_ratio", 1/3),
+                                                               seed=data.get("seed"), node_filter=None, use_llm=True)
+                    else:
+                        # 变体生成（1/3 变体，保留 qid）
+                        selected = generate_variants_for(selected, variant_ratio=data.get("variant_ratio", 1/3),
+                                                         seed=data.get("seed"), use_llm=True)
+                    questions.extend(selected)
+                    quota = {k: QUOTAS[k] for k in (levels or list(QUOTAS.keys()))}
+                except Exception as e:
+                    tests_path = ROLE_DIR / role / "tests.json"
+                    if tests_path.exists():
+                        raw = json.loads(tests_path.read_text(encoding="utf-8"))
+                        for i, q in enumerate(raw):
+                            q["id"] = f"raw_{i}"
+                            q.setdefault("qid", f"{q.get('node_id','')}#{i}")
+                        questions.extend(raw)
+                    else:
+                        return self._send_json({"error": str(e)}, 500)
+
+            if not questions:
+                return self._send_json({"error": "未选择任何诊断范围（请选择市场竞争层级或内部知识方向）"}, 400)
+
+            return self._send_json({"questions": questions, "total": len(questions), "quota": quota})
 
         # ── 学习推荐 API (POST) ──
         if path == "/api/learning-tips":
@@ -1151,6 +1259,7 @@ class KGDSHandler(SimpleHTTPRequestHandler):
 # ── Main ──
 if __name__ == "__main__":
     init_db()
+    sync_internal_questions()
     port = int(os.environ.get("PORT", sys.argv[2] if len(sys.argv) > 2 and sys.argv[1] == "--port" else 8081))
     server = ThreadingHTTPServer(("0.0.0.0", port), KGDSHandler)
     print(f"[KGDS] Server v3 running on port {port}")

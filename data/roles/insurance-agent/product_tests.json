@@ -1,0 +1,2802 @@
+[
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我有社保，社保报完之后剩下的钱都能报吗？\"业务员应正确回答：",
+  "options": [
+   "都能报，没有免赔额",
+   "扣2万免赔额后按100%赔付",
+   "扣1万免赔额，但有社保一律只赔60%",
+   "年度免赔额1万元，若已从社保获得补偿，扣除免赔额后按100%赔付；若有社保但未使用社保报销，则按60%赔付"
+  ],
+  "correct_index": 3,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我确诊了恶性肿瘤，还有1万免赔额吗？\"业务员应正确回答：",
+  "options": [
+   "有，所有疾病都要扣免赔额",
+   "没有，恶性肿瘤属于6种重大疾病0免赔范围",
+   "有，但可以抵扣",
+   "没有，所有重疾都0免赔"
+  ],
+  "correct_index": 1,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"医生说质子重离子治疗效果好但很贵，能报吗？\"业务员应正确回答：",
+  "options": [
+   "可以，优医保2.0新增100万质子重离子保险金，在特定医疗机构接受质子、重离子治疗费用100%报销",
+   "不可以，质子重离子治疗不在保障范围",
+   "可以，但需先自费再报销50%",
+   "可以，与一般医疗共用100万限额"
+  ],
+  "correct_index": 0,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"住院前后门急诊的费用能报吗？\"业务员应正确回答：",
+  "options": [
+   "不能，只保住院费用",
+   "住院前7天和出院后7天",
+   "住院前7天（含住院当日）和出院后30天（含出院当日）",
+   "住院前30天和出院后7天"
+  ],
+  "correct_index": 2,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我爸62岁，之前没买过优医保，能重新投保吗？\"业务员应正确回答：",
+  "options": [
+   "可以，只要未满65岁",
+   "可以，只要未满88岁",
+   "不可以，超过60岁不能投保",
+   "61周岁至88周岁重新投保需同时满足：产品尚未停止销售、非首次投保本产品、经本公司审核同意"
+  ],
+  "correct_index": 3,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"如果住院时间很长，能一直赔下去吗？\"业务员应正确回答：",
+  "options": [
+   "能，住院多久赔多久",
+   "每一个保单年度内因疾病或意外住院最高给付180天，超过180天的费用不属于保险责任范围",
+   "最高赔120天",
+   "最高赔365天"
+  ],
+  "correct_index": 1,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生优医保2.0》保额构成为：一般医疗保险金年度给付限额（）万元+重大疾病医疗保险金年度给付限额（）万元，其中质子重离子医疗费用年度给付限额（）万元。",
+  "options": [
+   "100；200；100",
+   "200；100；100",
+   "100；300；100",
+   "100；200；200"
+  ],
+  "correct_index": 0,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生优医保2.0》等待期为（）天。",
+  "options": [
+   "15",
+   "30",
+   "60",
+   "90"
+  ],
+  "correct_index": 1,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "下列属于优医保2.0六种0免赔重大疾病的是：",
+  "options": [
+   "轻度脑中风后遗症、原位癌",
+   "甲状腺癌、前列腺癌",
+   "恶性肿瘤、重大器官移植术或造血干细胞移植术、冠状动脉搭桥术、终末期肾病、良性脑肿瘤、慢性肝功能衰竭失代偿期",
+   "急性心肌梗死、严重帕金森病"
+  ],
+  "correct_index": 2,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "优医保2.0相比优医保（1.0版），重大疾病种类由30种升级至（）种。",
+  "options": [
+   "40",
+   "45",
+   "60",
+   "50"
+  ],
+  "correct_index": 3,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "优医保2.0的住院前后门急诊保障由升级前的\"住院前7天+出院后7天\"升级为\"住院前7天（含住院当日）+出院后30天（含出院当日）\"。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-01",
+  "product": "优医保2.0",
+  "product_category": "医疗险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "若被保险人有基本医疗保险但未从基本医疗保险获得该次治疗的医疗费用补偿，则优医保2.0约定的给付比例为100%。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "优医保2.0产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款少儿医疗险保证续保吗？\"业务员应正确回答：",
+  "options": [
+   "保证续保到60岁",
+   "保证续保到25岁",
+   "主险不保证续保（1年期）；附加险是费率可调的保证续保型医疗险，保证续保至被保险人年满18周岁后的首个续保保险期间届满时止",
+   "两款都保证续保"
+  ],
+  "correct_index": 2,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"孩子附加险最多能续保到几岁？\"业务员应正确回答：",
+  "options": [
+   "到25周岁",
+   "续保时被保险人年龄满19周岁即不再接受续保",
+   "到22周岁",
+   "到30周岁"
+  ],
+  "correct_index": 1,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"附加险的保费以后会涨吗？\"业务员应正确回答：",
+  "options": [
+   "会，本附加险是费率可调的长期医疗险，首次调整费率不早于上市满3年且每次调整间隔不少于1年，单个费率组别每次调整上限30%",
+   "不会，费率终身固定",
+   "会，可以随时调整无上限",
+   "不会，除非停售"
+  ],
+  "correct_index": 0,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"通过互联网医院开药有什么限制吗？\"业务员应正确回答：",
+  "options": [
+   "没有限制，任意开药",
+   "每次处方用量不超过30天",
+   "每次药品种类不超过10种",
+   "每次处方用量不超过7天、药品种类不超过5种，且药品须属于互联网医院药品清单"
+  ],
+  "correct_index": 3,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"孩子意外磕掉牙齿，能赔牙科费用吗？\"业务员应正确回答：",
+  "options": [
+   "能，牙科检查、修复都能赔",
+   "能赔原本完整无损自身牙齿的意外紧急治疗费，但须在事故之日起14日内就诊；14日后就诊不赔，且不含修复、种植、整形费用",
+   "不能，任何牙科都不赔",
+   "能赔，但只赔种植牙费用"
+  ],
+  "correct_index": 1,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"已经给孩子买了优医保2.0，还能买这个吗？\"业务员应正确回答：",
+  "options": [
+   "可以，两款可叠加",
+   "可以，但理赔只能二选一",
+   "不可以，本产品与优医保、优医保2.0、优医保3.0、医乐保、长相守、百万能量少儿医疗等同类医疗险仅可择其一，不可重复投保",
+   "可以，但保费会翻倍"
+  ],
+  "correct_index": 2,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生百万能量（守护星）少儿医疗保险》主险被保险人投保年龄为出生满（）至（）周岁；附加险投保年龄为出生满（）至（）周岁。",
+  "options": [
+   "28天；18；28天；17",
+   "28天；17；28天；18",
+   "28天；16；28天；18",
+   "30天；18；28天；17"
+  ],
+  "correct_index": 0,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "百万能量（守护星）少儿医疗的等待期为（）日；因意外伤害发生保险事故的（）等待期。",
+  "options": [
+   "30；有",
+   "90；无",
+   "15；无",
+   "30；无"
+  ],
+  "correct_index": 3,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "附加险在保险期间届满时若到期未支付保险费，自保险费约定支付日的次日零时起有（）日的宽限期。",
+  "options": [
+   "30",
+   "60",
+   "15",
+   "90"
+  ],
+  "correct_index": 1,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "附加险费率调整的触发条件不包括：",
+  "options": [
+   "上一年度本产品赔付率≥85%",
+   "上一年度本产品赔付率≥上一年度行业平均赔付率－10%",
+   "上一年度本产品赔付率≥100%",
+   "中华人民共和国基本医疗保险制度发生重大变化"
+  ],
+  "correct_index": 2,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "若在任一保险期间结束后60日内没有及时足额支付保险费，则附加险的保证续保期间将一并终止。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-02",
+  "product": "百万能量守护星",
+  "product_category": "医疗险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "意外门急诊牙科医疗费用保险金包含牙科例行检查和牙病的诊治费用。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "百万能量守护星产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"确诊重度疾病后，还能赔急性危重状态保险金吗？\"业务员应正确回答：",
+  "options": [
+   "不能，重度疾病保险金、急性危重状态保险金、身故或全残保险金仅给付其中一项；若同一疾病原因、同次医疗行为或同次意外伤害同时符合给付条件，仅承担重度疾病保险金责任",
+   "可以，两项都能赔",
+   "可以，但需间隔一年",
+   "可以，但要扣除已赔部分"
+  ],
+  "correct_index": 0,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"如果同时得了两种重度疾病，能赔两份吗？\"业务员应正确回答：",
+  "options": [
+   "可以，每种疾病各赔一份",
+   "不可以，同一疾病原因、同次医疗行为或同次意外伤害事故导致两种或以上重度疾病的，仅按其中一种给付",
+   "可以，但第二份减半",
+   "不可以，但可先赔急性危重状态"
+  ],
+  "correct_index": 1,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"重度疾病关爱保险金能赔几次？\"业务员应正确回答：",
+  "options": [
+   "可赔多次",
+   "每年一次",
+   "以一次为限，给付后本合同终止",
+   "以两次为限"
+  ],
+  "correct_index": 2,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"附加如意东风两全保险的保额是多少？\"业务员应正确回答：",
+  "options": [
+   "与主险基本保额相同",
+   "由投保人任意约定",
+   "是主险保额的50%",
+   "基本保险金额为主险合同的年交保险费，主险年交保费变更则相应调整"
+  ],
+  "correct_index": 3,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"附加两全险保到什么时候？\"业务员应正确回答：",
+  "options": [
+   "保险期间至被保险人年满88周岁",
+   "保至80周岁",
+   "保至100周岁",
+   "保至终身"
+  ],
+  "correct_index": 0,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款重疾险能搭配哪些附加险？\"业务员可推荐：",
+  "options": [
+   "只能搭配万能账户",
+   "附加如意东风两全保险、附加康乐意外伤害医疗保险、附加新康乐住院医疗保险、附加新康乐每日住院给付医疗保险、附加医乐保医疗保险、附加女性特定疾病保险、投保人豁免保险费（2025版）重疾/定寿等",
+   "只能搭配医疗险",
+   "不能搭配任何附加险"
+  ],
+  "correct_index": 1,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生如意东风终身重大疾病保险》及附加两全保险的等待期为（）日（意外伤害导致的除外）。",
+  "options": [
+   "30",
+   "60",
+   "90",
+   "180"
+  ],
+  "correct_index": 2,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生附加如意东风两全保险》被保险人投保年龄为（）周岁，保险期间至（）周岁。",
+  "options": [
+   "28天-55；88",
+   "18-55；88",
+   "18-60；80",
+   "28天-60；88"
+  ],
+  "correct_index": 1,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生附加如意东风两全保险》的风险保额累计规则为：",
+  "options": [
+   "按基本保额1倍累计",
+   "按基本保额0.5倍累计",
+   "按基本保额1.3倍累计",
+   "本附加险不累计风险保额"
+  ],
+  "correct_index": 3,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生附加如意东风两全保险》的险种搭配规则为：",
+  "options": [
+   "仅可附加于《民生如意东风终身重大疾病保险》下",
+   "可附加于任意主险下",
+   "仅可单独投保",
+   "可与任何重疾险搭配"
+  ],
+  "correct_index": 0,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "主险给付\"重度疾病保险金\"或\"急性危重状态保险金\"其中一项后，附加两全保险现金价值减少为零，不再承担\"身故或全残保险金\"和\"满期保险金\"责任。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-03",
+  "product": "如意东风",
+  "product_category": "重疾险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "《民生附加如意东风两全保险》的\"身故或全残保险金\"和\"满期保险金\"可以同时给付。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "如意东风产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我82岁了，还能买这款年金吗？\"业务员应正确回答：",
+  "options": [
+   "可以，最高投保年龄85周岁",
+   "不可以，被保险人投保年龄为出生满28天-80周岁",
+   "可以，最高投保年龄90周岁",
+   "不可以，最高投保年龄75周岁"
+  ],
+  "correct_index": 1,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这笔钱可以放多久？\"业务员应正确回答：",
+  "options": [
+   "保险期间可选10年、15年、20年、25年、30年或至被保险人年满88周岁后的首个保单周年日止",
+   "只能放10年",
+   "只能放到80岁",
+   "只能放5年"
+  ],
+  "correct_index": 0,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"生存金和满期金能进万能账户继续增值吗？\"业务员应正确回答：",
+  "options": [
+   "不能，年金和万能账户不相关",
+   "可以，无条件转入",
+   "可以，生存保险金、满期祝福金将作为追加保险费转入《民生聚盈宝（2025版）年金保险（万能型）》账户，但累计保费（交费年期×年交保费）≥10万才可关联",
+   "可以，但需要额外付费开通"
+  ],
+  "correct_index": 2,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"交费方式有哪些？\"业务员应正确回答：",
+  "options": [
+   "只能趸交",
+   "趸交、年交5年和10年",
+   "年交10年和20年",
+   "一次交清，年交（3年、5年交）"
+  ],
+  "correct_index": 3,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款年金能搭配医疗险吗？\"业务员可推荐：",
+  "options": [
+   "不能搭配任何附加险",
+   "可搭配《民生附加康乐意外伤害医疗保险》《民生附加新康乐住院医疗保险》《民生附加新康乐每日住院给付医疗保险》《民生附加医乐保医疗保险》",
+   "只能搭配重疾险",
+   "只能搭配寿险"
+  ],
+  "correct_index": 1,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"最低交多少保费？\"业务员应正确回答：",
+  "options": [
+   "1万保费起售，以1000元的整数倍递增",
+   "5000元起售",
+   "2万起售",
+   "3万起售"
+  ],
+  "correct_index": 0,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生润泽恒赢年金保险》被保险人投保年龄为出生满（）至（）周岁；投保人须年满18周岁，交费期满时不得超过（）周岁。",
+  "options": [
+   "28天；75；75",
+   "28天；80；80",
+   "28天；85；80",
+   "30天；80；75"
+  ],
+  "correct_index": 1,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生润泽恒赢年金保险》风险保额累计规则为：",
+  "options": [
+   "按基本保额1倍累计",
+   "按年交保费1倍累计",
+   "本险种不累计风险保额",
+   "按基本保额0.5倍累计"
+  ],
+  "correct_index": 2,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生润泽恒赢年金保险》核保尺度为：",
+  "options": [
+   "支持健康加费，评点≤200加费承保",
+   "任何评点都标准承保",
+   "评点>200仍可加费承保",
+   "不支持健康加费；核保评点≤200点按标准费率承保，>200点拒保"
+  ],
+  "correct_index": 3,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "润泽恒赢与万能型产品相关联的门槛为：本产品累计保费（交费年期×年交保费）≥（）万元。",
+  "options": [
+   "5",
+   "10",
+   "20",
+   "30"
+  ],
+  "correct_index": 1,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "投保人自签收《民生润泽恒赢年金保险》合同之日起，有15日的犹豫期，犹豫期内解除合同将无息退还全部已交保费。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-04",
+  "product": "润泽恒赢",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "润泽恒赢年金保险可以与《民生聚能宝（2025版）年金保险（万能型）》相关联。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "润泽恒赢产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我是女性，最早几岁能开始领养老金？\"业务员应正确回答：",
+  "options": [
+   "可选择在年满50周岁至75周岁的任一周岁年龄开始领取",
+   "最早55周岁",
+   "最早60周岁",
+   "最早45周岁"
+  ],
+  "correct_index": 0,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我担心刚领几年养老金人就没了，钱怎么办？\"业务员应正确回答：",
+  "options": [
+   "钱就没了",
+   "只退已交保费",
+   "养老保险金是保证给付30年的终身年金；保证领取期内身故，给付保证领取期内尚未领取的养老保险金（不计利息）与身故当时现金价值的较大者",
+   "身故后由受益人继续领取到100岁"
+  ],
+  "correct_index": 2,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"红利怎么领？\"业务员应正确回答：",
+  "options": [
+   "只能累积生息",
+   "只能现金领取",
+   "红利是保证的，每年都有",
+   "投保时可选择现金领取或累积生息，保险期间内可变更；红利分配是不确定的，某些年度可能为零"
+  ],
+  "correct_index": 3,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"月领和年领差多少？\"业务员应正确回答：",
+  "options": [
+   "月领金额=年领金额÷12",
+   "月领金额=年领金额×0.085",
+   "月领金额=年领金额×0.5",
+   "月领金额=年领金额×0.8"
+  ],
+  "correct_index": 1,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款养老金能关联万能账户吗？\"业务员应正确回答：",
+  "options": [
+   "不能关联万能账户",
+   "可以与《民生聚能宝（2025版）年金保险（万能型）》相关联",
+   "可以与《民生聚盈宝（2025版）年金保险（万能型）》相关联",
+   "可以关联任意万能险"
+  ],
+  "correct_index": 1,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"投保人年龄有限制吗？\"业务员应正确回答：",
+  "options": [
+   "投保人须年满18周岁，交费期满时不得超过75周岁",
+   "投保人须年满20周岁",
+   "投保人无年龄限制",
+   "投保人须年满18周岁，交费期满不超过80周岁"
+  ],
+  "correct_index": 0,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心裕人生养老年金保险（分红型）》被保险人投保年龄为出生满（）至（）周岁，保险期间为（）。",
+  "options": [
+   "28天；70；终身",
+   "28天；80；至100周岁",
+   "28天；75；终身",
+   "28天；75；至85周岁"
+  ],
+  "correct_index": 2,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心裕人生》交费方式为：一次交清、年交（3年、5年、（）年）。",
+  "options": [
+   "7",
+   "6",
+   "8",
+   "9"
+  ],
+  "correct_index": 3,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心裕人生》保费要求为：保费以（）元的整数倍递增。",
+  "options": [
+   "500",
+   "1000",
+   "2000",
+   "100"
+  ],
+  "correct_index": 1,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心裕人生》红利派发日为（），本合同在效力中止期间（）红利的分配。",
+  "options": [
+   "保单周年日；不享有",
+   "保单周年日；仍享有",
+   "合同生效日；不享有",
+   "年末；仍享有"
+  ],
+  "correct_index": 0,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "心裕人生的保单红利是保证利益，每个年度都一定会有红利分配。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-05",
+  "product": "心裕人生",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "若投保时被保险人投保年龄已满起始领取年龄，则养老保险金开始领取日为犹豫期结束的次日。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "心裕人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款养老金的领取年龄有什么规定？\"业务员应正确回答：",
+  "options": [
+   "男女都从60岁起领",
+   "女55-75、男60-75",
+   "男女都从55岁起领",
+   "女性可选择50-75周岁、男性60-75周岁的任一周岁年龄开始领取，且不得小于投保时国家规定的退休年龄"
+  ],
+  "correct_index": 3,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我以后想少领一点、降低保额可以吗？\"业务员应正确回答：",
+  "options": [
+   "不可以，保额不能变",
+   "自第5个保单周年日（含）起可申请减少基本保险金额，每个保单年度内累计减少不得超过本合同生效时基本保险金额的20%",
+   "可以，随时可减少无限制",
+   "可以，但只能增加不能减少"
+  ],
+  "correct_index": 1,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"养老金是保证给付的吗？\"业务员应正确回答：",
+  "options": [
+   "是，养老保险金类型为保证给付30年的终身年金；保证领取期内身故，给付尚未领取部分与身故当时现金价值的较大者",
+   "不是，看公司经营情况",
+   "是，保证给付20年",
+   "不是，只保证给付10年"
+  ],
+  "correct_index": 0,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"红利怎么领？\"业务员应正确回答：",
+  "options": [
+   "只能现金领取",
+   "只能累积生息",
+   "投保时可选择现金领取或累积生息，保险期间内可变更",
+   "红利保证每年不低于1%"
+  ],
+  "correct_index": 2,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款能配万能账户吗？\"业务员应正确回答：",
+  "options": [
+   "不能",
+   "可以与《民生聚盈宝（2025版）年金保险（万能型）》相关联",
+   "可以与《民生聚能宝（2025版）年金保险（万能型）》相关联",
+   "可以关联任意万能险"
+  ],
+  "correct_index": 1,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"交费期有哪些选择？\"业务员应正确回答：",
+  "options": [
+   "一次交清、年交（3年、5年、10年）",
+   "一次交清、年交（5年、10年、20年）",
+   "只能10年交",
+   "一次交清、年交（3年、5年、9年）"
+  ],
+  "correct_index": 0,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心赢人生养老年金保险（分红型）》被保险人投保年龄为出生满（）至（）周岁，保险期间为（）。",
+  "options": [
+   "28天；75；至80周岁",
+   "28天；75；终身",
+   "28天；70；终身",
+   "28天；80；终身"
+  ],
+  "correct_index": 1,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心赢人生》养老金领取方式为（）、（），月领金额等于年领金额×0.085。",
+  "options": [
+   "年领；半年领",
+   "季领；月领",
+   "年领；月领",
+   "年领；一次性领取"
+  ],
+  "correct_index": 2,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心赢人生》红利领取方式为：现金领取、（）。",
+  "options": [
+   "抵交保费",
+   "购买增额",
+   "转入万能",
+   "累积生息"
+  ],
+  "correct_index": 3,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生心赢人生》养老保险金起始领取年龄不得小于投保时（）规定的退休年龄。",
+  "options": [
+   "国家",
+   "公司",
+   "行业",
+   "监管"
+  ],
+  "correct_index": 0,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "若被保险人于养老保险金开始领取日（含）后身故，本公司不承担给付身故保险金的责任。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-06",
+  "product": "心赢人生",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "《民生心赢人生养老年金保险（分红型）》可以与《民生聚能宝（2025版）年金保险（万能型）》相关联。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "心赢人生产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"不关联主险，单独买聚盈宝最低交多少钱？\"业务员应正确回答：",
+  "options": [
+   "最低1万元",
+   "最低10万元",
+   "最低5万元",
+   "本险种单独投保时，趸交及自主追加保费最低50万元"
+  ],
+  "correct_index": 3,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我主险累计保费8万，万能账户最多能追加多少？\"业务员应正确回答：",
+  "options": [
+   "最多8万",
+   "与本万能险关联的险种累计保费<10万时，自主交付保费上限是关联主险累计保费的1倍（即最多8万）",
+   "最多24万",
+   "最多40万"
+  ],
+  "correct_index": 1,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"主险累计保费50万，万能账户最多能追加多少？\"业务员应正确回答：",
+  "options": [
+   "累计保费10万（含）至100万（不含），自主交付保费上限是关联主险累计保费的3倍（即最多150万）",
+   "最多50万",
+   "最多250万",
+   "最多100万"
+  ],
+  "correct_index": 0,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"结算利率是多少？\"业务员应正确回答：",
+  "options": [
+   "保证3.0%",
+   "保证5.0%",
+   "最低保证利率为1.0%，超过最低保证利率的部分是不确定的",
+   "保证1.75%"
+  ],
+  "correct_index": 2,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我以后想部分领取账户价值，可以吗？\"业务员应正确回答：",
+  "options": [
+   "不可以，万能账户不能领取",
+   "合同有效期内且未发生保险事故、犹豫期后可以申请部分领取，可能产生费用，且每年部分领取后个人账户价值不得低于公司规定的最低金额",
+   "可以，随时领不限次数金额",
+   "只能退保才能领取"
+  ],
+  "correct_index": 1,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款万能险能加医疗附加险吗？\"业务员应正确回答：",
+  "options": [
+   "不能附加其他附加险；可以与《民生传世稳赢（臻享版）终身寿险》《民生心禧一生（2025版）养老年金保险》相关联",
+   "可以附加医疗险",
+   "可以附加重疾险",
+   "可以附加任何附加险"
+  ],
+  "correct_index": 0,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生聚盈宝（2025版）年金保险（万能型）》投保年龄为出生满（）至（）周岁，保险期间为（），交费方式为（）。",
+  "options": [
+   "28天；75；终身；一次交清",
+   "28天；80；至100周岁；年交",
+   "28天；80；终身；一次交清",
+   "18；80；终身；一次交清"
+  ],
+  "correct_index": 2,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "聚盈宝关联投保时趸交保费最低（）元；与本万能险关联的险种累计保费在100万（含）及以上时，自主交付保费上限为关联主险累计保费的（）倍。",
+  "options": [
+   "100；3",
+   "100；5",
+   "1000；5",
+   "100；10"
+  ],
+  "correct_index": 1,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生聚盈宝》风险保额规则为：",
+  "options": [
+   "按基本保额1倍累计",
+   "按账户价值1倍累计",
+   "按保费1倍累计",
+   "本险种不累计人身险风险保额"
+  ],
+  "correct_index": 3,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "聚盈宝利益演示中的现金价值为：",
+  "options": [
+   "个人账户价值扣除退保费用",
+   "个人账户价值",
+   "已交保费",
+   "基本保额"
+  ],
+  "correct_index": 0,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "聚盈宝的趸交保险费、自主追加保险费和约定转入保险费均计发佣金。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-07",
+  "product": "聚盈宝",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "如果发生保单贷款，部分领取金额可用余额会扣除贷款本息和。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "聚盈宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"不关联主险，单独买聚能宝最低交多少钱？\"业务员应正确回答：",
+  "options": [
+   "最低50万元",
+   "单独投保且无关联险种时，趸交及自主追加保费最低100万元",
+   "最低10万元",
+   "最低20万元"
+  ],
+  "correct_index": 1,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我主险累计保费20万，能关联聚能宝吗？\"业务员应正确回答：",
+  "options": [
+   "可以，无门槛",
+   "可以，但需体检",
+   "不可以，关联投保需关联险种累计总保费≥30万",
+   "可以，但只能追加10万"
+  ],
+  "correct_index": 2,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"主险累计保费80万，万能最多能追加多少？\"业务员应正确回答：",
+  "options": [
+   "累计总保费30万（含）至100万（不含），自主交付保费上限是所有关联险种累计总保费的3倍（即最多240万）",
+   "最多80万",
+   "最多400万",
+   "最多160万"
+  ],
+  "correct_index": 0,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"聚能宝和聚盈宝有什么区别？\"业务员应正确回答：",
+  "options": [
+   "没有区别，是同一款产品",
+   "聚能宝保额更高",
+   "聚盈宝关联门槛更高",
+   "关联门槛和单独投保最低保费不同：聚能宝关联投保需累计总保费≥30万、单独投保最低100万元；聚盈宝无累计门槛（按倍数规则）、单独投保最低50万元"
+  ],
+  "correct_index": 3,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款能加附加险吗？\"业务员应正确回答：",
+  "options": [
+   "可以加医疗险",
+   "本险种不能附加其他附加险",
+   "可以加重疾险",
+   "可以加意外险"
+  ],
+  "correct_index": 1,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"结算利率确定吗？\"业务员应正确回答：",
+  "options": [
+   "保证5%",
+   "保证3%",
+   "最低保证利率为1.0%，超过部分不确定，实际保单账户利益可能低于利益演示水平",
+   "保证2.5%"
+  ],
+  "correct_index": 2,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生聚能宝（2025版）年金保险（万能型）》投保年龄为出生满（）至（）周岁，保险期间为（），交费方式为（）。",
+  "options": [
+   "28天；80；终身；一次交清",
+   "28天；75；终身；一次交清",
+   "18；80；终身；年交",
+   "28天；80；至100周岁；一次交清"
+  ],
+  "correct_index": 0,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "聚能宝关联投保：当关联险种累计总保费≥30万时可关联，趸交保费最低（）元；累计总保费在100万及以上时，自主交付保费上限是累计总保费的（）倍。",
+  "options": [
+   "1000；3",
+   "100；3",
+   "1000；5",
+   "100；5"
+  ],
+  "correct_index": 3,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "聚能宝可关联的险种不包括：",
+  "options": [
+   "《民生传世稳赢（臻享版）终身寿险》",
+   "《民生心禧一生（2025版）养老年金保险》",
+   "《民生聚盈宝（2025版）年金保险（万能型）》",
+   "《民生心颐人生（福满堂）养老年金保险（分红型）》"
+  ],
+  "correct_index": 2,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "聚能宝折标比例为：趸交保险费和自主追加保险费（）；约定转入保险费（）。",
+  "options": [
+   "2%；2%",
+   "2%；不计折标",
+   "1%；不计折标",
+   "2%；1%"
+  ],
+  "correct_index": 1,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "聚能宝单独投保时，趸交及自主追加保费最低为50万元。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-08",
+  "product": "聚能宝",
+  "product_category": "年金险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "万能险结算利率超过最低保证利率的部分是不确定的，实际保单账户利益可能低于利益演示水平。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "聚能宝产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我66岁，男性，还能买隽永世家吗？\"业务员应正确回答：",
+  "options": [
+   "可以，最高投保年龄70周岁",
+   "不可以，最高投保年龄为男性65周岁、女性70周岁",
+   "可以，最高投保年龄75周岁",
+   "不可以，最高投保年龄60周岁"
+  ],
+  "correct_index": 1,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我想把财富定向传承给女儿，这款产品有什么功能？\"业务员应正确回答：",
+  "options": [
+   "支持第二投保人功能、对接保险金信托，可实现家族财富定向传承",
+   "没有传承功能",
+   "只能法定继承",
+   "不支持指定受益人"
+  ],
+  "correct_index": 0,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"最低保额是多少？\"业务员应正确回答：",
+  "options": [
+   "10万保额起售",
+   "5万保额起售",
+   "20万保额起售，以10000元的整数倍递增",
+   "50万保额起售"
+  ],
+  "correct_index": 2,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款终身寿能附加哪些险？\"业务员可推荐：",
+  "options": [
+   "只能附加医疗险",
+   "不能附加任何附加险",
+   "只能附加意外险",
+   "可附加康乐意外伤害医疗、新康乐住院医疗、新康乐每日住院给付、医乐保、女性特定疾病、投保人豁免（2025版）重疾/定寿等"
+  ],
+  "correct_index": 3,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"交费期最长可以多久？\"业务员应正确回答：",
+  "options": [
+   "最长10年",
+   "一次交清，年交3/5/10/15/20/30年交",
+   "最长20年",
+   "最长15年"
+  ],
+  "correct_index": 1,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我是5类职业（高空作业），能买吗？\"业务员应正确回答：",
+  "options": [
+   "不可以，本产品投保职业仅限1-4类",
+   "可以，所有职业都可投保",
+   "可以，但需加费",
+   "可以，5类职业优惠"
+  ],
+  "correct_index": 0,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生隽永世家终身寿险》被保险人投保年龄为出生满（）至（）周岁；投保人须年满18周岁，交费期满时不得超过（）周岁。",
+  "options": [
+   "28天；70；80",
+   "28天；75；75",
+   "28天；70；75",
+   "28天；65；75"
+  ],
+  "correct_index": 2,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生隽永世家终身寿险》保险期间为（），交费方式为一次交清、年交（3/5/10/15/20/30年交）。",
+  "options": [
+   "至88周岁",
+   "终身",
+   "至100周岁",
+   "至80周岁"
+  ],
+  "correct_index": 1,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生隽永世家终身寿险》风险保额规则为：按基本保险金额的（）倍累计寿险风险保额、（）倍累计意外险风险保额。",
+  "options": [
+   "1；1",
+   "1；2",
+   "1.3；1",
+   "2；1"
+  ],
+  "correct_index": 0,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生隽永世家终身寿险》核保尺度为：",
+  "options": [
+   "不支持健康加费",
+   "健康加费≤300加费承保",
+   "任何情况都标准承保",
+   "健康加费≤200加费承保；健康加费>200拒保"
+  ],
+  "correct_index": 3,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "《民生附加投保人豁免保险费（2025版）重大疾病保险》与《民生附加投保人豁免保险费（2025版）定期寿险》可以同时搭售。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-09",
+  "product": "隽永世家",
+  "product_category": "终身寿险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "隽永世家终身寿险D类业务员不可销售。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "隽永世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"保额以后会增长吗？\"业务员应正确回答：",
+  "options": [
+   "保额固定不变",
+   "每年按3.5%增长",
+   "投保时的有效保险金额等于基本保险金额；自第二个保单年度起，各保单年度的有效保险金额每年按1.75%以年复利形式增加",
+   "每年按2.5%增长"
+  ],
+  "correct_index": 2,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"红利是怎么分配的？\"业务员应正确回答：",
+  "options": [
+   "本合同红利分配形式包括增额红利和终了红利；终了红利包括体恤金终了红利（身故时给付身故受益人）和特别终了红利（其他原因终止时给付投保人）",
+   "只有现金红利",
+   "只有终了红利",
+   "红利以现金方式每年直接发放"
+  ],
+  "correct_index": 0,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我以后想降低保额可以吗？\"业务员应正确回答：",
+  "options": [
+   "不可以",
+   "可以，随时无限制",
+   "可以，但只能增加",
+   "自第五个保单周年日（含）起可申请减少基本保险金额，每个保单年度内累计减少不得超过本合同生效时基本保险金额的20%"
+  ],
+  "correct_index": 3,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"最低交多少保费？\"业务员应正确回答：",
+  "options": [
+   "一律1万起售",
+   "一次交清10万保费起售；年交3年3万、5年2万、10年1万起售，保费以1000元的整数倍递增",
+   "一律5万起售",
+   "一次交清50万起售"
+  ],
+  "correct_index": 1,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我68岁，男性，还能买吗？\"业务员应正确回答：",
+  "options": [
+   "不可以，最高65周岁",
+   "不可以，最高60周岁",
+   "可以，最高投保年龄为男性69周岁、女性70周岁",
+   "可以，最高75周岁"
+  ],
+  "correct_index": 2,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款分红终身寿能关联万能账户吗？\"业务员应正确回答：",
+  "options": [
+   "可以与《民生聚盈宝（2025版）年金保险（万能型）》和《民生聚能宝（2025版）年金保险（万能型）》相关联",
+   "不能关联万能账户",
+   "只能关联聚盈宝",
+   "只能关联聚能宝"
+  ],
+  "correct_index": 0,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生传世金樽（此心安）终身寿险（分红型）》被保险人投保年龄为出生满（）至（）周岁，保险期间为（）。",
+  "options": [
+   "28天；70；至100周岁",
+   "28天；70；终身",
+   "28天；75；终身",
+   "28天；69；终身"
+  ],
+  "correct_index": 1,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生传世金樽》交费方式为：一次交清、年交（3年、5年、（）年交）。",
+  "options": [
+   "15",
+   "20",
+   "10",
+   "30"
+  ],
+  "correct_index": 2,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生传世金樽》风险保额规则为：按基本保险金额的（）倍累计增额寿险风险保额。",
+  "options": [
+   "1.3",
+   "2",
+   "0.5",
+   "1"
+  ],
+  "correct_index": 3,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生传世金樽》红利分配形式为：增额红利和（）。",
+  "options": [
+   "终了红利",
+   "现金红利",
+   "特别红利",
+   "累积生息红利"
+  ],
+  "correct_index": 0,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "传世金樽的有效保险金额自第二个保单年度起，各保单年度每年按1.75%以年复利形式增加。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-10",
+  "product": "传世金樽",
+  "product_category": "终身寿险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "传世金樽健康加费≤200点按标准费率承保，健康加费>200点拒保。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "传世金樽产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"鎏金世家和传世金樽都是分红型终身寿，红利方式一样吗？\"业务员应正确回答：",
+  "options": [
+   "一样，都是增额红利+终了红利",
+   "不一样，鎏金世家红利分配形式为增额红利；传世金樽为增额红利+终了红利",
+   "一样，都是现金分红",
+   "不一样，鎏金世家是现金分红"
+  ],
+  "correct_index": 1,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我64岁，男性，还能买鎏金世家吗？\"业务员应正确回答：",
+  "options": [
+   "不可以，最高投保年龄为男性63周岁、女性67周岁",
+   "可以，最高70周岁",
+   "可以，最高65周岁",
+   "不可以，最高60周岁"
+  ],
+  "correct_index": 0,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"最低保额多少？\"业务员应正确回答：",
+  "options": [
+   "10万保额起售",
+   "5万保额起售",
+   "20万保额起售，以10000元的整数倍递增",
+   "30万保额起售"
+  ],
+  "correct_index": 2,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我累计保额比较高，会有什么额外流程吗？\"业务员应正确回答：",
+  "options": [
+   "没有额外流程",
+   "累计保额超过100万需生调",
+   "累计保额超过200万需生调",
+   "当被保险人累计寿险风险保额>400万时，需进行生存调查"
+  ],
+  "correct_index": 3,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"想对接保险金信托，有什么条件？\"业务员应正确回答：",
+  "options": [
+   "无条件",
+   "同一投、被保人，在我司累计有效保单的总保费或总保额大于等于300万元",
+   "累计保费≥100万",
+   "累计保额≥500万"
+  ],
+  "correct_index": 1,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"交费期有哪些选择？\"业务员应正确回答：",
+  "options": [
+   "一次交清，年交3/5/10/15/20/30年交",
+   "只能20年交",
+   "一次交清，年交5/10年",
+   "一次交清，年交10/20年"
+  ],
+  "correct_index": 0,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生鎏金世家终身寿险（分红型）》被保险人投保年龄为出生满（）至（）周岁，保险期间为（）。",
+  "options": [
+   "28天；67；至100周岁",
+   "28天；67；终身",
+   "28天；70；终身",
+   "28天；63；终身"
+  ],
+  "correct_index": 1,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生鎏金世家》风险保额规则为：按基本保险金额的（）倍累计寿险风险保额、（）倍累计意外险风险保额。",
+  "options": [
+   "1.3；1",
+   "1；2",
+   "1；1",
+   "2；1"
+  ],
+  "correct_index": 2,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生鎏金世家》红利分配形式为（）。",
+  "options": [
+   "增额红利和终了红利",
+   "现金红利",
+   "特别红利",
+   "增额红利"
+  ],
+  "correct_index": 3,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生鎏金世家》销售资格与职业要求为：（）类业务员除外，投保职业仅限（）类职业。",
+  "options": [
+   "D；1-4",
+   "C；1-4",
+   "D；1-5",
+   "C；1-3"
+  ],
+  "correct_index": 0,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "鎏金世家采用\"保额分红\"方式，保险公司将当年度的可分配盈余以增加保险金额的方式进行分配，而非直接发放现金。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-11",
+  "product": "鎏金世家",
+  "product_category": "终身寿险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "针对鎏金世家，同一投、被保人在我司累计有效保单的总保费或总保额≥300万元可对接保险金信托。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "鎏金世家产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"买这款护理险能抵税吗？\"业务员应正确回答：",
+  "options": [
+   "不能抵税",
+   "本险种为适用个人所得税优惠政策的商业健康保险",
+   "只有企业客户能抵税",
+   "不确定"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"能给爸妈买吗？\"业务员应正确回答：",
+  "options": [
+   "可以，投被保人关系可为本人、配偶、子女或父母",
+   "不可以，只能给本人买",
+   "可以，但只能给子女买",
+   "不可以，只能给配偶买"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"护理金最长能领多久？\"业务员应正确回答：",
+  "options": [
+   "终身领取",
+   "最长领3年",
+   "年领时最高领取期限为5年或10年；月领时最高为60个月或120个月",
+   "最长领1年"
+  ],
+  "correct_index": 2,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"月领能领多少？\"业务员应正确回答：",
+  "options": [
+   "月领金额=基本保额",
+   "月领金额=基本保额÷12",
+   "月领金额=基本保额×10%",
+   "月领金额=基本保额×8.5%；年领每年领取金额=基本保险金额"
+  ],
+  "correct_index": 3,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款护理险能加医疗附加险吗？\"业务员应正确回答：",
+  "options": [
+   "可以，附加医乐保医疗",
+   "本险种仅限单独投保，不能加附加险",
+   "可以，附加新康乐住院医疗",
+   "可以，附加康乐意外伤害医疗"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我还没买过民生保险，能选19年交吗？\"业务员应正确回答：",
+  "options": [
+   "不可以，9年交、19年交仅限我司老客户",
+   "可以，任何人都能选",
+   "可以，但需体检",
+   "不可以，只有9年交限老客户"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（惠享版2025）护理保险》被保险人投保年龄为出生满（）至（）周岁，保险期间为（）。",
+  "options": [
+   "28天；70；终身",
+   "28天；65；至80周岁",
+   "28天；65；终身",
+   "18；65；终身"
+  ],
+  "correct_index": 2,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（惠享版2025）》保额规定为：（）保额起售，保额以（）元的整数倍递增。",
+  "options": [
+   "3万；100",
+   "2万；1000",
+   "3万；1000",
+   "2万；100"
+  ],
+  "correct_index": 3,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（惠享版2025）》职业类别限（）类；本险种以（）倍基本保额计入护理险风险保额。",
+  "options": [
+   "1-4类；1",
+   "1-5类；1",
+   "1-4类；1.3",
+   "1-5类；1.3"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（惠享版2025）》核保评估规则为：本险种不支持健康加费，核保评点≤（）点按标准费率承保，>（）点拒保。",
+  "options": [
+   "150；150",
+   "100；100",
+   "200；200",
+   "150；200"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "特定疾病长期护理保险金和意外伤残长期护理保险金仅给付其中一项，开始给付其中任意一项后本合同效力终止。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-12",
+  "product": "勿忘我惠享版2025",
+  "product_category": "护理险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "本合同的等待期为90天，被保险人在等待期内因意外伤害以外的原因导致身故，本公司向您无息返还已交保险费。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我惠享版2025产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"爱永驻和惠享版2025有什么主要区别？\"业务员应正确回答：",
+  "options": [
+   "没有区别，同一款产品",
+   "爱永驻保额更低",
+   "爱永驻投保年龄放宽至28天-70周岁、保额3万起售、核保评点≤100点标准承保；惠享版2025投保年龄28天-65周岁、保额2万起售、评点≤150点",
+   "惠享版2025投保年龄更高"
+  ],
+  "correct_index": 2,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款护理险保到什么时候？\"业务员应正确回答：",
+  "options": [
+   "只能保终身",
+   "保险期间为至被保险人年满80周岁后的首个保单周年日止、或终身，投保时可约定",
+   "只能保到70岁",
+   "只能保到85岁"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我60岁，还能买吗？\"业务员应正确回答：",
+  "options": [
+   "可以，投保年龄为出生满28天-70周岁",
+   "不可以，最高55周岁",
+   "不可以，最高65周岁",
+   "可以，最高75周岁"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"护理金年领最长能领多久？\"业务员应正确回答：",
+  "options": [
+   "终身领取",
+   "最长3年",
+   "最长1年",
+   "年领时最高领取期限为5年或10年；月领时最高为60个月或120个月"
+  ],
+  "correct_index": 3,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"这款能搭配其他险吗？\"业务员应正确回答：",
+  "options": [
+   "可以搭配医疗险",
+   "本险种仅支持单独销售",
+   "可以搭配意外险",
+   "可以搭配重疾险"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"最低保额多少？\"业务员应正确回答：",
+  "options": [
+   "2万保额起售",
+   "1万保额起售",
+   "3万保额起售，保额以1000元的整数倍递增",
+   "5万保额起售"
+  ],
+  "correct_index": 2,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（爱永驻）护理保险》被保险人投保年龄为出生满（）至（）周岁；投保人须年满18周岁，交费期满时不得超过（）周岁。",
+  "options": [
+   "28天；70；75",
+   "28天；75；75",
+   "28天；70；80",
+   "28天；65；75"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（爱永驻）》交费期间为：一次交清、年交（3年、5年、9年、10年、15年、19年、（）年交）。",
+  "options": [
+   "25",
+   "20",
+   "30",
+   "12"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（爱永驻）》职业类别限（）类；本险种以（）倍基本保额计入护理险风险保额。",
+  "options": [
+   "1-4类；1.3",
+   "1-5类；1.3",
+   "1-4类；1",
+   "1-5类；1"
+  ],
+  "correct_index": 3,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生勿忘我（爱永驻）》核保评估规则为：本产品不支持健康加费，核保评点≤（）点按标准费率承保，>（）点拒保。",
+  "options": [
+   "150；150",
+   "200；200",
+   "100；100",
+   "100；150"
+  ],
+  "correct_index": 2,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "阶段性投保规则（2025年9月1日0点-2026年3月1日0点）将爱永驻的被保险人投保年龄放宽至出生满28天-75周岁。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-13",
+  "product": "勿忘我爱永驻",
+  "product_category": "护理险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "本合同生效后，可以变更长期护理保险金的领取方式及最高领取期限。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 1,
+  "source": "勿忘我爱永驻产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"坐飞机出事能赔多少？\"业务员应正确回答：",
+  "options": [
+   "只赔1倍基本保额",
+   "赔2倍基本保额",
+   "意外身故赔1倍基本保额，另加航空意外身故保险金额外4倍基本保额（共5倍）",
+   "赔10倍基本保额"
+  ],
+  "correct_index": 2,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"猝死赔吗？\"业务员应正确回答：",
+  "options": [
+   "赔，猝死属于意外",
+   "不赔，被保险人猝死在责任免除范围内",
+   "赔，按2倍保额",
+   "赔，但需医院证明"
+  ],
+  "correct_index": 1,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"我腰椎间盘突出犯了摔伤，能赔吗？\"业务员应正确回答：",
+  "options": [
+   "不赔，因椎间盘突出症（包括膨出、突出、脱出、游离型等类型）导致的伤害在责任免除内",
+   "赔，属于意外",
+   "赔，但只赔50%",
+   "不赔，只有手术才赔"
+  ],
+  "correct_index": 0,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"意外医疗费用怎么赔？\"业务员应正确回答：",
+  "options": [
+   "无免赔额，100%赔付",
+   "扣除100元免赔额后80%赔付",
+   "扣除50元免赔额后100%赔付",
+   "扣除50元免赔额；没有从基本医疗保险或公费医疗获得补偿的按100%赔付，已获得的按80%赔付"
+  ],
+  "correct_index": 3,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"意外住院每天赔多少？\"业务员应正确回答：",
+  "options": [
+   "每天赔100元",
+   "每天赔50元，无免赔",
+   "意外伤害每日住院保险金每天20元，扣除3天免赔日，单次住院最多给付30天（以案例演示规则）",
+   "每天赔200元"
+  ],
+  "correct_index": 2,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "客户问：\"叫救护车的费用能赔吗？\"业务员应正确回答：",
+  "options": [
+   "不能赔",
+   "可选责任含意外救护车费用保险金，救护车费用可获赔付（案例中300元全额赔付）",
+   "只能赔100元",
+   "只能赔50%"
+  ],
+  "correct_index": 1,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生活力腾腾意外伤害保险》投保年龄为出生满（）至（）周岁，保险期间为（），交费方式为一次交清。",
+  "options": [
+   "28天；75；一年",
+   "28天；70；一年",
+   "28天；75；终身",
+   "18；75；一年"
+  ],
+  "correct_index": 0,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生活力腾腾意外伤害保险》保额规定为：（）保额起售，保额以（）元的整数倍递增；同一被保险人限投一份。",
+  "options": [
+   "10万；1000",
+   "5万；100",
+   "10万；10000",
+   "5万；1000"
+  ],
+  "correct_index": 3,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "《民生活力腾腾意外伤害保险》投保职业仅限（）类职业。",
+  "options": [
+   "1-3",
+   "1-4",
+   "1-5",
+   "1-6"
+  ],
+  "correct_index": 1,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "choice",
+  "difficulty": 2,
+  "question": "活力腾腾风险保额累计规则为：按基本保险金额的（）倍累计意外险风险保额、（）倍累计未成年人身故风险保额、（）倍累计航意风险保额。",
+  "options": [
+   "1；1；4",
+   "1；2；2",
+   "1；2；4",
+   "1；1；2"
+  ],
+  "correct_index": 2,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "民生活力腾腾意外伤害保险产品计划由主险《民生活力腾腾意外伤害保险》与《民生附加康悦住院医疗保险》《民生附加康悦每日住院给付医疗保险》组合而成，主险可单独购买。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "活力腾腾产品培训课件"
+ },
+ {
+  "category": "产品知识",
+  "product_id": "PROD-14",
+  "product": "活力腾腾",
+  "product_category": "意外险",
+  "type": "judge",
+  "difficulty": 1,
+  "question": "活力腾腾的网约车意外身故保障为额外1倍基本保险金额。",
+  "options": [
+   "是",
+   "否"
+  ],
+  "correct_index": 0,
+  "source": "活力腾腾产品培训课件"
+ }
+]
