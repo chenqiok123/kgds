@@ -198,6 +198,12 @@ button{font-family:var(--font);border:none;cursor:pointer;background:none;color:
 
 <!-- 底部Tab -->
 <div id="tabbar">
+  <div class="tab-item" onclick="location.href='/'">
+    <div class="t-icon">📝</div><div class="t-label">诊断</div>
+  </div>
+  <div class="tab-item" onclick="location.href='/?tab=graph'">
+    <div class="t-icon">🗺️</div><div class="t-label">图谱</div>
+  </div>
   <div class="tab-item active" data-tab="today" onclick="switchTab('today')">
     <div class="t-icon">📖</div><div class="t-label">今日</div>
   </div>
@@ -231,19 +237,37 @@ const LS = {
   get(k, d){ try{ const v = localStorage.getItem('topoo_'+k); return v===null? d : JSON.parse(v); }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem('topoo_'+k, JSON.stringify(v)); }catch(e){} }
 };
+// ── 统一登录态：与 KGDS 主应用共用 localStorage.kgds_user（去掉 topoo_token 双轨）──
+const AUTO_LOGIN_MS = 30 * 24 * 60 * 60 * 1000; // 30天自动登录有效期
+function getSharedUser(){
+  try{
+    const raw = localStorage.getItem('kgds_user');
+    if(!raw) return null;
+    const u = JSON.parse(raw);
+    if(!u || !u.token){ localStorage.removeItem('kgds_user'); return null; }
+    // 超过30天未打开则清除登录态，需重新登录
+    if(u.login_at && (Date.now() - u.login_at > AUTO_LOGIN_MS)){ localStorage.removeItem('kgds_user'); return null; }
+    return u;
+  }catch(e){ return null; }
+}
+function setSharedUser(u){ try{ u ? localStorage.setItem('kgds_user', JSON.stringify(u)) : localStorage.removeItem('kgds_user'); }catch(e){} }
+const _sharedUser = getSharedUser();
+// 滑动刷新：本次打开算一次活跃，延长30天
+if(_sharedUser){ _sharedUser.login_at = Date.now(); setSharedUser(_sharedUser); }
 const state = {
   read: LS.get('read', []),
   streak: LS.get('streak', 0),
   lastReadDate: LS.get('lastReadDate', null),
   episodeScores: LS.get('episodeScores', {}), // {1:{score:85,correct:4,total:5}, ...}
-  token: LS.get('token', null),
-  name: LS.get('name', '书友'),
+  token: _sharedUser ? _sharedUser.token : null,
+  name: (_sharedUser && _sharedUser.name) || '书友',
   buddySub: LS.get('buddySub', 'list'), // 'list' | 'ranking'
 };
+// 登录后再继续提交打擂（成绩记入云端排名的桥接标志）
+let pendingSubmit = false;
 function saveState(){
   LS.set('read', state.read); LS.set('streak', state.streak);
   LS.set('lastReadDate', state.lastReadDate); LS.set('episodeScores', state.episodeScores);
-  LS.set('token', state.token); LS.set('name', state.name);
   LS.set('buddySub', state.buddySub);
 }
 
@@ -491,11 +515,10 @@ function renderBuddyHome(){
 }
 
 async function fetchBookRanking(){
-  try{
-    const res = await fetch('/api/arena/book-ranking?book=thinking-fast-slow');
-    const data = await res.json();
-    return data.ranking || [];
-  }catch(e){ return []; }
+  const res = await fetch('/api/arena/book-ranking?book=thinking-fast-slow');
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const data = await res.json();
+  return data.ranking || [];
 }
 
 /* ═══════ 单期打擂 ═══════ */
@@ -612,9 +635,15 @@ function pickQuizA(i){ quizAnswers[quizQuestions[quizIdx].id] = i; renderQuizQ()
 function quizNav(d){ quizIdx = Math.max(0, Math.min(quizQuestions.length-1, quizIdx+d)); renderQuizQ(); }
 
 async function submitEpisodeQuiz(){
+  // 未登录先引导登录，确保成绩记入云端排名（匿名提交后端不记名、不进排名）
+  if(!state.token){
+    pendingSubmit = true;
+    showLogin();
+    return;
+  }
   const ta = quizQuestions.length;
   let score, tc;
-  // 服务端判分（支持匿名；登录用户自动记录成绩与排名）
+  // 服务端判分（登录用户自动记录成绩与排名）
   try{
     const headers = {'Content-Type':'application/json'};
     if(state.token) headers['Authorization'] = 'Bearer '+state.token;
@@ -967,9 +996,13 @@ async function doLogin(){
     if(data.user && data.user.token){
       state.token = data.user.token;
       state.name = data.user.name;
+      data.user.login_at = Date.now();  // 记录登录时间，作为30天自动登录有效期起点
+      setSharedUser(data.user);
       saveState();
       // 关闭弹窗
       document.querySelector('.login-overlay')?.remove();
+      // 若因打擂提交触发的登录，登录后自动继续提交（成绩记入排名）
+      if(pendingSubmit){ pendingSubmit = false; submitEpisodeQuiz(); return; }
       // 刷新当前可见 Tab
       const activePage = document.querySelector('.page.active');
       if(activePage && activePage.id === 'page-me') renderMe();
@@ -1063,7 +1096,7 @@ function renderMe(){
     ${state.token ? `
       <div class="card" style="text-align:center;padding:14px">
         <div style="font-size:14px;color:var(--tx3)">👤 ${state.name}</div>
-        <button class="btn-ghost" style="width:auto;padding:6px 20px;margin:6px auto 0;font-size:13px" onclick="state.token=null;state.name='书友';saveState();renderMe();">退出登录</button>
+        <button class="btn-ghost" style="width:auto;padding:6px 20px;margin:6px auto 0;font-size:13px" onclick="state.token=null;state.name='书友';setSharedUser(null);saveState();renderMe();">退出登录</button>
       </div>
     ` : `
       <button class="btn-ghost" onclick="showLogin()">登录解锁留言和排名</button>
@@ -1089,7 +1122,8 @@ function showConceptTip(c){
 
 function resetAll(){
   if(!confirm('确定清除所有本地数据？这将重置阅读进度和打擂成绩。')) return;
-  ['read','streak','lastReadDate','episodeScores','token','name','buddySub'].forEach(k=>localStorage.removeItem('topoo_'+k));
+  ['read','streak','lastReadDate','episodeScores','buddySub'].forEach(k=>localStorage.removeItem('topoo_'+k));
+  localStorage.removeItem('kgds_user');
   location.reload();
 }
 

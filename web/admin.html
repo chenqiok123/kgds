@@ -24,6 +24,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
 .login-box{max-width:380px;margin:60px auto;background:var(--bg2);padding:32px;border-radius:var(--radius);border:1px solid var(--bd)}
 .login-box h2{font-size:18px;margin-bottom:4px}.login-box .sub{font-size:11px;color:var(--tx2);margin-bottom:20px}
 .toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.toolbar input,.toolbar select,.toolbar textarea{padding:6px 10px;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);outline:none;font-family:inherit}
+.toolbar input:focus,.toolbar select:focus,.toolbar textarea:focus{border-color:var(--acc)}
+.toolbar input{width:160px}
 .cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
 .card{flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-sm);padding:16px}
 .card .v{font-size:28px;font-weight:800;color:var(--acc)}
@@ -79,6 +82,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
     <div class="logo">🧠<span>管理后台</span></div>
     <div class="side-item active" data-page="dashboard" onclick="navTo('dashboard')">📊 仪表盘</div>
     <div class="side-item" data-page="roles" onclick="navTo('roles')">🏗️ 岗位</div>
+    <div class="side-item" data-page="org" onclick="navTo('org')">🏢 组织</div>
     <div class="side-item" data-page="questions" onclick="navTo('questions')">📝 题库</div>
     <div class="side-item" data-page="users" onclick="navTo('users')">👥 用户</div>
     <div class="side-item" data-page="flywheel" onclick="navTo('flywheel')">🌀 飞轮</div>
@@ -93,11 +97,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
         <div class="field"><label>邮箱</label><input type="email" id="l-email" placeholder="admin@kgds.local"></div>
         <div class="field"><label>密码</label><input type="password" id="l-pw" placeholder="密码" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <button class="btn btn-primary" style="width:100%" onclick="doLogin()">登录</button>
-        <div style="font-size:10px;color:var(--tx2);margin-top:12px;text-align:center">默认: admin@kgds.local / kgds2026</div>
       </div>
     </div>
     <div class="page" id="page-dashboard"><div class="page-title">📊 仪表盘</div><div class="page-sub">系统概览</div><div class="cards" id="dash-cards"></div></div>
     <div class="page" id="page-roles"><div class="page-title">🏗️ 岗位管理</div><div class="page-sub">管理岗位、知识图谱节点和连线</div><div class="toolbar"><button class="btn btn-primary" onclick="showRoleModal()">+ 新建</button><input id="role-search" placeholder="搜索..." style="width:180px;padding:6px 10px;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);outline:none" oninput="loadRoles()"></div><div id="role-list"></div></div>
+    <div class="page" id="page-org"><div class="page-title">🏢 组织管理</div><div class="page-sub">管理行业、岗位、企业及企业白名单</div>
+      <div class="fw-box"><h4>🏭 行业</h4><div class="toolbar"><input id="ind-key" placeholder="行业标识(如 bank)"><input id="ind-name" placeholder="行业名称(如 银行)"><input id="ind-role" placeholder="知识包目录(如 insurance-agent)"><button class="btn btn-primary btn-sm" onclick="addIndustry()">+ 添加</button></div><div id="industry-list"></div></div>
+      <div class="fw-box"><h4>💼 岗位（职业）</h4><div class="toolbar"><select id="occ-industry"></select><input id="occ-name" placeholder="岗位名称(如 客户经理)"><button class="btn btn-primary btn-sm" onclick="addOccupation()">+ 添加</button></div><div id="occupation-list"></div></div>
+      <div class="fw-box"><h4>🏢 企业</h4><div class="toolbar"><select id="cmp-industry"></select><input id="cmp-name" placeholder="企业名称(如 民生人寿)"><button class="btn btn-primary btn-sm" onclick="addCompany()">+ 添加</button></div><div id="company-list"></div></div>
+      <div class="fw-box"><h4>📋 企业白名单</h4><div class="toolbar"><select id="roster-company" onchange="loadRoster()"></select><input id="roster-name" placeholder="姓名"><input id="roster-phone" placeholder="手机号"><button class="btn btn-primary btn-sm" onclick="addRoster()">+ 添加</button></div><div class="toolbar"><textarea id="roster-batch" placeholder="批量导入：每行一条「姓名,手机号」" style="flex:1;min-width:260px;height:56px"></textarea><button class="btn btn-secondary btn-sm" onclick="importRoster()">📥 批量导入</button></div><div id="roster-list"></div></div>
+    </div>
     <div class="page" id="page-questions"><div class="page-title">📝 题库管理</div><div class="page-sub">按岗位查看和编辑试题</div><div class="toolbar"><select id="q-role" onchange="loadQuestions()" style="padding:6px 10px;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);outline:none"></select><select id="q-layer" onchange="loadQuestions()" style="padding:6px 10px;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);outline:none"><option value="">全部</option><option value="foundation">基础</option><option value="advanced">提升</option><option value="transcendent">升华</option></select><button class="btn btn-primary btn-sm" onclick="showQuestionModal()">+ 添加</button><button class="btn btn-secondary btn-sm" onclick="importQuestions()">📥 导入</button><span id="q-count" style="font-size:11px;color:var(--tx2);margin-left:auto"></span></div><div id="question-list"></div></div>
     <div class="page" id="page-users"><div class="page-title">👥 用户管理</div><div class="page-sub">查看和删除注册用户</div><div class="toolbar"><input id="u-search" placeholder="搜索姓名或邮箱..." style="width:220px;padding:6px 10px;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);outline:none" oninput="loadUsers()"></div><div id="user-list"></div></div>
 

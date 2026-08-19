@@ -23,6 +23,7 @@ function navTo(p) {
   var t = document.getElementById('page-' + p); if (t) t.classList.add('active');
   if (p === 'dashboard') loadDashboard();
   if (p === 'roles') loadRoles();
+  if (p === 'org') loadOrg();
   if (p === 'questions') loadQuestionRoles();
   if (p === 'users') loadUsers();
   if (p === 'flywheel') loadFlywheel();
@@ -299,5 +300,164 @@ function loadFlywheel() {
     })
     .catch(function(e){
       dash.innerHTML = '<div style="text-align:center;color:var(--rd);padding:40px">加载失败: ' + e + '</div>';
+    });
+}
+
+// ── 组织管理（行业/岗位/企业/白名单）──
+var orgData = { industries: [], occupations: [], companies: [] };
+
+function loadOrg() {
+  Promise.all([
+    fetch(API + '/admin/industries', { headers: authH() }).then(function(r){return r.json();}).catch(function(){return [];}),
+    fetch(API + '/admin/occupations', { headers: authH() }).then(function(r){return r.json();}).catch(function(){return [];}),
+    fetch(API + '/admin/companies', { headers: authH() }).then(function(r){return r.json();}).catch(function(){return [];})
+  ]).then(function(r){
+    orgData.industries = Array.isArray(r[0]) ? r[0] : [];
+    orgData.occupations = Array.isArray(r[1]) ? r[1] : [];
+    orgData.companies = Array.isArray(r[2]) ? r[2] : [];
+    renderIndustries(); renderOccupations(); renderCompanies();
+    fillOrgSelects(); loadRoster();
+  });
+}
+
+function fillOrgSelects() {
+  ['occ-industry', 'cmp-industry'].forEach(function(id){
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">选择行业</option>';
+    orgData.industries.forEach(function(ind){
+      var o = document.createElement('option');
+      o.value = ind.key; o.textContent = ind.name;
+      sel.appendChild(o);
+    });
+  });
+  var rs = document.getElementById('roster-company');
+  if (rs) {
+    rs.innerHTML = '<option value="">选择企业</option>';
+    orgData.companies.forEach(function(cp){
+      var o = document.createElement('option');
+      o.value = cp.id; o.textContent = cp.name;
+      rs.appendChild(o);
+    });
+  }
+}
+
+function renderIndustries() {
+  var el = document.getElementById('industry-list');
+  if (!el) return;
+  if (!orgData.industries.length) { el.innerHTML = '<div style="color:var(--tx2);padding:12px">暂无行业</div>'; return; }
+  var h = '<table class="tbl"><tr><th>标识</th><th>名称</th><th>知识包目录</th><th style="width:80px">操作</th></tr>';
+  orgData.industries.forEach(function(ind){
+    h += '<tr><td><code style="color:var(--acc)">' + ind.key + '</code></td><td>' + ind.name + '</td><td>' + (ind.role_id || '-') + '</td><td><button class="btn btn-danger btn-sm" onclick="delIndustry(\'' + ind.key + '\')">删除</button></td></tr>';
+  });
+  el.innerHTML = h + '</table>';
+}
+
+function renderOccupations() {
+  var el = document.getElementById('occupation-list');
+  if (!el) return;
+  if (!orgData.occupations.length) { el.innerHTML = '<div style="color:var(--tx2);padding:12px">暂无岗位</div>'; return; }
+  var h = '<table class="tbl"><tr><th>ID</th><th>所属行业</th><th>名称</th><th style="width:80px">操作</th></tr>';
+  orgData.occupations.forEach(function(oc){
+    h += '<tr><td>' + oc.id + '</td><td>' + oc.industry_key + '</td><td>' + oc.name + '</td><td><button class="btn btn-danger btn-sm" onclick="delOccupation(' + oc.id + ')">删除</button></td></tr>';
+  });
+  el.innerHTML = h + '</table>';
+}
+
+function renderCompanies() {
+  var el = document.getElementById('company-list');
+  if (!el) return;
+  if (!orgData.companies.length) { el.innerHTML = '<div style="color:var(--tx2);padding:12px">暂无企业</div>'; return; }
+  var h = '<table class="tbl"><tr><th>ID</th><th>所属行业</th><th>名称</th><th style="width:80px">操作</th></tr>';
+  orgData.companies.forEach(function(cp){
+    h += '<tr><td>' + cp.id + '</td><td>' + cp.industry_key + '</td><td>' + cp.name + '</td><td><button class="btn btn-danger btn-sm" onclick="delCompany(' + cp.id + ')">删除</button></td></tr>';
+  });
+  el.innerHTML = h + '</table>';
+}
+
+function loadRoster() {
+  var sel = document.getElementById('roster-company');
+  var cid = sel ? sel.value : '';
+  var el = document.getElementById('roster-list');
+  if (!el) return;
+  if (!cid) { el.innerHTML = '<div style="color:var(--tx2);padding:12px">请先选择企业</div>'; return; }
+  fetch(API + '/admin/roster?company_id=' + cid, { headers: authH() })
+    .then(function(r){return r.json();})
+    .then(function(list){
+      if (!Array.isArray(list)) list = [];
+      if (!list.length) { el.innerHTML = '<div style="color:var(--tx2);padding:12px">暂无白名单成员，可批量导入</div>'; return; }
+      var h = '<table class="tbl"><tr><th>ID</th><th>姓名</th><th>手机号</th><th style="width:80px">操作</th></tr>';
+      list.forEach(function(m){
+        h += '<tr><td>' + m.id + '</td><td>' + m.name + '</td><td>' + m.phone + '</td><td><button class="btn btn-danger btn-sm" onclick="delRoster(' + m.id + ')">删除</button></td></tr>';
+      });
+      el.innerHTML = h + '</table>';
+    })
+    .catch(function(){ el.innerHTML = '<div style="color:var(--rd);padding:12px">加载失败</div>'; });
+}
+
+function addIndustry() {
+  var key = document.getElementById('ind-key').value.trim();
+  var name = document.getElementById('ind-name').value.trim();
+  var role = document.getElementById('ind-role').value.trim();
+  if (!key || !name) return toast('请填写行业标识和名称', 'error');
+  fetch(API + '/admin/industry', { method: 'POST', headers: authH(), body: JSON.stringify({ action:'add', key:key, name:name, role_id:role }) })
+    .then(function(r){return r.json();}).then(function(d){ if (d.error) return toast(d.error, 'error'); toast('已添加'); loadOrg(); });
+}
+function delIndustry(key) {
+  if (!confirm('删除行业 "' + key + '"？')) return;
+  fetch(API + '/admin/industry', { method: 'POST', headers: authH(), body: JSON.stringify({ action:'delete', key:key }) })
+    .then(function(r){return r.json();}).then(function(d){ if (d.error) return toast(d.error, 'error'); toast('已删除'); loadOrg(); });
+}
+function addOccupation() {
+  var ik = document.getElementById('occ-industry').value;
+  var name = document.getElementById('occ-name').value.trim();
+  if (!ik || !name) return toast('请选择行业并填写岗位名称', 'error');
+  fetch(API + '/admin/occupation', { method:'POST', headers:authH(), body:JSON.stringify({ action:'add', industry_key:ik, name:name }) })
+    .then(function(r){return r.json();}).then(function(d){ if(d.error) return toast(d.error,'error'); toast('已添加'); loadOrg(); });
+}
+function delOccupation(id) {
+  if (!confirm('删除该岗位？')) return;
+  fetch(API + '/admin/occupation', { method:'POST', headers:authH(), body:JSON.stringify({ action:'delete', id:id }) })
+    .then(function(r){return r.json();}).then(function(d){ if(d.error) return toast(d.error,'error'); toast('已删除'); loadOrg(); });
+}
+function addCompany() {
+  var ik = document.getElementById('cmp-industry').value;
+  var name = document.getElementById('cmp-name').value.trim();
+  if (!ik || !name) return toast('请选择行业并填写企业名称', 'error');
+  fetch(API + '/admin/company', { method:'POST', headers:authH(), body:JSON.stringify({ action:'add', industry_key:ik, name:name }) })
+    .then(function(r){return r.json();}).then(function(d){ if(d.error) return toast(d.error,'error'); toast('已添加'); loadOrg(); });
+}
+function delCompany(id) {
+  if (!confirm('删除该企业？其白名单与内部知识归属将失效')) return;
+  fetch(API + '/admin/company', { method:'POST', headers:authH(), body:JSON.stringify({ action:'delete', id:id }) })
+    .then(function(r){return r.json();}).then(function(d){ if(d.error) return toast(d.error,'error'); toast('已删除'); loadOrg(); });
+}
+function addRoster() {
+  var cid = document.getElementById('roster-company').value;
+  var name = document.getElementById('roster-name').value.trim();
+  var phone = document.getElementById('roster-phone').value.trim();
+  if (!cid || !name || !phone) return toast('请选择企业并填写姓名手机号', 'error');
+  fetch(API + '/admin/roster', { method:'POST', headers:authH(), body:JSON.stringify({ action:'add', company_id:parseInt(cid), name:name, phone:phone }) })
+    .then(function(r){return r.json();}).then(function(d){ if(d.error) return toast(d.error,'error'); toast('已添加'); loadRoster(); });
+}
+function delRoster(id) {
+  if (!confirm('删除该白名单成员？')) return;
+  fetch(API + '/admin/roster', { method:'POST', headers:authH(), body:JSON.stringify({ action:'delete', id:id }) })
+    .then(function(r){return r.json();}).then(function(d){ if(d.error) return toast(d.error,'error'); toast('已删除'); loadRoster(); });
+}
+function importRoster() {
+  var cid = document.getElementById('roster-company').value;
+  var raw = document.getElementById('roster-batch').value.trim();
+  if (!cid) return toast('请先选择企业', 'error');
+  if (!raw) return toast('请粘贴待导入名单', 'error');
+  var members = raw.split('\n').map(function(line){
+    var parts = line.split(/[,，\t]/).map(function(x){return x.trim();});
+    return { name: parts[0] || '', phone: parts[1] || '' };
+  }).filter(function(m){ return m.name && m.phone; });
+  if (!members.length) return toast('未解析到有效名单', 'error');
+  fetch(API + '/admin/roster', { method:'POST', headers:authH(), body:JSON.stringify({ action:'import', company_id:parseInt(cid), members:members }) })
+    .then(function(r){return r.json();}).then(function(d){
+      if (d.error) return toast(d.error, 'error');
+      toast('导入完成：新增 ' + d.added + '，跳过 ' + d.skipped); loadRoster();
     });
 }

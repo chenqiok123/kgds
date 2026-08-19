@@ -29,7 +29,7 @@ KGDS API Server v3 — 管理后台版
 
 import json, os, sys, sqlite3, hashlib, secrets, re, shutil, random
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
@@ -141,6 +141,46 @@ def init_db():
             key TEXT PRIMARY KEY,
             value TEXT
         );
+        CREATE TABLE IF NOT EXISTS industries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            key TEXT UNIQUE NOT NULL,
+            name TEXT NOT NULL,
+            role_id TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now','localtime'))
+        );
+        CREATE TABLE IF NOT EXISTS occupations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            industry_key TEXT NOT NULL,
+            name TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now','localtime'))
+        );
+        CREATE TABLE IF NOT EXISTS companies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            industry_key TEXT NOT NULL,
+            name TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now','localtime'))
+        );
+        CREATE TABLE IF NOT EXISTS company_roster (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now','localtime')),
+            FOREIGN KEY (company_id) REFERENCES companies(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_roster_company ON company_roster(company_id);
+        CREATE INDEX IF NOT EXISTS idx_roster_phone ON company_roster(phone);
+        CREATE TABLE IF NOT EXISTS daily_checkins (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            question_qid TEXT,
+            correct INTEGER DEFAULT 0,
+            dismissed INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now','localtime')),
+            UNIQUE(user_id, date)
+        );
+        CREATE INDEX IF NOT EXISTS idx_checkins_user ON daily_checkins(user_id);
     """)
     conn.commit()
 
@@ -153,6 +193,24 @@ def init_db():
         conn.execute("SELECT password_hash FROM users LIMIT 0")
     except sqlite3.OperationalError:
         conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
+    # 多行业/岗位/企业字段迁移
+    for col in ["industry", "occupation", "company", "phone"]:
+        try:
+            conn.execute(f"SELECT {col} FROM users LIMIT 0")
+        except sqlite3.OperationalError:
+            conn.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT DEFAULT ''")
+    try:
+        conn.execute("SELECT company_id FROM internal_questions LIMIT 0")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE internal_questions ADD COLUMN company_id INTEGER DEFAULT NULL")
+    try:
+        conn.execute("SELECT dismissed FROM daily_checkins LIMIT 0")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE daily_checkins ADD COLUMN dismissed INTEGER DEFAULT 0")
+    try:
+        conn.execute("SELECT points FROM users LIMIT 0")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE users ADD COLUMN points INTEGER DEFAULT 0")
     conn.commit()
 
     # Seed default admin — 密码从环境变量读取，绝不硬编码
@@ -168,6 +226,26 @@ def init_db():
             print(f"[KGDS]    邮箱: {admin_email}")
             print(f"[KGDS]    密码: {admin_pw}")
             print(f"[KGDS]    ⚠️  请立即在 Zeabur 环境变量中设置 ADMIN_PASSWORD，否则重新部署后密码会变！")
+
+    # Seed 默认行业/岗位/企业（保险 → 代理人 → 民生人寿）
+    if not conn.execute("SELECT id FROM industries LIMIT 1").fetchone():
+        conn.execute("INSERT INTO industries (key, name, role_id) VALUES (?,?,?)",
+                     ("insurance", "保险", "insurance-agent"))
+    if not conn.execute("SELECT id FROM occupations LIMIT 1").fetchone():
+        conn.execute("INSERT INTO occupations (industry_key, name) VALUES (?,?)", ("insurance", "代理人"))
+    if not conn.execute("SELECT id FROM companies LIMIT 1").fetchone():
+        cur = conn.execute("INSERT INTO companies (industry_key, name) VALUES (?,?)", ("insurance", "民生人寿"))
+        # 现有内部知识（168题）归默认企业「民生人寿」
+        conn.execute("UPDATE internal_questions SET company_id = ? WHERE company_id IS NULL", (cur.lastrowid,))
+    conn.commit()
+
+    # 一次性：老用户（历史数据）归入默认行业+企业，保持原有产品知识可见性
+    legacy_done = conn.execute("SELECT value FROM settings WHERE key = 'migrated_legacy_org'").fetchone()
+    if not legacy_done:
+        conn.execute("UPDATE users SET industry = 'insurance' WHERE industry = '' OR industry IS NULL")
+        conn.execute("UPDATE users SET company = '民生人寿' WHERE (company = '' OR company IS NULL) AND industry = 'insurance'")
+        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('migrated_legacy_org', '1')")
+        conn.commit()
 
     conn.close()
 
@@ -185,6 +263,9 @@ def sync_internal_questions():
         sys.stderr.write(f"[KGDS] product_tests.json 加载失败: {e}\n")
         return 0
     conn = get_db()
+    # 默认企业（现有产品知识归属「民生人寿」）
+    comp = conn.execute("SELECT id FROM companies WHERE name = '民生人寿'").fetchone()
+    default_company_id = comp["id"] if comp else None
     conn.execute("DELETE FROM internal_questions WHERE category = ?", ("产品知识",))
     n = 0
     for it in items:
@@ -197,24 +278,33 @@ def sync_internal_questions():
             "source": it.get("source", ""),
         }, ensure_ascii=False)
         conn.execute(
-            "INSERT INTO internal_questions (category, question, options, correct_index, difficulty, source_paragraph) VALUES (?,?,?,?,?,?)",
+            "INSERT INTO internal_questions (category, question, options, correct_index, difficulty, source_paragraph, company_id) VALUES (?,?,?,?,?,?,?)",
             ("产品知识", it["question"],
              json.dumps(it.get("options", []), ensure_ascii=False),
              it.get("correct_index", 0),
              it.get("difficulty", 2),
-             meta))
+             meta, default_company_id))
         n += 1
     conn.commit()
     conn.close()
     sys.stderr.write(f"[KGDS] internal_questions 同步：产品知识 {n} 题\n")
     return n
 
-def load_internal_questions(category):
-    """从 internal_questions 表读取某内部知识类别全部题目，转成前端题结构。"""
+def load_internal_questions(category, company_name=""):
+    """从 internal_questions 表读取某内部知识类别全部题目，转成前端题结构。
+    company_name 非空时仅返回该企业内部知识（数据隔离）；空则返回全部（向后兼容）。"""
     conn = get_db()
-    rows = conn.execute(
-        "SELECT id, category, question, options, correct_index, difficulty, source_paragraph FROM internal_questions WHERE category = ?",
-        (category,)).fetchall()
+    if company_name:
+        rows = conn.execute(
+            """SELECT iq.id, iq.category, iq.question, iq.options, iq.correct_index, iq.difficulty, iq.source_paragraph
+               FROM internal_questions iq
+               JOIN companies c ON c.id = iq.company_id
+               WHERE iq.category = ? AND c.name = ?""",
+            (category, company_name)).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT id, category, question, options, correct_index, difficulty, source_paragraph FROM internal_questions WHERE category = ?",
+            (category,)).fetchall()
     conn.close()
     out = []
     for r in rows:
@@ -262,28 +352,32 @@ def pick_internal_questions(items, per_product=2, seed=None):
 def new_token():
     return secrets.token_hex(16)
 
-def register_user(name, email):
+def register_user(name, email, industry="", occupation="", company="", phone=""):
     conn = get_db()
     token = new_token()
     try:
-        conn.execute("INSERT INTO users (name, email, token) VALUES (?, ?, ?)", (name, email, token))
+        conn.execute("INSERT INTO users (name, email, token, industry, occupation, company, phone) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                     (name, email, token, industry, occupation, company, phone))
         conn.commit()
         uid = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()["id"]
-        return {"id": uid, "name": name, "email": email, "token": token, "is_admin": False}
+        return {"id": uid, "name": name, "email": email, "token": token, "is_admin": False,
+                "industry": industry, "occupation": occupation, "company": company, "phone": phone}
     except sqlite3.IntegrityError:
-        row = conn.execute("SELECT id, name, token, is_admin FROM users WHERE email = ?", (email,)).fetchone()
+        row = conn.execute("SELECT id, name, token, is_admin, industry, occupation, company, phone FROM users WHERE email = ?", (email,)).fetchone()
         if row:
-            return {"id": row["id"], "name": row["name"], "email": email, "token": row["token"], "is_admin": bool(row["is_admin"])}
+            return {"id": row["id"], "name": row["name"], "email": email, "token": row["token"], "is_admin": bool(row["is_admin"]),
+                    "industry": row["industry"], "occupation": row["occupation"], "company": row["company"], "phone": row["phone"]}
         raise
     finally:
         conn.close()
 
 def login_user(email):
     conn = get_db()
-    row = conn.execute("SELECT id, name, token, is_admin FROM users WHERE email = ?", (email,)).fetchone()
+    row = conn.execute("SELECT id, name, token, is_admin, industry, occupation, company, phone FROM users WHERE email = ?", (email,)).fetchone()
     conn.close()
     if row:
-        return {"id": row["id"], "name": row["name"], "email": email, "token": row["token"], "is_admin": bool(row["is_admin"])}
+        return {"id": row["id"], "name": row["name"], "email": email, "token": row["token"], "is_admin": bool(row["is_admin"]),
+                "industry": row["industry"], "occupation": row["occupation"], "company": row["company"], "phone": row["phone"]}
     return None
 
 def admin_login(email, password):
@@ -319,9 +413,267 @@ def check_admin(token):
 
 def get_user_by_token(token):
     conn = get_db()
-    row = conn.execute("SELECT id, name, email, is_admin FROM users WHERE token = ?", (token,)).fetchone()
+    row = conn.execute("SELECT id, name, email, is_admin, industry, occupation, company, phone FROM users WHERE token = ?", (token,)).fetchone()
     conn.close()
     return dict(row) if row else None
+
+# ── 多行业 / 岗位 / 企业 ──
+def industry_to_role(industry_key):
+    """行业 key → role 目录名（知识包）。空则默认 insurance-agent。"""
+    if not industry_key:
+        return "insurance-agent"
+    conn = get_db()
+    row = conn.execute("SELECT role_id FROM industries WHERE key = ?", (industry_key,)).fetchone()
+    conn.close()
+    if row and row["role_id"]:
+        return row["role_id"]
+    return industry_key
+
+def list_industries():
+    conn = get_db()
+    rows = conn.execute("SELECT key, name, role_id FROM industries ORDER BY id").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def list_occupations(industry_key=""):
+    conn = get_db()
+    if industry_key:
+        rows = conn.execute("SELECT id, industry_key, name FROM occupations WHERE industry_key = ? ORDER BY id", (industry_key,)).fetchall()
+    else:
+        rows = conn.execute("SELECT id, industry_key, name FROM occupations ORDER BY id").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def list_companies(industry_key=""):
+    conn = get_db()
+    if industry_key:
+        rows = conn.execute("SELECT id, industry_key, name FROM companies WHERE industry_key = ? ORDER BY id", (industry_key,)).fetchall()
+    else:
+        rows = conn.execute("SELECT id, industry_key, name FROM companies ORDER BY id").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def list_company_roster(company_id):
+    conn = get_db()
+    rows = conn.execute("SELECT id, company_id, name, phone, created_at FROM company_roster WHERE company_id = ? ORDER BY id", (company_id,)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def verify_company_roster(company_name, name, phone):
+    """企业白名单校验：姓名+手机号必须匹配预录入名单。返回 (ok, message)。"""
+    conn = get_db()
+    comp = conn.execute("SELECT id FROM companies WHERE name = ?", (company_name,)).fetchone()
+    if not comp:
+        conn.close()
+        return False, "所选企业不存在"
+    row = conn.execute("SELECT id FROM company_roster WHERE company_id = ? AND name = ? AND phone = ?",
+                       (comp["id"], (name or "").strip(), (phone or "").strip())).fetchone()
+    conn.close()
+    if row:
+        return True, ""
+    return False, "姓名或手机号与预录入名单不一致，请联系企业管理员"
+
+def phone_already_used(phone):
+    """手机号是否已被其他账号绑定（防重复注册）。"""
+    phone = (phone or "").strip()
+    if not phone:
+        return False
+    conn = get_db()
+    row = conn.execute("SELECT id FROM users WHERE phone = ?", (phone,)).fetchone()
+    conn.close()
+    return row is not None
+
+# ── 段位评定：按分层掌握率定段（取代自报从业年限）──
+RANK_TIERS = [
+    # (rank_key, title, icon, years, 判定条件 f=基础 a=提升 t=升华)
+    ("king",     "王者", "🌟", "15年+",  lambda f, a, t: t >= 0.80),
+    ("diamond",  "钻石", "👑", "10年+",  lambda f, a, t: a >= 0.85 and t >= 0.60),
+    ("platinum", "铂金", "💎", "5-10年", lambda f, a, t: f >= 0.85 and a >= 0.70),
+    ("gold",     "黄金", "🥇", "3-5年",  lambda f, a, t: f >= 0.75 and a >= 0.50),
+    ("silver",   "白银", "🥈", "1-3年",  lambda f, a, t: f >= 0.60),
+    ("bronze",   "青铜", "🥉", "0-1年",  lambda f, a, t: True),
+]
+
+def compute_rank(layer_stats):
+    """按分层掌握率评定段位。layer_stats: {foundation/advanced/transcendent: {correct,total}}"""
+    def rate(ly):
+        s = (layer_stats or {}).get(ly) or {}
+        total = s.get("total", 0)
+        return (s.get("correct", 0) / total) if total > 0 else 0.0
+    f, a, t = rate("foundation"), rate("advanced"), rate("transcendent")
+    for key, title, icon, years, cond in RANK_TIERS:
+        if cond(f, a, t):
+            return {"rank": key, "title": title, "icon": icon, "years": years,
+                    "rates": {"foundation": round(f, 3), "advanced": round(a, 3), "transcendent": round(t, 3)}}
+    return {"rank": "bronze", "title": "青铜", "icon": "🥉", "years": "0-1年",
+            "rates": {"foundation": round(f, 3), "advanced": round(a, 3), "transcendent": round(t, 3)}}
+
+# ── 每日一题 + 打卡 ──
+def get_user_layer_stats(user_id):
+    """从最近一次 session 聚合分层掌握率。"""
+    conn = get_db()
+    row = conn.execute("SELECT node_status FROM test_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT 1", (user_id,)).fetchone()
+    conn.close()
+    layers = {"foundation":{"correct":0,"total":0},"advanced":{"correct":0,"total":0},"transcendent":{"correct":0,"total":0}}
+    if not row or not row["node_status"]:
+        return layers
+    node_status = json.loads(row["node_status"])
+    for nid, s in node_status.items():
+        ly = s.get("layer", "unknown")
+        if ly in layers:
+            layers[ly]["correct"] += s.get("correct", 0)
+            layers[ly]["total"] += s.get("total", 0)
+    return layers
+
+def get_user_rank(user_id):
+    return compute_rank(get_user_layer_stats(user_id))
+
+def get_daily_question(user_id, role):
+    """按段位抽每日一题。段位→层级：青铜/白银→基础，黄金/铂金→提升，钻石/王者→升华。"""
+    rank_key = get_user_rank(user_id)["rank"]
+    if rank_key in ("bronze", "silver"):
+        target_layer = "foundation"
+    elif rank_key in ("gold", "platinum"):
+        target_layer = "advanced"
+    else:
+        target_layer = "transcendent"
+
+    nodes_path = ROLE_DIR / role / "nodes.json"
+    tests_path = ROLE_DIR / role / "tests.json"
+    if not nodes_path.exists() or not tests_path.exists():
+        return None
+    try:
+        node_layer = {n["id"]: n.get("layer", "unknown") for n in json.loads(nodes_path.read_text(encoding="utf-8"))}
+        tests = json.loads(tests_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+    candidates = [q for q in tests if node_layer.get(q.get("node_id"), "unknown") == target_layer]
+    if not candidates:
+        candidates = tests
+
+    # 优先薄弱节点（答过但掌握不足），其次未答节点
+    conn = get_db()
+    row = conn.execute("SELECT node_status FROM test_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT 1", (user_id,)).fetchone()
+    conn.close()
+    node_status = json.loads(row["node_status"]) if row and row["node_status"] else {}
+    weak = [q for q in candidates if node_status.get(q.get("node_id"), {}).get("confidence", 0) < 0.67]
+    unseen = [q for q in candidates if q.get("node_id") not in node_status]
+    pool = weak or unseen or candidates
+    # 确定性种子：同一天同一用户总是同一题（保证「每日一题」语义）
+    rng = random.Random(f"{user_id}:{date.today()}")
+    return rng.choice(pool)
+
+def compute_streak(user_id):
+    """连续打卡天数：从今天/昨天往回数连续正确打卡天数。"""
+    conn = get_db()
+    rows = conn.execute("SELECT DISTINCT date FROM daily_checkins WHERE user_id = ? AND correct = 1", (user_id,)).fetchall()
+    conn.close()
+    dates = {r["date"] for r in rows}
+    if not dates:
+        return 0
+    today = date.today()
+    if str(today) in dates:
+        start = today
+    elif str(today - timedelta(days=1)) in dates:
+        start = today - timedelta(days=1)
+    else:
+        return 0
+    streak = 0
+    d = start
+    while str(d) in dates:
+        streak += 1
+        d -= timedelta(days=1)
+    return streak
+
+def get_daily_status(user_id):
+    """今日打卡状态 + streak + 近14天日历。"""
+    today = date.today()
+    conn = get_db()
+    row = conn.execute("SELECT date, correct, question_qid, dismissed FROM daily_checkins WHERE user_id = ? AND date = ?", (user_id, str(today))).fetchone()
+    days = conn.execute("SELECT date, correct FROM daily_checkins WHERE user_id = ? AND date >= ? ORDER BY date", (user_id, str(today - timedelta(days=13)))).fetchall()
+    conn.close()
+    day_map = {d["date"]: d["correct"] for d in days}
+    calendar = []
+    for i in range(13, -1, -1):
+        d = today - timedelta(days=i)
+        ds = str(d)
+        calendar.append({"date": ds, "weekday": "日一二三四五六"[d.weekday()], "done": ds in day_map, "correct": bool(day_map.get(ds, 0))})
+    # 今天答错则连续立即清零；否则按最近一次正确打卡回推
+    streak = 0 if (row and not row["correct"]) else compute_streak(user_id)
+    return {
+        "today": str(today),
+        "checked_in": row is not None,
+        "correct": bool(row["correct"]) if row else False,
+        "dismissed": bool(row["dismissed"]) if row else False,
+        "streak": streak,
+        "progress": _progress_of(streak),
+        "points": _get_points(user_id),
+        "calendar": calendar,
+    }
+
+def _progress_of(streak):
+    """额外奖励进度：当前 3 天周期内已完成天数（1~3），streak<1 时返回 0。"""
+    if streak < 1:
+        return 0
+    return ((streak - 1) % 3) + 1
+
+def _get_points(user_id):
+    conn = get_db()
+    row = conn.execute("SELECT points FROM users WHERE id = ?", (user_id,)).fetchone()
+    conn.close()
+    return (row["points"] if row and row["points"] is not None else 0)
+
+def save_checkin(user_id, qid, correct):
+    """记录今日打卡并结算积分。
+    答对 +1 基础分；每连续答对满 3 天额外 +3 分。答错连续清零（不扣已得积分）。
+    返回 dict：streak / progress / bonus / gained / points。"""
+    today = str(date.today())
+    conn = get_db()
+    existing = conn.execute("SELECT id, correct FROM daily_checkins WHERE user_id = ? AND date = ?", (user_id, today)).fetchone()
+    first_correct = False
+    if existing:
+        if correct and not existing["correct"]:
+            conn.execute("UPDATE daily_checkins SET correct = 1, question_qid = ? WHERE id = ?", (qid, existing["id"]))
+            first_correct = True
+    else:
+        conn.execute("INSERT INTO daily_checkins (user_id, date, question_qid, correct) VALUES (?, ?, ?, ?)",
+                     (user_id, today, qid, 1 if correct else 0))
+        if correct:
+            first_correct = True
+    conn.commit()
+
+    gained = 0
+    bonus = 0
+    streak = 0
+    if first_correct:
+        streak = compute_streak(user_id)              # 今天 correct=1，从今天往回数
+        bonus = 3 if (streak > 0 and streak % 3 == 0) else 0
+        gained = 1 + bonus
+        c = get_db()
+        c.execute("UPDATE users SET points = points + ? WHERE id = ?", (gained, user_id))
+        c.commit()
+        c.close()
+    elif correct:
+        streak = compute_streak(user_id)              # 当天已答对过（重复提交），不加分
+    else:
+        streak = 0                                    # 答错：连续立即清零
+    conn.close()
+
+    return {"streak": streak, "progress": _progress_of(streak), "bonus": bonus, "gained": gained, "points": _get_points(user_id)}
+
+def dismiss_daily(user_id):
+    """记录今日已关闭每日一题弹窗（无奖励）。当天不再弹出。"""
+    today = str(date.today())
+    conn = get_db()
+    existing = conn.execute("SELECT id FROM daily_checkins WHERE user_id = ? AND date = ?", (user_id, today)).fetchone()
+    if existing:
+        conn.execute("UPDATE daily_checkins SET dismissed = 1 WHERE id = ?", (existing["id"],))
+    else:
+        conn.execute("INSERT INTO daily_checkins (user_id, date, question_qid, correct, dismissed) VALUES (?, ?, NULL, 0, 1)",
+                     (user_id, today))
+    conn.commit()
+    conn.close()
 
 def save_session(user_id, profile, answers, node_status, questions, overall_score, total_correct, total_questions, levels):
     conn = get_db()
@@ -689,7 +1041,23 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             })
 
         if path in ("/api/nodes", "/api/edges", "/api/tests"):
-            return self._serve_file(ROLE_DIR / "insurance-agent" / f"{path.split('/')[-1]}.json")
+            # 数据隔离：按用户所属行业加载对应知识包（未登录默认保险）
+            role = "insurance-agent"
+            user = get_user_by_token(self._auth_header())
+            if user:
+                role = industry_to_role(user.get("industry", ""))
+            f = ROLE_DIR / role / f"{path.split('/')[-1]}.json"
+            if f.exists():
+                return self._serve_file(f)
+            return self._send_json({"error": "该行业知识包尚未配置"}, 404)
+
+        # ── 多行业元数据（注册页下拉用，公开）──
+        if path == "/api/meta":
+            return self._send_json({
+                "industries": list_industries(),
+                "occupations": list_occupations(),
+                "companies": list_companies(),
+            })
 
         # ── Reading Arena (伴读擂台) ──
         if path == "/api/arena/tests":
@@ -761,6 +1129,24 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
             return self._send_json(list_roles())
 
+        if path == "/admin/industries":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            return self._send_json(list_industries())
+
+        if path == "/admin/occupations":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            return self._send_json(list_occupations(qs.get("industry", [""])[0]))
+
+        if path == "/admin/companies":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            return self._send_json(list_companies(qs.get("industry", [""])[0]))
+
+        if path == "/admin/roster":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            company_id = int(qs.get("company_id", [0])[0] or 0)
+            if not company_id: return self._send_json({"error": "请指定 company_id"}, 400)
+            return self._send_json(list_company_roster(company_id))
+
         m = self._match("admin/roles/<id>/data")
         if m:
             if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
@@ -799,6 +1185,9 @@ class KGDSHandler(SimpleHTTPRequestHandler):
         file_path = WEB_DIR / path.lstrip("/")
         if file_path.exists():
             return self._serve_file(file_path)
+        # ── 抽卡系统（下一版本开放，接口预留桩）──
+        if path.startswith("/api/gacha/") or path.startswith("/api/cards/"):
+            return self._send_json({"code": "NOT_READY", "message": "抽卡系统下一版本开放", "path": path}, 501)
         # SPA fallback
         return self._serve_file(WEB_DIR / "app.html")
 
@@ -810,10 +1199,29 @@ class KGDSHandler(SimpleHTTPRequestHandler):
         if path == "/api/register":
             name = (data.get("name") or "").strip()
             email = (data.get("email") or "").strip().lower()
+            industry = (data.get("industry") or "").strip()
+            occupation = (data.get("occupation") or "").strip()
+            company = (data.get("company") or "").strip()
+            phone = (data.get("phone") or "").strip()
             if not name or not email: return self._send_json({"error": "姓名和邮箱不能为空"}, 400)
             if "@" not in email or "." not in email: return self._send_json({"error": "请输入有效的邮箱地址"}, 400)
-            user = register_user(name, email)
-            return self._send_json({"user": user, "message": "登录成功"})
+            if not industry: return self._send_json({"error": "请选择行业"}, 400)
+            # 行业必须与管理员录入一致
+            valid_industries = {r["key"] for r in list_industries()}
+            if industry not in valid_industries: return self._send_json({"error": "所选行业无效，请刷新后重试"}, 400)
+            # 企业用户：必填手机号 + 白名单校验 + 手机号查重
+            if company:
+                if not phone: return self._send_json({"error": "企业用户需填写手机号"}, 400)
+                ok, msg = verify_company_roster(company, name, phone)
+                if not ok: return self._send_json({"error": msg}, 403)
+                if phone_already_used(phone):
+                    conn = get_db()
+                    dup = conn.execute("SELECT email FROM users WHERE phone = ?", (phone,)).fetchone()
+                    conn.close()
+                    if not dup or dup["email"].lower() != email:
+                        return self._send_json({"error": "该手机号已被其他账号绑定，无法重复注册"}, 403)
+            user = register_user(name, email, industry, occupation, company, phone)
+            return self._send_json({"user": user, "message": "注册成功"})
 
         if path == "/api/login":
             email = (data.get("email") or "").strip().lower()
@@ -823,13 +1231,14 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             return self._send_json({"error": "该邮箱未注册，请先注册"}, 404)
 
         if path == "/api/generate-test":
-            role = data.get("role", "insurance-agent")
             levels = data.get("levels")
             internal_category = data.get("internal_category")  # 内部知识类别
 
             # 历史感知：读取该用户的已测 qid + 节点掌握度（四重调度器输入）
             token = data.get("token") or self._auth_header()
             user = get_user_by_token(token) if token else None
+            # 数据隔离：role 由用户所属行业决定，忽略前端传入（防止越权看其它行业）
+            role = industry_to_role(user.get("industry", "")) if user else data.get("role", "insurance-agent")
             tested_qids, node_conf = None, None
             if user:
                 try:
@@ -845,7 +1254,11 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             # ── 题库隔离：内部知识 与 市场竞争 二选一（各自内部选题逻辑独立，互不干扰）──
             if internal_category:
                 # ── 内部知识路径：internal_questions 表（完整题集，不经过市场调度器）──
-                internal_qs = load_internal_questions(internal_category)
+                # 数据隔离：内部知识属企业级，未加入企业则不可见
+                company_name = user.get("company", "") if user else ""
+                if not company_name:
+                    return self._send_json({"error": "企业内部知识仅对已加入企业的用户开放，请先在企业登记后再试"}, 403)
+                internal_qs = load_internal_questions(internal_category, company_name)
                 if not internal_qs:
                     return self._send_json({"error": f"内部知识题库「{internal_category}」暂无题目，请管理员上传文档后生成"}, 400)
                 if internal_category == "产品知识":
@@ -897,7 +1310,7 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             if not user: return self._send_json({"error": "请先登录"}, 401)
             node_ids = data.get("node_ids", [])
             shown = data.get("shown", {})
-            tips_path = BASE_DIR / "data" / "roles" / "insurance-agent" / "learning_tips.json"
+            tips_path = ROLE_DIR / industry_to_role(user.get("industry", "")) / "learning_tips.json"
             try:
                 with open(tips_path, 'r', encoding='utf-8') as f:
                     all_tips = json.load(f)
@@ -925,13 +1338,61 @@ class KGDSHandler(SimpleHTTPRequestHandler):
         if path == "/api/internal/categories":
             user = get_user_by_token(self._auth_header())
             if not user: return self._send_json({"error": "请先登录"}, 401)
+            company_name = user.get("company", "")
+            if not company_name:
+                return self._send_json({"categories": [], "message": "未加入企业，无企业内部知识"})
             cats = []
             for cat in ["基础知识", "产品知识", "合规知识"]:
                 count = get_db().execute(
-                    "SELECT COUNT(*) FROM internal_questions WHERE category = ?", (cat,)
+                    """SELECT COUNT(*) FROM internal_questions iq
+                       JOIN companies c ON c.id = iq.company_id
+                       WHERE iq.category = ? AND c.name = ?""",
+                    (cat, company_name)
                 ).fetchone()[0]
                 cats.append({"name": cat, "question_count": count})
             return self._send_json({"categories": cats})
+
+        # ── 每日一题 + 打卡 ──
+        if path == "/api/daily-question":
+            user = get_user_by_token(data.get("token") or self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            role = industry_to_role(user.get("industry", ""))
+            status = get_daily_status(user["id"])
+            if status["checked_in"]:
+                return self._send_json({"checked_in": True, "dismissed": status["dismissed"], "correct": status["correct"], "streak": status["streak"], "progress": status["progress"], "points": status["points"], "question": None})
+            q = get_daily_question(user["id"], role)
+            if not q:
+                return self._send_json({"error": "题库尚未就绪"}, 400)
+            return self._send_json({"checked_in": False, "dismissed": False, "streak": status["streak"], "progress": status["progress"], "points": status["points"], "question": q})
+
+        if path == "/api/daily-dismiss":
+            user = get_user_by_token(data.get("token") or self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            dismiss_daily(user["id"])
+            return self._send_json({"ok": True, "dismissed": True})
+
+        if path == "/api/daily-checkin":
+            user = get_user_by_token(data.get("token") or self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            qid = data.get("qid", "")
+            correct = bool(data.get("correct", False))
+            result = save_checkin(user["id"], qid, correct)
+            status = get_daily_status(user["id"])
+            return self._send_json({
+                "checked_in": True,
+                "correct": correct,
+                "streak": result["streak"],
+                "progress": result["progress"],
+                "bonus": result["bonus"],
+                "gained": result["gained"],
+                "points": result["points"],
+                "calendar": status["calendar"],
+            })
+
+        if path == "/api/daily-status":
+            user = get_user_by_token(data.get("token") or self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            return self._send_json(get_daily_status(user["id"]))
 
         if path == "/api/submit":
             answers = data.get("answers", {})
@@ -945,9 +1406,9 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             nodes_path = ROLE_DIR / role / "nodes.json"
             if nodes_path.exists():
                 for n in json.loads(nodes_path.read_text(encoding="utf-8")):
-                    node_meta[n["id"]] = {"label": n.get("label", n["id"]), "content": n.get("content", ""), "layer": n.get("layer", "unknown")}
+                    node_meta[n["id"]] = {"label": n.get("label", n["id"]), "content": n.get("content", ""), "layer": n.get("layer", "unknown"), "category": n.get("category", n.get("layer", "unknown"))}
 
-            node_st, tc, ta = {}, 0, 0
+            node_st, tc, ta, item_results = {}, 0, 0, []
             for q in questions:
                 if not isinstance(q, dict): continue
                 qid = str(q["id"])
@@ -956,11 +1417,23 @@ class KGDSHandler(SimpleHTTPRequestHandler):
                 if correct: tc += 1
                 ta += 1
                 nid = q.get("node_id", "unknown")
-                nm = node_meta.get(nid, {"label": nid, "content": "", "layer": q.get("layer", "unknown")})
-                s = node_st.get(nid, {"correct":0,"total":0,"label":nm["label"],"content":nm["content"],"layer":nm["layer"]})
+                nm = node_meta.get(nid, {"label": nid, "content": "", "layer": q.get("layer", "unknown"), "category": q.get("category", q.get("layer", "unknown"))})
+                s = node_st.get(nid, {"correct":0,"total":0,"label":nm["label"],"content":nm["content"],"layer":nm["layer"],"category":nm["category"]})
                 s["total"] += 1
                 if correct: s["correct"] += 1
                 node_st[nid] = s
+                # 错题解析项（解析优先题目自带 explanation，否则用节点 content 兜底）
+                item_results.append({
+                    "qid": qid,
+                    "node_id": nid,
+                    "node_label": nm["label"],
+                    "question": q.get("question", ""),
+                    "options": q.get("options", []),
+                    "your_answer": chosen,
+                    "correct_answer": q.get("correct_index", q.get("correct")),
+                    "is_correct": bool(correct),
+                    "explanation": (q.get("explanation") or "").strip() or nm.get("content", "") or ""
+                })
 
             for s in node_st.values():
                 s["confidence"] = s["total"] > 0 and s["correct"] / s["total"] or 0
@@ -974,7 +1447,8 @@ class KGDSHandler(SimpleHTTPRequestHandler):
                     layers[ly]["total"] += s["total"]
 
             report = {"total_score": ta>0 and round(tc/ta*100) or 0, "total_correct": tc, "total_questions": ta,
-                      "node_status": node_st, "layer_stats": layers, "profile": profile}
+                      "node_status": node_st, "layer_stats": layers, "profile": profile,
+                      "rank": compute_rank(layers), "item_results": item_results}
 
             user = get_user_by_token(token) if token else None
             if user:
@@ -1191,6 +1665,106 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             result = create_role(role_id, meta)
             if result: return self._send_json(result)
             return self._send_json({"error": "岗位已存在"}, 409)
+
+        # ── 行业 / 岗位 / 企业 / 白名单 管理 ──
+        if path == "/admin/industry":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            action = data.get("action", "add")
+            conn = get_db()
+            if action == "add":
+                key = (data.get("key") or "").strip().lower().replace(" ", "-")
+                name = (data.get("name") or "").strip()
+                role_id = (data.get("role_id") or "").strip()
+                if not key or not name: return self._send_json({"error": "行业标识和名称不能为空"}, 400)
+                if not re.match(r'^[a-z0-9_-]+$', key): return self._send_json({"error": "行业标识只能包含小写字母、数字、横线和下划线"}, 400)
+                try:
+                    conn.execute("INSERT INTO industries (key, name, role_id) VALUES (?,?,?)", (key, name, role_id))
+                    conn.commit(); conn.close()
+                    return self._send_json({"ok": True})
+                except sqlite3.IntegrityError:
+                    conn.close()
+                    return self._send_json({"error": "行业标识已存在"}, 409)
+            elif action == "delete":
+                conn.execute("DELETE FROM industries WHERE key = ?", ((data.get("key") or "").strip(),))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            return self._send_json({"error": "不支持的 action"}, 400)
+
+        if path == "/admin/occupation":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            action = data.get("action", "add")
+            conn = get_db()
+            if action == "add":
+                industry_key = (data.get("industry_key") or "").strip()
+                name = (data.get("name") or "").strip()
+                if not industry_key or not name: return self._send_json({"error": "所属行业和岗位名称不能为空"}, 400)
+                conn.execute("INSERT INTO occupations (industry_key, name) VALUES (?,?)", (industry_key, name))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            elif action == "delete":
+                conn.execute("DELETE FROM occupations WHERE id = ?", (int(data.get("id") or 0),))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            return self._send_json({"error": "不支持的 action"}, 400)
+
+        if path == "/admin/company":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            action = data.get("action", "add")
+            conn = get_db()
+            if action == "add":
+                industry_key = (data.get("industry_key") or "").strip()
+                name = (data.get("name") or "").strip()
+                if not industry_key or not name: return self._send_json({"error": "所属行业和企业名称不能为空"}, 400)
+                conn.execute("INSERT INTO companies (industry_key, name) VALUES (?,?)", (industry_key, name))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            elif action == "delete":
+                conn.execute("DELETE FROM companies WHERE id = ?", (int(data.get("id") or 0),))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            return self._send_json({"error": "不支持的 action"}, 400)
+
+        if path == "/admin/roster":
+            if not is_admin: return self._send_json({"error": "需要管理员权限"}, 403)
+            action = data.get("action", "add")
+            conn = get_db()
+            company_id = int(data.get("company_id") or 0)
+            if not company_id: return self._send_json({"error": "请指定 company_id"}, 400)
+            if action == "add":
+                name = (data.get("name") or "").strip()
+                phone = (data.get("phone") or "").strip()
+                if not name or not phone: return self._send_json({"error": "姓名和手机号不能为空"}, 400)
+                # 防重复录入
+                dup = conn.execute("SELECT id FROM company_roster WHERE company_id = ? AND phone = ?", (company_id, phone)).fetchone()
+                if dup: conn.close(); return self._send_json({"error": "该手机号已在白名单中"}, 409)
+                conn.execute("INSERT INTO company_roster (company_id, name, phone) VALUES (?,?,?)", (company_id, name, phone))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            elif action == "import":
+                members = data.get("members") or []
+                if not isinstance(members, list) or not members: return self._send_json({"error": "请提供待导入名单"}, 400)
+                added, skipped = 0, 0
+                for m in members:
+                    nm = (m.get("name") or "").strip() if isinstance(m, dict) else ""
+                    ph = (m.get("phone") or "").strip() if isinstance(m, dict) else ""
+                    if not nm or not ph:
+                        skipped += 1; continue
+                    dup = conn.execute("SELECT id FROM company_roster WHERE company_id = ? AND phone = ?", (company_id, ph)).fetchone()
+                    if dup:
+                        skipped += 1; continue
+                    conn.execute("INSERT INTO company_roster (company_id, name, phone) VALUES (?,?,?)", (company_id, nm, ph))
+                    added += 1
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True, "added": added, "skipped": skipped})
+            elif action == "delete":
+                conn.execute("DELETE FROM company_roster WHERE id = ?", (int(data.get("id") or 0),))
+                conn.commit(); conn.close()
+                return self._send_json({"ok": True})
+            return self._send_json({"error": "不支持的 action"}, 400)
+
+        # ── 抽卡系统（下一版本开放，接口预留桩）──
+        if path.startswith("/api/gacha/") or path.startswith("/api/cards/"):
+            return self._send_json({"code": "NOT_READY", "message": "抽卡系统下一版本开放", "path": path}, 501)
 
         return self._send_json({"error": "Not found"}, 404)
 

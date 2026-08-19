@@ -32,17 +32,47 @@ var PRODUCTS = [
   {name:'活力腾腾', cat:'意外险'}
 ];
 
+// ── 全局 Toast 提示（替代 alert，区分错误/成功/信息）──
+function toast(msg, type) {
+  type = type || 'info';
+  var icons = { info:'ℹ️', error:'⚠️', success:'✅' };
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = '<span>' + (icons[type] || icons.info) + '</span> ' + msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(function(){ t.classList.add('show'); });
+  setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 300); }, 3200);
+}
+
 // ── Init ──
+// 30天自动登录有效期（滑动过期：每次打开刷新起点）
+var AUTO_LOGIN_MS = 30 * 24 * 60 * 60 * 1000;
 (function init() {
   var stored = localStorage.getItem('kgds_user');
   if (stored) {
-    try { state.user = JSON.parse(stored); } catch(e) {}
+    try {
+      var _u = JSON.parse(stored);
+      // 有 token 且（无 login_at 的旧登录态 或 未超过30天）→ 保留并滑动刷新
+      if (_u && _u.token && (!_u.login_at || (Date.now() - _u.login_at <= AUTO_LOGIN_MS))) {
+        state.user = _u;
+        _u.login_at = Date.now();
+        try { localStorage.setItem('kgds_user', JSON.stringify(_u)); } catch(e) {}
+      } else {
+        localStorage.removeItem('kgds_user');
+      }
+    } catch(e) { localStorage.removeItem('kgds_user'); }
   }
   updateHeader();
+  loadMeta();          // 加载行业/岗位/企业下拉
+  refreshAuthUI();     // 按当前模式显示/隐藏注册字段
   if (state.user) {
     showPhase('profile');
     loadInternalCategories();
+    loadDaily();  // 当日首次进入跳出每日一题弹窗
   }
+  // 支持 URL 参数 ?tab=graph 直接进入图谱（兔扑导航跳转）
+  var _navParams = new URLSearchParams(window.location.search);
+  if (_navParams.get('tab') === 'graph') switchTab('graph');
 })();
 
 // ── 内部知识方向题数 ──
@@ -74,51 +104,153 @@ function updateHeader() {
   }
 }
 
-function toggleAuthMode() {
-  state.authMode = state.authMode === 'register' ? 'login' : 'register';
+// ── 多行业元数据（注册页三级下拉）──
+var META = { industries: [], occupations: [], companies: [] };
+
+function loadMeta() {
+  fetch(API + '/api/meta')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.industries) META.industries = d.industries;
+      if (d.occupations) META.occupations = d.occupations;
+      if (d.companies) META.companies = d.companies;
+      fillIndustrySelect();
+    })
+    .catch(function(e){ console.error('loadMeta:', e); });
+}
+
+function fillIndustrySelect() {
+  var sel = document.getElementById('f-industry');
+  if (!sel) return;
+  sel.innerHTML = '';
+  var opt = document.createElement('option');
+  opt.value = ''; opt.textContent = '请选择行业';
+  sel.appendChild(opt);
+  META.industries.forEach(function(ind){
+    var o = document.createElement('option');
+    o.value = ind.key; o.textContent = ind.name;
+    sel.appendChild(o);
+  });
+  sel.onchange = function(){ fillOccupationSelect(); fillCompanySelect(); };
+  fillOccupationSelect();
+  fillCompanySelect();
+}
+
+function fillOccupationSelect() {
+  var sel = document.getElementById('f-occupation');
+  if (!sel) return;
+  var ind = document.getElementById('f-industry').value;
+  sel.innerHTML = '';
+  var o0 = document.createElement('option');
+  o0.value = ''; o0.textContent = '不选择';
+  sel.appendChild(o0);
+  META.occupations.forEach(function(oc){
+    if (ind && oc.industry_key !== ind) return;
+    var o = document.createElement('option');
+    o.value = oc.name; o.textContent = oc.name;
+    sel.appendChild(o);
+  });
+}
+
+function fillCompanySelect() {
+  var sel = document.getElementById('f-company');
+  if (!sel) return;
+  var ind = document.getElementById('f-industry').value;
+  sel.innerHTML = '';
+  var o0 = document.createElement('option');
+  o0.value = ''; o0.textContent = '不加入企业';
+  sel.appendChild(o0);
+  META.companies.forEach(function(cp){
+    if (ind && cp.industry_key !== ind) return;
+    var o = document.createElement('option');
+    o.value = cp.name; o.textContent = cp.name;
+    sel.appendChild(o);
+  });
+  sel.onchange = function(){ togglePhoneField(); };
+}
+
+function togglePhoneField() {
+  var company = document.getElementById('f-company').value;
+  var phoneField = document.getElementById('field-phone');
+  if (phoneField) phoneField.style.display = company ? 'block' : 'none';
+}
+
+function fieldWrapper(id) {
+  var el = document.getElementById(id);
+  if (!el) return null;
+  return el.classList.contains('field') ? el : el.parentElement;
+}
+
+function refreshAuthUI() {
+  var isLogin = state.authMode === 'login';
   var title = document.getElementById('login-title');
   var label = document.getElementById('field-email').querySelector('label');
   var btn = document.getElementById('btn-auth');
   var sw = document.getElementById('switch-mode');
-  if (state.authMode === 'login') {
+  var sub = document.getElementById('sub-hint');
+  fieldWrapper('f-name').style.display = isLogin ? 'none' : 'block';
+  fieldWrapper('field-industry').style.display = isLogin ? 'none' : 'block';
+  fieldWrapper('field-occupation').style.display = isLogin ? 'none' : 'block';
+  fieldWrapper('field-company').style.display = isLogin ? 'none' : 'block';
+  togglePhoneField();
+  if (isLogin) {
     title.textContent = '🔑 登录 KGDS';
     label.textContent = '邮箱';
     btn.textContent = '登录';
     sw.innerHTML = '还没有账号？<a onclick="toggleAuthMode()">立即注册</a>';
-    document.getElementById('f-name').parentElement.style.display = 'none';
+    if (sub) sub.innerHTML = '欢迎回来';
   } else {
     title.textContent = '👋 欢迎使用 KGDS';
     label.textContent = '邮箱';
     btn.textContent = '🚀 开始测评';
     sw.innerHTML = '已有账号？<a onclick="toggleAuthMode()">直接登录</a>';
-    document.getElementById('f-name').parentElement.style.display = 'block';
+    if (sub) sub.innerHTML = '知识图谱诊断系统<br>首次使用将自动注册';
   }
+}
+
+function toggleAuthMode() {
+  state.authMode = state.authMode === 'register' ? 'login' : 'register';
+  refreshAuthUI();
 }
 
 function handleAuth() {
   var name = document.getElementById('f-name').value.trim();
   var email = document.getElementById('f-email').value.trim();
-  if (!email) { alert('请输入邮箱地址'); return; }
-  if (!email.includes('@') || !email.includes('.')) { alert('请输入有效的邮箱地址'); return; }
-  if (state.authMode === 'register' && !name) { alert('请输入姓名'); return; }
+  if (!email) { toast('请输入邮箱地址', 'error'); return; }
+  if (!email.includes('@') || !email.includes('.')) { toast('请输入有效的邮箱地址', 'error'); return; }
 
-  var endpoint = state.authMode === 'register' ? '/api/register' : '/api/login';
-  var body = state.authMode === 'register' ? { name: name, email: email } : { email: email };
+  var endpoint, body;
+  if (state.authMode === 'register') {
+    if (!name) { toast('请输入姓名', 'error'); return; }
+    var industry = document.getElementById('f-industry').value;
+    var occupation = document.getElementById('f-occupation').value;
+    var company = document.getElementById('f-company').value;
+    var phone = document.getElementById('f-phone').value.trim();
+    if (!industry) { toast('请选择行业', 'error'); return; }
+    if (company && !phone) { toast('加入企业需填写手机号', 'error'); return; }
+    endpoint = '/api/register';
+    body = { name: name, email: email, industry: industry, occupation: occupation, company: company, phone: phone };
+  } else {
+    endpoint = '/api/login';
+    body = { email: email };
+  }
   var btn = document.getElementById('btn-auth');
   btn.disabled = true; btn.textContent = '处理中...';
 
   fetch(API + endpoint, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.error) { alert(data.error); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; return; }
+      if (data.error) { toast(data.error, 'error'); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; return; }
       state.user = data.user;
+      state.user.login_at = Date.now();  // 记录登录时间，作为30天自动登录有效期起点
       localStorage.setItem('kgds_user', JSON.stringify(state.user));
       updateHeader();
       loadLatestSession();  // 加载最新诊断记录（图谱着色用）
       loadInternalCategories();
+      loadDaily();  // 当日首次进入跳出每日一题弹窗
       showPhase('profile');
     })
-    .catch(function(e) { alert('网络错误，请重试'); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; });
+    .catch(function(e) { toast('网络异常，请检查连接后重试', 'error'); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; });
 }
 
 function logout() {
@@ -201,33 +333,174 @@ function switchTab(name) {
   }
 }
 
-function toggleGraphMode() {
-  var btn = document.getElementById('btn-full-graph');
-  if (state.graphMode === 'report') {
-    // 切换到完整图谱（恢复节点原始颜色）
-    state.graphMode = 'full';
-    if (btn) { btn.textContent = '🎯 诊断图谱'; btn.classList.remove('active'); }
-    if (state.blinkTimer) { clearInterval(state.blinkTimer); state.blinkTimer = null; }
-    if (state.graphInstance) {
-      var layerColors = { 'foundation':'#5B9BD5', 'advanced':'#2ECC40', 'transcendent':'#9B59B6' };
-      var resetNodes = state.nodes.map(function(n){
-        var node = Object.assign({}, n);
-        delete node.mastery; delete node._blinkGroup;
-        // state.nodes 保留原始颜色，直接恢复；若无颜色则按层级着色
-        if (!node.color) node.color = layerColors[n.layer] || '#5B9BD5';
-        node.val = (n.weight || 3) * 1.5;
-        return node;
-      });
-      state.graphInstance.graphData({ nodes: resetNodes, links: state.edges });
-      state.graphInstance.nodeColor(function(n){ return n.color; });
-      state.graphInstance.nodeVal(function(n){ return n.val; });
-    }
-  } else {
-    // 切换到诊断着色图谱
-    state.graphMode = 'report';
-    if (btn) { btn.textContent = '🗺️ 完整图谱'; btn.classList.add('active'); }
-    if (state.report && state.graphInstance) applyGraphColors();
+// ── 每日一题 + 打卡（悬浮弹窗，当日首次进入跳出）──
+var dailyState = { question: null, checked_in: false, correct: false, dismissed: false, streak: 0, progress: 0, bonus: 0, gained: 0, points: 0 };
+
+function loadDaily() {
+  if (!state.user) return;
+  fetch(API + '/api/daily-question', { method: 'POST', headers: authHeaders(), body: '{}' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) return;
+      dailyState.streak = d.streak || 0;
+      dailyState.progress = d.progress || 0;
+      dailyState.points = d.points || 0;
+      dailyState.checked_in = d.checked_in;
+      dailyState.dismissed = d.dismissed;
+      dailyState.correct = d.correct;
+      dailyState.question = d.question;
+      // 当日未答题且未关闭 → 跳出弹窗
+      if (!dailyState.checked_in && !dailyState.dismissed && dailyState.question) {
+        renderDailyModal();
+        showDailyModal();
+      }
+    })
+    .catch(function(){});
+}
+
+function dailyHead() {
+  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-right:18px">'
+    + '<span style="font-size:16px;font-weight:700">📆 每日一题</span>'
+    + '<span style="font-size:13px;color:#FF9500">🔥 连续 <b>' + dailyState.streak + '</b> 天</span></div>';
+}
+
+function showDailyModal() {
+  var m = document.getElementById('daily-modal');
+  if (m) m.classList.add('show');
+}
+
+function hideDailyModal() {
+  var m = document.getElementById('daily-modal');
+  if (m) m.classList.remove('show');
+}
+
+function renderDailyModal() {
+  var body = document.getElementById('daily-modal-body');
+  if (!body) return;
+  var q = dailyState.question;
+  if (!q) return;
+  var opts = (q.options || []).map(function(opt, i){
+    return '<button onclick="answerDaily(' + i + ')" style="display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:10px;color:var(--tx);cursor:pointer;font-size:14px;line-height:1.4">' + opt + '</button>';
+  }).join('');
+  body.innerHTML = dailyHead() + '<div style="font-size:15px;line-height:1.55;margin-bottom:4px">' + q.question + '</div>' + opts + '<div style="margin-top:10px;font-size:12px;color:var(--tx2);text-align:center">答对点亮光球 · 关闭则放弃今日奖励</div>';
+}
+
+function answerDaily(idx) {
+  var q = dailyState.question;
+  if (!q) return;
+  var correctIdx = q.correct !== undefined ? q.correct : q.correct_index;
+  var correct = (idx === correctIdx);
+  fetch(API + '/api/daily-checkin', { method: 'POST', headers: authHeaders(),
+    body: JSON.stringify({ qid: q.qid || q.id, correct: correct }) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      dailyState.checked_in = true;
+      dailyState.correct = correct;
+      dailyState.streak = d.streak || 0;
+      dailyState.progress = d.progress || 0;
+      dailyState.bonus = d.bonus || 0;
+      dailyState.gained = d.gained || 0;
+      dailyState.points = d.points || 0;
+      if (correct) {
+        toast('🎉 答对了！光球已点亮，连续 ' + dailyState.streak + ' 天', 'success');
+        showDailyResult(true);
+      } else {
+        showDailyResult(false, idx, correctIdx);
+      }
+    });
+}
+
+function dailyProgressBar(progress) {
+  var cells = '';
+  for (var i = 1; i <= 3; i++) {
+    var on = i <= progress;
+    cells += '<span style="display:inline-block;width:24px;height:24px;line-height:24px;border-radius:50%;margin:0 4px;font-size:12px;font-weight:700;' + (on ? 'background:linear-gradient(135deg,#FF9500,#FFB84D);color:#fff;box-shadow:0 2px 6px rgba(255,149,0,.35)' : 'background:rgba(255,255,255,.06);color:var(--tx2);border:1px solid var(--bd)') + '">' + (on ? '✓' : i) + '</span>';
   }
+  return '<div style="margin-top:10px;text-align:center"><div style="font-size:12px;color:var(--tx2);margin-bottom:6px">🎁 额外奖励 <b style="color:#FF9500">' + progress + '/3</b></div><div>' + cells + '</div></div>';
+}
+
+function dailyBonusHint(progress, bonus) {
+  if (bonus > 0) return '已领额外 +3 分，进度重置，明天重新累计';
+  return '再连续答对 ' + (3 - progress) + ' 天，领额外 +3 分';
+}
+
+function showDailyResult(correct, chosen, correctIdx) {
+  var body = document.getElementById('daily-modal-body');
+  if (!body) return;
+  var q = dailyState.question;
+  if (correct) {
+    var gainedText = dailyState.bonus > 0
+      ? '<div style="font-size:15px;color:#FF9500;font-weight:700;margin-bottom:2px">+1 分 + 🎁 额外 +3 分</div>'
+      : '<div style="font-size:15px;color:#FF9500;font-weight:700;margin-bottom:2px">+1 分</div>';
+    body.innerHTML = dailyHead()
+      + '<div style="padding:10px;text-align:center;color:var(--tx2)">'
+      + '<div style="font-size:40px;margin-bottom:6px">🎉</div>'
+      + '<div style="font-size:15px;color:var(--tx);margin-bottom:6px">答对了，光球已点亮！</div>'
+      + gainedText
+      + '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">累计 ' + dailyState.points + ' 分</div>'
+      + '<div style="font-size:18px;color:#FF9500;font-weight:700">🔥 已连续 ' + dailyState.streak + ' 天</div>'
+      + dailyProgressBar(dailyState.progress)
+      + '<div style="margin-top:4px;font-size:12px;color:var(--tx2)">' + dailyBonusHint(dailyState.progress, dailyState.bonus) + '</div>'
+      + '<div style="margin-top:2px;font-size:12px;color:var(--tx2)">明天再来，断了会清零</div>'
+      + '</div>'
+      + '<div style="margin-top:14px"><button onclick="hideDailyModal()" style="width:100%;padding:11px;background:var(--accent,#4f7cff);border:none;border-radius:10px;color:#fff;font-size:14px;cursor:pointer">收下奖励</button></div>';
+  } else {
+    var opts = (q.options || []).map(function(opt, i){
+      var style = 'display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:10px;color:var(--tx);font-size:14px;line-height:1.4;border:1px solid ';
+      if (i === correctIdx) style += '#2ECC40;background:rgba(46,204,64,.15)';
+      else if (i === chosen) style += '#FF4136;background:rgba(255,65,54,.15)';
+      else style += 'var(--bd);background:rgba(255,255,255,.04)';
+      return '<div style="' + style + '">' + (i===correctIdx?'✅ ':'') + (i===chosen && i!==correctIdx?'❌ ':'') + opt + '</div>';
+    }).join('');
+    body.innerHTML = dailyHead()
+      + '<div style="font-size:15px;line-height:1.55;margin-bottom:4px">' + q.question + '</div>'
+      + opts
+      + '<div style="margin-top:12px;text-align:center">'
+      + '<div style="font-size:18px;color:#FF9500;font-weight:700">🔥 已连续 0 天</div>'
+      + dailyProgressBar(0)
+      + '<div style="margin-top:4px;font-size:12px;color:var(--tx2)">额外奖励进度已清零，明天重新累计</div>'
+      + '<div style="margin-top:2px;font-size:12px;color:var(--tx2)">明天再来，断了会清零</div>'
+      + '</div>'
+      + '<div style="margin-top:14px"><button onclick="hideDailyModal()" style="width:100%;padding:11px;background:var(--accent,#4f7cff);border:none;border-radius:10px;color:#fff;font-size:14px;cursor:pointer">知道了</button></div>';
+  }
+}
+
+function dismissDaily() {
+  hideDailyModal();
+  fetch(API + '/api/daily-dismiss', { method: 'POST', headers: authHeaders(), body: '{}' })
+    .catch(function(){});
+}
+
+function enterFullGraph() {
+  // 按住显示完整图谱（恢复节点原始颜色）
+  if (state.graphMode === 'full') return;
+  state.graphMode = 'full';
+  var btn = document.getElementById('btn-full-graph');
+  if (btn) { btn.textContent = '👁️ 松开恢复'; btn.classList.remove('active'); }
+  if (state.blinkTimer) { clearInterval(state.blinkTimer); state.blinkTimer = null; }
+  if (state.graphInstance) {
+    var layerColors = { 'foundation':'#5B9BD5', 'advanced':'#2ECC40', 'transcendent':'#9B59B6' };
+    var resetNodes = state.nodes.map(function(n){
+      var node = Object.assign({}, n);
+      delete node.mastery; delete node._blinkGroup;
+      // state.nodes 保留原始颜色，直接恢复；若无颜色则按层级着色
+      if (!node.color) node.color = layerColors[n.layer] || '#5B9BD5';
+      node.val = (n.weight || 3) * 1.5;
+      return node;
+    });
+    state.graphInstance.graphData({ nodes: resetNodes, links: state.edges });
+    state.graphInstance.nodeColor(function(n){ return n.color; });
+    state.graphInstance.nodeVal(function(n){ return n.val; });
+  }
+}
+
+function exitFullGraph() {
+  // 松开恢复诊断着色图谱
+  if (state.graphMode === 'report') return;
+  state.graphMode = 'report';
+  var btn = document.getElementById('btn-full-graph');
+  if (btn) { btn.textContent = '👁️ 按住看完整图谱'; btn.classList.add('active'); }
+  if (state.report && state.graphInstance) applyGraphColors();
 }
 
 function showPhase(name) {
@@ -383,6 +656,125 @@ function updateLevelInfo() {
 }
 
 // ── Graph ──
+// 上下游映射：nodeId -> [{id, edgeLabel}]（边 source→target：target 的上游是 source，source 的下游是 target）
+var nodeLabelMap = {};
+var nodeUpstream = {};
+var nodeDownstream = {};
+function buildAdjacency() {
+  nodeLabelMap = {}; nodeUpstream = {}; nodeDownstream = {};
+  (state.nodes || []).forEach(function(n){ nodeLabelMap[n.id] = n.label; });
+  (state.edges || []).forEach(function(e){
+    var s = e.source, t = e.target;
+    if (!s || !t) return;
+    if (!nodeUpstream[t]) nodeUpstream[t] = [];
+    nodeUpstream[t].push({ id: s, edgeLabel: e.label });
+    if (!nodeDownstream[s]) nodeDownstream[s] = [];
+    nodeDownstream[s].push({ id: t, edgeLabel: e.label });
+  });
+}
+function showNodeDetail(n) {
+  var old = document.querySelector('.node-detail-overlay');
+  if (old) old.remove();
+  var ups = nodeUpstream[n.id] || [];
+  var downs = nodeDownstream[n.id] || [];
+  function linkList(arr, arrow) {
+    if (!arr || !arr.length) return '<div style="color:var(--tx2);font-size:12px;padding:4px 0">（暂无）</div>';
+    return arr.map(function(x){
+      return '<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;margin-bottom:6px;background:var(--card);border:1px solid var(--bd2);border-radius:10px;cursor:pointer" onclick="openNodeById(\'' + x.id + '\')">' +
+        '<span style="font-size:15px;flex-shrink:0">' + arrow + '</span>' +
+        '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--tx)">' + (nodeLabelMap[x.id] || x.id) + '</div>' +
+        (x.edgeLabel ? '<div style="font-size:11px;color:var(--tx2);margin-top:1px">' + x.edgeLabel + '</div>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+  var layerText = n.layer ? ({foundation:'基础', advanced:'提升', transcendent:'升华'}[n.layer] || n.layer) : '';
+  var overlay = document.createElement('div');
+  overlay.className = 'node-detail-overlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:300;display:flex;align-items:flex-end;justify-content:center';
+  overlay.onclick = function(e){ if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML =
+    '<div style="background:var(--bg);width:100%;max-width:480px;max-height:82vh;border-radius:16px 16px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px calc(20px + var(--safe-b))" onclick="event.stopPropagation()">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">' +
+        '<div style="min-width:0"><div style="font-size:18px;font-weight:700;line-height:1.3;color:var(--tx)">' + n.label + '</div>' +
+        (layerText ? '<div style="font-size:11px;color:var(--acc);margin-top:4px">' + layerText + (n.category ? ' · ' + n.category : '') + '</div>' : '') +
+        '</div>' +
+        '<button onclick="this.closest(\'.node-detail-overlay\').remove()" style="background:none;border:none;font-size:22px;color:var(--tx2);cursor:pointer;padding:4px;flex-shrink:0">✕</button>' +
+      '</div>' +
+      '<div style="font-size:13px;line-height:1.75;color:var(--tx);margin-bottom:18px">' + (n.content || '暂无简介') + '</div>' +
+      '<div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:8px">⬆️ 上游知识 <span style="font-weight:400;color:var(--tx2);font-size:11px">（它依赖什么）</span></div>' +
+      linkList(ups, '⬆️') +
+      '<div style="font-size:13px;font-weight:700;color:var(--tx);margin:14px 0 8px">⬇️ 下游知识 <span style="font-weight:400;color:var(--tx2);font-size:11px">（它支撑什么）</span></div>' +
+      linkList(downs, '⬇️') +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+function openNodeById(id) {
+  var node = null;
+  (state.nodes || []).forEach(function(n){ if (n.id === id) node = n; });
+  if (!node) return;
+  var overlay = document.querySelector('.node-detail-overlay');
+  if (overlay) overlay.remove();
+  showNodeDetail(node);
+}
+/* 2D 图谱降级（移动端 / 3D 库不可用）：分层 SVG 布局，节点可点、保上下游详情 */
+function renderGraph2D() {
+  var container = document.getElementById('graph-container');
+  if (!container) return;
+  var nodes = state.nodes, edges = state.edges;
+  if (!nodes || !nodes.length) {
+    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx2);font-size:14px">暂无图谱数据</div>';
+    return;
+  }
+  var layerOrder = ['transcendent', 'advanced', 'foundation', 'unknown'];
+  var layers = { foundation: [], advanced: [], transcendent: [], unknown: [] };
+  nodes.forEach(function(n){ (layers[n.layer] || layers.unknown).push(n); });
+
+  var W = container.clientWidth || 360;
+  var H = container.clientHeight || 500;
+  var pad = 34;
+  var layerH = (H - 2 * pad) / layerOrder.length;
+
+  var pos = {};
+  layerOrder.forEach(function(ly, li){
+    var arr = layers[ly];
+    if (!arr.length) return;
+    var y = pad + li * layerH + layerH / 2;
+    var spacing = (W - 2 * pad) / (arr.length + 1);
+    arr.forEach(function(n, i){ pos[n.id] = { x: pad + spacing * (i + 1), y: y }; });
+  });
+
+  var edgeHTML = (edges || []).map(function(e){
+    var s = pos[e.source], t = pos[e.target];
+    if (!s || !t) return '';
+    var w = (e.strength ? e.strength : 0.5);
+    return '<line x1="'+s.x+'" y1="'+s.y+'" x2="'+t.x+'" y2="'+t.y+'" stroke="rgba(91,155,213,'+(0.12+w*0.15)+')" stroke-width="'+(0.5+w)+'"/>';
+  }).join('');
+
+  var nodeHTML = nodes.map(function(n){
+    var p = pos[n.id];
+    if (!p) return '';
+    var r = 7 + (n.weight || 3) * 0.9;
+    var color = n.color || '#888';
+    var label = (n.label || n.id);
+    return '<g class="g2d-node" data-id="'+n.id+'" style="cursor:pointer">' +
+      '<circle cx="'+p.x+'" cy="'+p.y+'" r="'+r+'" fill="'+color+'" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>' +
+      '<text x="'+p.x+'" y="'+(p.y + r + 11)+'" text-anchor="middle" font-size="9" fill="#c8c8d0" style="pointer-events:none">'+label+'</text>' +
+      '</g>';
+  }).join('');
+
+  container.innerHTML = '<svg width="100%" height="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="background:#0a0a14;display:block">' +
+    edgeHTML + nodeHTML + '</svg>';
+
+  container.querySelectorAll('.g2d-node').forEach(function(g){
+    g.addEventListener('click', function(){
+      var id = g.getAttribute('data-id');
+      var node = null;
+      nodes.forEach(function(n){ if (n.id === id) node = n; });
+      if (node) showNodeDetail(node);
+    });
+  });
+}
+
 function initGraph() {
   var container = document.getElementById('graph-container');
   if (!container) return;
@@ -401,9 +793,14 @@ function initGraph() {
   }
 
   loadData().then(function(){
+    buildAdjacency();
+    // 移动端或 3D 库不可用 → 2D 分层降级（保光球可点 + 上下游详情）
+    if (window.innerWidth <= 640 || typeof ForceGraph3D === 'undefined') {
+      renderGraph2D();
+      return;
+    }
     var timedOut = false;
-    var timeoutId = setTimeout(function(){ timedOut = true; container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx2);font-size:14px;flex-direction:column;gap:12px"><div style="font-size:48px">🧠</div><div>3D 图谱加载超时</div><div style="font-size:11px">测试功能不受影响</div></div>'; }, 8000);
-    if (timedOut) return;
+    var timeoutId = setTimeout(function(){ timedOut = true; renderGraph2D(); }, 8000);
     container.innerHTML = '';
     var Graph = ForceGraph3D()(container)
       .graphData({ nodes: state.nodes, links: state.edges })
@@ -416,7 +813,7 @@ function initGraph() {
       .linkDirectionalParticles(function(l){ return (l.strength || 0) > 0.8 ? 2 : 0; })
       .linkDirectionalParticleWidth(1.5)
       .linkDirectionalParticleSpeed(0.004)
-      .onNodeClick(function(n){ if (n.content) alert(n.label + '\n\n' + n.content); });
+      .onNodeClick(function(n){ showNodeDetail(n); });
     state.graphInstance = Graph;
     clearTimeout(timeoutId);
     setTimeout(function(){ Graph.cameraPosition({ x:100, y:50, z:150 }, { x:0, y:0, z:0 }, 2000); }, 300);
@@ -442,7 +839,6 @@ function setGraphZoom(v) {
 function startTest() {
   state.profile = {
     name: state.user ? state.user.name : (document.getElementById('f-name').value || '匿名用户'),
-    years: document.getElementById('f-years').value,
     target: document.getElementById('f-target').value,
     customer: document.getElementById('f-customer').value,
     levels: state.selectedLevels
@@ -453,7 +849,10 @@ function startTest() {
   function loadTests() {
     return fetch(API + '/api/generate-test', { method:'POST', headers:authHeaders(),
       body: JSON.stringify({ role:'insurance-agent', variant_ratio:1/3, seed:Date.now(), levels:state.selectedLevels, internal_category: state.internalCategory, products: state.selectedProducts })
-    }).then(function(r){ return r.json(); }).then(function(d){ return d.questions; })
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if (d.error) { toast(d.error, 'error'); throw new Error(d.error); }
+      return d.questions;
+    })
     .catch(function(){
       return fetch(API + '/api/tests').then(function(r){ if(!r.ok) throw new Error('no'); return r.json(); })
       .catch(function(){ return fetch('../data/roles/insurance-agent/tests.json').then(function(r){ return r.json(); }); });
@@ -463,7 +862,7 @@ function startTest() {
   loadTests().then(function(questions){
     state.questions = questions; state.answers = {}; state.currentQ = 0;
     renderQuestion();
-  }).catch(function(){ state.questions = []; alert('无法加载试题，请确保服务器正常运行。'); showPhase('profile'); });
+  }).catch(function(){ state.questions = []; toast('网络异常，无法加载试题，请检查连接后重试', 'error'); showPhase('profile'); });
 }
 
 function renderQuestion() {
@@ -508,6 +907,7 @@ function submitTest() {
   }).then(function(r){ return r.json(); }).then(function(report){
     state.report = report;
     renderReport();
+    checkRankUp(report.rank);
     applyGraphColors();
     saveResult();
     loadFlywheelFeedback();
@@ -558,7 +958,55 @@ function localScore() {
   Object.values(st).forEach(function(s){ s.confidence=s.total>0?s.correct/s.total:0; s.mastered=s.confidence>=0.67; });
   var ls = { foundation:{correct:0,total:0}, advanced:{correct:0,total:0}, transcendent:{correct:0,total:0} };
   Object.values(st).forEach(function(s){ if (ls[s.layer]) { ls[s.layer].correct+=s.correct; ls[s.layer].total+=s.total; } });
-  return { total_score:ta>0?Math.round(tc/ta*100):0, total_correct:tc, total_questions:ta, node_status:st, layer_stats:ls, profile:state.profile };
+  return { total_score:ta>0?Math.round(tc/ta*100):0, total_correct:tc, total_questions:ta, node_status:st, layer_stats:ls, profile:state.profile, rank: computeRankLocal(ls) };
+}
+
+/* 前端段位计算（历史记录兜底 / 本地打分）—— 与后端 compute_rank 同构 */
+function computeRankLocal(layerStats) {
+  function rate(ly) {
+    var s = (layerStats || {})[ly] || {};
+    return s.total > 0 ? s.correct / s.total : 0;
+  }
+  var f = rate('foundation'), a = rate('advanced'), t = rate('transcendent');
+  var tiers = [
+    ['king','王者','🌟','15年+', function(){ return t >= 0.80; }],
+    ['diamond','钻石','👑','10年+', function(){ return a >= 0.85 && t >= 0.60; }],
+    ['platinum','铂金','💎','5-10年', function(){ return f >= 0.85 && a >= 0.70; }],
+    ['gold','黄金','🥇','3-5年', function(){ return f >= 0.75 && a >= 0.50; }],
+    ['silver','白银','🥈','1-3年', function(){ return f >= 0.60; }],
+    ['bronze','青铜','🥉','0-1年', function(){ return true; }]
+  ];
+  for (var i = 0; i < tiers.length; i++) {
+    if (tiers[i][4]()) return { rank: tiers[i][0], title: tiers[i][1], icon: tiers[i][2], years: tiers[i][3] };
+  }
+  return { rank: 'bronze', title: '青铜', icon: '🥉', years: '0-1年' };
+}
+
+/* 段位晋级检测：对比上次段位，升段触发晋级仪式 */
+function checkRankUp(rank) {
+  if (!rank || !rank.rank) return;
+  var order = ['bronze','silver','gold','platinum','diamond','king'];
+  var prevKey = null;
+  try { prevKey = localStorage.getItem('kgds_last_rank'); } catch(e){}
+  try { localStorage.setItem('kgds_last_rank', rank.rank); } catch(e){}
+  if (!prevKey || order.indexOf(prevKey) < 0) return; // 首次诊断或异常，无晋级判断
+  var pi = order.indexOf(prevKey), ci = order.indexOf(rank.rank);
+  if (ci > pi) showRankUpModal(rank);
+}
+
+function showRankUpModal(rank) {
+  var overlay = document.createElement('div');
+  overlay.id = 'rankup-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML =
+    '<div style="background:linear-gradient(160deg,#FFF8E1,#FFF3C4);border-radius:20px;padding:32px 28px;text-align:center;max-width:330px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.4)">' +
+    '<div style="font-size:56px;line-height:1">'+rank.icon+'</div>' +
+    '<div style="font-size:22px;font-weight:800;color:#3a2d00;margin-top:10px">🎉 恭喜晋级！</div>' +
+    '<div style="font-size:15px;color:#5a4a10;margin-top:12px;line-height:1.7">你已晋升为<br><strong style="font-size:19px">'+rank.icon+' '+rank.title+'</strong><br>相当于从业 <strong>'+rank.years+'</strong> 的老手</div>' +
+    '<div style="font-size:12px;color:#8a7a30;margin-top:10px">知识图谱正在变绿，继续点亮光球 👊</div>' +
+    '<button onclick="document.getElementById(\'rankup-overlay\').remove()" style="margin-top:18px;padding:11px 30px;border:none;border-radius:10px;background:linear-gradient(135deg,#ffb300,#ff8f00);color:#fff;font-size:15px;font-weight:700;cursor:pointer">收下段位 💪</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
 }
 
 function renderReport() {
@@ -585,8 +1033,16 @@ function renderReport() {
   var praise = getPraise(score, strengths, r.profile);
   var scoreColor = score>=70?'var(--gr)':(score>=55?'var(--ye)':'var(--rd)');
 
+  // 段位（后端 compute_rank 返回，取代自报年限）
+  var rk = r.rank || {icon:'🥉', title:'青铜', years:'0-1年', rank:'bronze'};
+
   var html = '';
   html += '<div class="rp-header"><div class="rp-score-ring"><span class="score-text" style="color:'+scoreColor+'">'+score+'</span><span class="score-label">综合评分</span></div><div class="rp-summary"><h2>'+praise.title+'</h2><div class="sub">'+praise.subtitle+'</div><div class="rp-badges"><span class="rp-badge '+sbc+'">综合 '+sl+'</span><span class="rp-badge '+(lp.foundation>=75?'excellent':'warning')+'">基础 '+(lp.foundation||0)+'%</span><span class="rp-badge '+(lp.advanced>=65?'good':'warning')+'">提升 '+(lp.advanced||0)+'%</span><span class="rp-badge '+(lp.transcendent>=50?'good':'danger')+'">升华 '+(lp.transcendent||0)+'%</span></div></div></div>';
+  // 段位卡片
+  html += '<div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#FFF8E1,#FFFDE7);border:1px solid #F0E6B8;border-radius:14px;padding:14px 16px;margin:12px 0">' +
+    '<div style="font-size:40px;line-height:1">'+rk.icon+'</div>' +
+    '<div style="flex:1"><div style="font-size:17px;font-weight:700;color:var(--tx)">'+rk.title+' <span style="font-weight:400;font-size:12px;color:var(--tx2)">相当于从业 '+rk.years+'</span></div>' +
+    '<div style="font-size:11px;color:var(--tx2);margin-top:3px">系统按分层掌握率自动评定 · 非自报年限</div></div></div>';
 
   var layerNames = ['🏗️ 基础技能','📈 提升技能','🚀 升华技能'];
   var layerKeys = ['foundation','advanced','transcendent'];
@@ -644,6 +1100,31 @@ function renderReport() {
     }
   }
   html += '</div>';
+
+  // ── 错题解析（刻意练习闭环：错题追着你直到掌握）──
+  var wrongItems = (r.item_results || []).filter(function(it){ return !it.is_correct; });
+  if (wrongItems.length > 0) {
+    html += '<div class="rp-card"><h4>📝 错题解析 <span style="font-size:11px;color:var(--tx2);font-weight:400">共 '+wrongItems.length+' 题</span></h4>';
+    wrongItems.forEach(function(it, idx){
+      var optTxt = (it.options || []).map(function(o, oi){
+        var mark = '';
+        if (oi === it.correct_answer) mark = ' <span style="color:var(--gr)">✅</span>';
+        if (oi === it.your_answer && oi !== it.correct_answer) mark = ' <span style="color:var(--rd)">❌</span>';
+        return '<div style="font-size:12px;color:var(--tx2);padding:2px 0">'+String.fromCharCode(65+oi)+'. '+o+mark+'</div>';
+      }).join('');
+      var yourTxt = (it.your_answer === undefined || it.your_answer === null) ? '未作答' : String.fromCharCode(65+it.your_answer);
+      var correctTxt = (it.correct_answer === undefined || it.correct_answer === null) ? '—' : String.fromCharCode(65+it.correct_answer);
+      html += '<div style="border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px">';
+      html += '<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:6px">'+(idx+1)+'. '+it.question+'</div>';
+      html += optTxt;
+      html += '<div style="font-size:12px;margin-top:6px;padding:8px;border-radius:8px;background:var(--bg2)">';
+      html += '<div style="color:var(--rd)">你的答案：'+yourTxt+'</div>';
+      html += '<div style="color:var(--gr)">正确答案：'+correctTxt+'</div>';
+      html += '<div style="margin-top:6px;color:var(--tx);line-height:1.5">💡 '+((it.explanation||'').trim() || '（暂无解析，建议复习该知识点）')+'</div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
 
   // ── 学习推荐（替代书单）──
   html += '<div class="rp-card" id="learning-card"><h4>📖 推荐学习</h4><div id="learning-tips" style="min-height:80px;display:flex;align-items:center;justify-content:center"><div class="spinner" style="width:20px;height:20px;border-width:2px"></div></div></div>';
@@ -985,7 +1466,8 @@ function saveResult() {
     total_correct: state.report.total_correct,
     total_questions: state.report.total_questions,
     layer_stats: state.report.layer_stats,
-    node_status: state.report.node_status
+    node_status: state.report.node_status,
+    rank: state.report.rank
   };
   try {
     var h = JSON.parse(localStorage.getItem('kgds_history')||'[]');
@@ -1046,7 +1528,8 @@ function renderSessions(sessions, p) {
     var sc = r.overall_score || r.total_score || 0;
     var sco = sc>=70?'var(--gr)':(sc>=55?'var(--ye)':'var(--rd)');
     var nm = (r.profile&&r.profile.name) ? r.profile.name : '匿名';
-    html += '<div class="history-item" onclick="viewHistoryDetail(\''+r.session_id+'\',\''+i+'\')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><div><span style="color:var(--tx);font-weight:600">'+nm+'</span> <span style="color:var(--tx2);font-size:11px">'+ds+'</span></div><span style="color:'+sco+';font-weight:700;font-size:16px">'+sc+'</span></div><div style="font-size:11px;color:var(--tx2);margin-top:2px">'+(r.total_correct||0)+'/'+(r.total_questions||0)+' 题</div></div>';
+    var rk = r.rank || computeRankLocal(r.layer_stats || {});
+    html += '<div class="history-item" onclick="viewHistoryDetail(\''+r.session_id+'\',\''+i+'\')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><div><span style="color:var(--tx);font-weight:600">'+nm+'</span> <span style="font-size:12px">'+rk.icon+'</span> <span style="color:var(--tx2);font-size:11px">'+rk.title+' · '+ds+'</span></div><span style="color:'+sco+';font-weight:700;font-size:16px">'+sc+'</span></div><div style="font-size:11px;color:var(--tx2);margin-top:2px">'+(r.total_correct||0)+'/'+(r.total_questions||0)+' 题</div></div>';
   });
   html += '<div style="padding:12px;text-align:center"><button class="btn btn-secondary" onclick="clearHistory()" style="font-size:11px;padding:6px 14px">🗑 清除本地</button> <button class="btn btn-secondary" onclick="exportHistory()" style="font-size:11px;padding:6px 14px">📥 导出</button></div>';
   p.innerHTML = html;
@@ -1071,6 +1554,7 @@ function viewHistoryDetail(sid, idx) {
     layer_stats: r.layer_stats || {},
     node_status: r.node_status || {},
     profile: r.profile || {},
+    rank: r.rank || computeRankLocal(r.layer_stats || {})
   };
   state.profile = r.profile || {};
   state.answers = r.answers || {};
@@ -1127,4 +1611,5 @@ window.selectInternal = selectInternal;
 window.updateInternalUI = updateInternalUI;
 window.hideProgress = hideProgress;
 window.renderProgress = renderProgress;
-window.toggleGraphMode = toggleGraphMode;
+window.enterFullGraph = enterFullGraph;
+window.exitFullGraph = exitFullGraph;

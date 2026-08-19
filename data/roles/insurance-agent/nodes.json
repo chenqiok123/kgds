@@ -1,731 +1,812 @@
 [
- {
-  "id": "L1-01",
-  "layer": "foundation",
-  "label": "寿险产品结构",
-  "confidence": 0.9,
-  "weight": 5,
-  "color": "#FF6B6B",
-  "content": "定期寿险(杠杆高无储蓄)/终身寿险(必赔确定性)/增额终身寿(保额复利递增,IRR回本减保三参数)/两全保险(满期+身故)。当前预定利率上限：普通型2.0%、分红型1.75%、万能型1.0%(2025-09起)。"
- },
- {
-  "id": "L1-02",
-  "layer": "foundation",
-  "label": "健康险保障范围",
-  "confidence": 0.9,
-  "weight": 5,
-  "color": "#FF6B6B",
-  "content": "重疾险28种统一定义覆盖95%+理赔,3种轻度疾病赔付≤30%,甲状腺癌I期按轻症。医疗险四梯度：百万(1万免赔)/中端(特需部约3倍保费)/高端/惠民保(带病可保高免赔)。DRG后外购药责任成标配。"
- },
- {
-  "id": "L1-03",
-  "layer": "foundation",
-  "label": "意外险四要素",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "意外定义(突发的/外来的/非本意的/非疾病的)、职业分类与费率关系。"
- },
- {
-  "id": "L1-04",
-  "layer": "foundation",
-  "label": "年金险与IRR",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "即期/延期年金、分红/万能/投连区别、内部收益率(IRR)计算。"
- },
- {
-  "id": "L1-05",
-  "layer": "foundation",
-  "label": "保险法红线",
-  "confidence": 0.9,
-  "weight": 5,
-  "color": "#FF6B6B",
-  "content": "保险法红线：投保人故意/重大过失未如实告知且足以影响承保决定，保险人可解除合同（两年不可抗辩）；代签名合同可无效；如实告知义务是合同最大诚信基石。格式条款不利解释规则、犹豫期（长期险一般10-15天）、宽限期60天。"
- },
- {
-  "id": "L1-06",
-  "layer": "foundation",
-  "label": "合规双录制度",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "合规双录：一年期以上人身险销售全程录音录像，含出示执业证、征求投保人意见、对投保提示书/条款逐项确认；犹豫期回访录音确认本人投保；双录不完整、走形式=监管处罚+销售误导举证风险。"
- },
- {
-  "id": "L1-07",
-  "layer": "foundation",
-  "label": "适当性管理",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "适当性管理：将合适产品卖给合适的人——匹配客户风险承受能力、财务状况与需求；风险测评如实填写是前提；对高龄/低收入客户推荐高风险产品（投连/万能）属违规；测评与产品风险等级错配是销售误导重灾区。"
- },
- {
-  "id": "L1-08",
-  "layer": "foundation",
-  "label": "反洗钱义务",
-  "confidence": 0.8,
-  "weight": 3,
-  "color": "#FF6B6B",
-  "content": "反洗钱义务：2025新《反洗钱法》——身份资料保存≥5年、交易记录≥10年；大额现金交易（单日单笔或累计≥5万元或等值1万美元）须报告；识别客户身份与投保目的/资金来源；拆分交易规避报告=可疑交易须上报；协助客户拆分=违规。"
- },
- {
-  "id": "L1-09",
-  "layer": "foundation",
-  "label": "客户获取方法",
-  "confidence": 0.8,
-  "weight": 5,
-  "color": "#FFA94D",
-  "content": "传统三大渠道：缘故市场(信任基础好但有限)、转介绍(无限连锁，需技巧)、陌生拜访(量大但转化率低)。数字化获客概览：私域运营(微信生态)、自媒体获客(短视频/直播/图文)、定制化活动(沙龙/产说会/社区活动)。核心原则：获客不是一次性动作，而是持续的流量池建设。"
- },
- {
-  "id": "L1-10",
-  "layer": "foundation",
-  "label": "初次面谈结构",
-  "confidence": 0.8,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "建立信任→了解需求→激发兴趣的标准面谈框架。"
- },
- {
-  "id": "L1-11",
-  "layer": "foundation",
-  "label": "风险金字塔唤醒",
-  "confidence": 0.8,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "死亡/疾病/养老/子女教育四大风险的需求唤醒逻辑。"
- },
- {
-  "id": "L1-12",
-  "layer": "foundation",
-  "label": "产品呈现技巧",
-  "confidence": 0.8,
-  "weight": 3,
-  "color": "#FFA94D",
-  "content": "产品亮点提炼(非条款朗读)、利益说明(而非功能罗列)。"
- },
- {
-  "id": "L1-13",
-  "layer": "foundation",
-  "label": "异议处理话术",
-  "confidence": 0.8,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "LSCPA异议处理五步法(Listen倾听→Share同理→Clarify澄清→Present方案→Ask促成)、三大异议类型(不划算/不想买/不相信)、真假异议判断法、高频异议应对(太贵了/不需要/考虑一下/已买了/不吉利/有社保了/买保险容易理赔难)。核心原则：异议是购买的第一步，异议越多购买欲望越强。"
- },
- {
-  "id": "L1-14",
-  "layer": "foundation",
-  "label": "促成技巧",
-  "confidence": 0.8,
-  "weight": 3,
-  "color": "#FFA94D",
-  "content": "七大促成法：①请求成交法(直接请求)②假设成交法(假定已购买，引导具体细节)③选择成交法/二择一法(保额50万还是100万)④小点成交法(次要问题先行)⑤从众成交法(社会认同)⑥优惠成交法(让步促成)⑦总结利益成交法(回顾核心利益)。客户类型匹配：犹豫不决型→选择+小点；专家型→请求；朋友型→假设。试探性促成→识别购买信号→正式促成→成交确认。"
- },
- {
-  "id": "L1-15",
-  "layer": "foundation",
-  "label": "保单递送与服务",
-  "confidence": 0.8,
-  "weight": 3,
-  "color": "#FFA94D",
-  "content": "递送流程标准化/保单整理/年度检视/理赔协助。"
- },
- {
-  "id": "L1-16",
-  "layer": "foundation",
-  "label": "活动量管理",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "日均拜访量(3-5访)/有效拜访率/活动量追踪表。"
- },
- {
-  "id": "L1-17",
-  "layer": "foundation",
-  "label": "销售误导边界",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "销售误导边界：禁止把保险与银行存款/理财简单类比并承诺收益；分红/万能演示须同时展示低中高档并注明非保证；选择性披露（只讲高档、不讲免责与退保损失）=误导；误导证据链（双录）是监管处罚关键。"
- },
- {
-  "id": "L1-18",
-  "layer": "foundation",
-  "label": "职业道德诚信",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "最大诚信原则/客户信息保密/利益冲突披露。"
- },
- {
-  "id": "L1-19",
-  "layer": "foundation",
-  "label": "名单管理",
-  "confidence": 0.7,
-  "weight": 3,
-  "color": "#FFA94D",
-  "content": "客户名单分类/更新频率/优先级排序。"
- },
- {
-  "id": "L1-20",
-  "layer": "foundation",
-  "label": "保险赔款税务",
-  "confidence": 0.8,
-  "weight": 3,
-  "color": "#FF6B6B",
-  "content": "赔款税务：保险赔款（重疾/医疗理赔金）免税；指定受益人的身故保险金不属遗产、直接给付受益人；普通商业保险保费不能抵个税，税优健康险/个人养老金（年12000元）可税前扣除；企业补充养老/医疗保费在规定标准内可税前扣除。"
- },
- {
-  "id": "L1-21",
-  "layer": "foundation",
-  "label": "续期管理",
-  "confidence": 0.7,
-  "weight": 3,
-  "color": "#FFA94D",
-  "content": "续期提醒/宽限期管理/失效保单复效。"
- },
- {
-  "id": "L1-22",
-  "layer": "foundation",
-  "label": "核保基础知识",
-  "confidence": 0.7,
-  "weight": 3,
-  "color": "#FF6B6B",
-  "content": "标准体/次标准体/延期/拒保的判断标准、健康告知处理。"
- },
- {
-  "id": "L2-01",
-  "layer": "advanced",
-  "label": "家庭财务诊断",
-  "confidence": 0.7,
-  "weight": 6,
-  "color": "#4A90E2",
-  "content": "资产负债表/收支储蓄表制作与解读、财务比率分析。"
- },
- {
-  "id": "L2-02",
-  "layer": "advanced",
-  "label": "风险缺口量化",
-  "confidence": 0.7,
-  "weight": 5,
-  "color": "#4A90E2",
-  "content": "生命价值法/遗嘱需求法/收入替代率的计算与应用。"
- },
- {
-  "id": "L2-03",
-  "layer": "advanced",
-  "label": "客户画像分层",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "按收入/家庭生命周期/风险偏好将客户分成6-8类画像，匹配产品组合。"
- },
- {
-  "id": "L2-04",
-  "layer": "advanced",
-  "label": "场景化需求唤醒",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "用'如果发生XX，你的家庭会怎样'的场景构建替代恐吓式营销。"
- },
- {
-  "id": "L2-05",
-  "layer": "advanced",
-  "label": "个人所得税基础",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "个人所得税基础：综合所得起征点5000元/月；个人养老金年缴费上限12000元，在综合所得或经营所得中据实扣除，领取时按3%单独计税；边际税率决定税优价值（税率≤3%时价值有限）；自由职业者在汇算清缴时于经营所得中扣除。"
- },
- {
-  "id": "L2-06",
-  "layer": "advanced",
-  "label": "婚姻继承法基础",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "婚姻继承法：婚内用共同财产投保的现金价值属夫妻共同财产，离婚可分割；指定受益人的身故保险金属受益人个人财产；未指定受益人/受益人先于被保险人身故=保险金作为遗产按法定继承；第一顺序继承人：配偶、子女、父母。"
- },
- {
-  "id": "L2-07",
-  "layer": "advanced",
-  "label": "分红险机制",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "分红险机制：可分配盈余来自三差（利差/死差/费差）；分红非保证，取决于实际经营成果；演示利率≠实际分红；分红实现率=实际分红/演示分红，是评估公司兑现能力的关键指标；预定利率上限分红型1.75%（2025-09起）。"
- },
- {
-  "id": "L2-08",
-  "layer": "advanced",
-  "label": "万能险精算",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "结算利率与保底利率/初始费用/持续奖金/部分领取规则。"
- },
- {
-  "id": "L2-09",
-  "layer": "advanced",
-  "label": "投资基础",
-  "confidence": 0.6,
-  "weight": 3,
-  "color": "#4A90E2",
-  "content": "股市/债券/基金基本概念、利率与保险产品价格的联动。"
- },
- {
-  "id": "L2-10",
-  "layer": "advanced",
-  "label": "客户分层管理",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#50E3C2",
-  "content": "A/B/C类客户标准、差异化跟进频率、RFM模型应用。"
- },
- {
-  "id": "L2-11",
-  "layer": "advanced",
-  "label": "转介绍系统",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#50E3C2",
-  "content": "转介绍时机选择/话术设计/激励机制/拒绝处理。"
- },
- {
-  "id": "L2-12",
-  "layer": "advanced",
-  "label": "沉默客户激活",
-  "confidence": 0.7,
-  "weight": 3,
-  "color": "#50E3C2",
-  "content": "流失预警信号/激活策略/二次接触脚本。"
- },
- {
-  "id": "L2-13",
-  "layer": "advanced",
-  "label": "个人品牌运营",
-  "confidence": 0.6,
-  "weight": 3,
-  "color": "#50E3C2",
-  "content": "朋友圈内容规划/短视频基础制作/公众号运营/本地IP打造。"
- },
- {
-  "id": "L2-14",
-  "layer": "advanced",
-  "label": "CRM系统应用",
-  "confidence": 0.6,
-  "weight": 3,
-  "color": "#50E3C2",
-  "content": "客户信息录入/跟进提醒/数据看板/分析报表。"
- },
- {
-  "id": "L2-15",
-  "layer": "advanced",
-  "label": "AI工具辅助",
-  "confidence": 0.5,
-  "weight": 2,
-  "color": "#50E3C2",
-  "content": "用大模型优化话术/快速查询条款/生成个性化建议。"
- },
- {
-  "id": "L2-16",
-  "layer": "advanced",
-  "label": "房产保险交互",
-  "confidence": 0.6,
-  "weight": 3,
-  "color": "#4A90E2",
-  "content": "房贷与定期寿险匹配逻辑/房产传承中的保险角色。"
- },
- {
-  "id": "L2-17",
-  "layer": "advanced",
-  "label": "投连险风控",
-  "confidence": 0.6,
-  "weight": 3,
-  "color": "#4A90E2",
-  "content": "账户类型/费用结构/风险提示义务/适合性评估。"
- },
- {
-  "id": "L2-18",
-  "layer": "advanced",
-  "label": "竞品对比能力",
-  "confidence": 0.6,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "同业产品对比框架/优劣势分析/非恶性对比的处理方式。"
- },
- {
-  "id": "L3-01",
-  "layer": "transcendent",
-  "label": "资产配置理论",
-  "confidence": 0.5,
-  "weight": 6,
-  "color": "#B8E986",
-  "content": "马科维茨现代投资组合/标准普尔家庭资产象限/美林时钟。"
- },
- {
-  "id": "L3-02",
-  "layer": "transcendent",
-  "label": "税务筹划",
-  "confidence": 0.5,
-  "weight": 5,
-  "color": "#B8E986",
-  "content": "个人所得税优化/企业主综合税筹/跨境税务/CRS影响。"
- },
- {
-  "id": "L3-03",
-  "layer": "transcendent",
-  "label": "家族财富传承",
-  "confidence": 0.5,
-  "weight": 5,
-  "color": "#B8E986",
-  "content": "遗嘱+保险金信托+家族信托的组合架构设计。"
- },
- {
-  "id": "L3-04",
-  "layer": "transcendent",
-  "label": "企业主风险隔离",
-  "confidence": 0.5,
-  "weight": 5,
-  "color": "#B8E986",
-  "content": "家企资产分离/股东互保/关键人保险/公司治理中的保险角色。"
- },
- {
-  "id": "L3-05",
-  "layer": "transcendent",
-  "label": "跨境财富规划",
-  "confidence": 0.4,
-  "weight": 4,
-  "color": "#B8E986",
-  "content": "移民前后税务规划/境外保险配置/外汇管理考量。"
- },
- {
-  "id": "L3-06",
-  "layer": "transcendent",
-  "label": "高客画像与触达",
-  "confidence": 0.5,
-  "weight": 5,
-  "color": "#DDA0DD",
-  "content": "企业家/高管/专业人士的特征画像/商会、俱乐部、私行等圈层入口。"
- },
- {
-  "id": "L3-07",
-  "layer": "transcendent",
-  "label": "高客面谈方法论",
-  "confidence": 0.5,
-  "weight": 4,
-  "color": "#DDA0DD",
-  "content": "不做产品推销→做家庭CFO角色/目标导向型规划/深度KYC。"
- },
- {
-  "id": "L3-08",
-  "layer": "transcendent",
-  "label": "保险金信托架构",
-  "confidence": 0.5,
-  "weight": 5,
-  "color": "#B8E986",
-  "content": "1.0(理赔金进信托)/2.0(保单进信托)/3.0(信托持有保单)的区别与适用。"
- },
- {
-  "id": "L3-09",
-  "layer": "transcendent",
-  "label": "信托法基础",
-  "confidence": 0.5,
-  "weight": 3,
-  "color": "#B8E986",
-  "content": "信托三要素(委托人/受托人/受益人)、受托人义务、信托财产独立性。"
- },
- {
-  "id": "L3-10",
-  "layer": "transcendent",
-  "label": "增员方法论",
-  "confidence": 0.5,
-  "weight": 4,
-  "color": "#FFD700",
-  "content": "增员画像定义/增员渠道(招募/同业引进/跨行挖角)/吸引力话术。"
- },
- {
-  "id": "L3-11",
-  "layer": "transcendent",
-  "label": "新人培养体系",
-  "confidence": 0.5,
-  "weight": 4,
-  "color": "#FFD700",
-  "content": "90天培养计划/陪同拜访/复盘会/技能通关考核。"
- },
- {
-  "id": "L3-12",
-  "layer": "transcendent",
-  "label": "团队绩效管理",
-  "confidence": 0.5,
-  "weight": 4,
-  "color": "#FFD700",
-  "content": "活动量追踪/产能看板/差异化辅导/流失预警与干预。"
- },
- {
-  "id": "L3-13",
-  "layer": "transcendent",
-  "label": "养老产业知识",
-  "confidence": 0.5,
-  "weight": 4,
-  "color": "#DDA0DD",
-  "content": "9073养老格局/CCRC持续照护社区/长护险制度/养老社区运营模式。"
- },
- {
-  "id": "L3-14",
-  "layer": "transcendent",
-  "label": "医疗资源整合",
-  "confidence": 0.5,
-  "weight": 3,
-  "color": "#DDA0DD",
-  "content": "就医绿通/二次诊疗/海外就医/高端体检资源的整合与应用。"
- },
- {
-  "id": "L3-15",
-  "layer": "transcendent",
-  "label": "家族办公室概念",
-  "confidence": 0.4,
-  "weight": 4,
-  "color": "#DDA0DD",
-  "content": "单一家办/联合家办的运作模式、服务范围、设立条件。"
- },
- {
-  "id": "L1-23",
-  "layer": "foundation",
-  "label": "购买信号识别",
-  "confidence": 0.8,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "语言信号(询问细节/价格/缴费方式/理赔流程/比较产品)、非语言信号(点头/前倾/沉默思考/拿合同仔细看/与家人交换眼神)、试探性促成(假设成交提问测试反应)、促成时机判断(信号出现后3分钟内行动)。反面信号：过度纠结价格不谈保障/频繁看手机/身体后倾。"
- },
- {
-  "id": "L1-24",
-  "layer": "foundation",
-  "label": "转介绍请求实务",
-  "confidence": 0.8,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "六大请求时机：资料收集后/促成填要保书时/递交保单时/服务回访时/理赔协助后/日常联络中。请求话术四要素：明确描述目标画像/引导联想具体人名/降低心理门槛/承诺反馈结果。抗拒处理：消除顾虑(不会强推/只是认识一下)、降低期望(只需2-3个名字)。信息收集：被介绍人年龄/职业/收入/家庭/健康/最佳拜访时间。回访报告：联络结果/面谈进展/感谢转介绍/请求再次推荐。"
- },
- {
-  "id": "L1-25",
-  "layer": "foundation",
-  "label": "私域运营与活动获客",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#FFA94D",
-  "content": "私域运营三板斧：朋友圈经营(专业内容30%+生活30%+互动40%)、社群运营(保险知识群/客户服务群，定期分享+答疑)、一对一私聊(节日问候/生日祝福/保单周年提醒/理赔资讯分享)。自媒体获客入门：短视频(保险科普/理赔故事/避坑指南)、直播(保险知识讲座/答疑互动)、图文(公众号/小红书/知乎)。定制化活动：产说会(产品说明会)、创说会(创业说明会/增员)、客户沙龙(亲子/养生/理财主题)、社区活动(义诊/法律咨询/节日活动)。核心原则：内容价值优先，获客是价值提供的副产品。"
- },
- {
-  "id": "L2-19",
-  "layer": "advanced",
-  "label": "促成心理学",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#50E3C2",
-  "content": "六类客户决策风格×促成策略：犹豫不决型→选择成交+小点成交+从众成交；专家型/自我中心型→请求成交(尊重自主决策)；敌对型→请求成交+小点成交；朋友型→假设成交(关系信任基础)；信念型→从众成交(群体认同)；渴求型→优惠成交+保证成交。心理压力管理：识别客户压力信号/适时后退降低防御/用提问替代陈述。决策加速技术：损失厌恶框架(不买的代价>买的好处)、时间稀缺性(合规前提下)、社会证明。"
- },
- {
-  "id": "L2-20",
-  "layer": "advanced",
-  "label": "深层异议挖掘",
-  "confidence": 0.7,
-  "weight": 4,
-  "color": "#50E3C2",
-  "content": "表面异议vs真实异议：太贵了→可能是预算问题/价值感知不足/比价心态/支付能力不够。3F法则深挖：Feel(感受认同)→Focus(聚焦真实痛点)→Fact(数据事实支撑)。异议日志分析：建立异议类型-处理效果矩阵，识别高频问题，优化话术。异议预防策略：在客户提出前主动处理(价格锚定/价值前置/风险可视化)。情绪处理：先处理心情再处理事情，客户的情绪化异议需要同理心而非逻辑。"
- },
- {
-  "id": "L3-16",
-  "layer": "transcendent",
-  "label": "无限连锁经营",
-  "confidence": 0.6,
-  "weight": 4,
-  "color": "#DDA0DD",
-  "content": "John Fleming无限连锁法(Unlimited Chain)：每次面谈都是下一次获客的起点，签单不是终点而是转介绍的起点。关键人物(Center of Influence)培养：识别有影响力的客户/持续提供价值/建立战略合作关系/定期互惠。转介绍自动化体系：标准化请求话术库/转介绍追踪表/感谢激励机制/客户转介绍率KPI。目标：每周15个访谈约定，其中80%来自转介绍和关键人物推荐。从个人品牌到转介绍飞轮：专业声誉→客户满意度→主动推荐→新客户→更高声誉。"
- },
- {
-  "id": "L3-17",
-  "layer": "transcendent",
-  "label": "销售说服心理学",
-  "confidence": 0.6,
-  "weight": 4,
-  "color": "#DDA0DD",
-  "content": "Cialdini说服六原则保险场景化：互惠(先提供价值→再请求帮助)、承诺一致(小同意→大决定，健康告知→保障规划)、社会认同(同类客户案例/理赔数据)、喜好(共同兴趣/真诚赞美/相似性)、权威(专业资质/行业认证/公司品牌)、稀缺(合规前提下：核保政策收紧/产品停售)。说服伦理边界：不得利用信息不对称误导/不得制造虚假紧迫感/不得操纵恐惧情绪。高阶应用：将说服原则融入日常服务而非仅用于签单，建立长期信任关系。"
- },
- {
-  "id": "L1-26",
-  "layer": "foundation",
-  "label": "增额终身寿险",
-  "confidence": 0.9,
-  "weight": 5,
-  "color": "#FF6B6B",
-  "content": "保额与现金价值按约定利率复利递增的终身寿险。核心三参数：IRR/回本速度/减保规则。预定利率上限2.0%（2025-09起），保额增长率≠投资收益率，减保=部分退保有损失。分红型=保证1.5-1.75%+浮动分红。"
- },
- {
-  "id": "L1-27",
-  "layer": "foundation",
-  "label": "医疗险DRG选品",
-  "confidence": 0.85,
-  "weight": 4,
-  "color": "#FF6B6B",
-  "content": "DRG/DIP医改后医疗险选品三要素：外购药械责任（是否限清单）、免赔额设计（0免赔/家庭共享/递减）、保证续保年限（20年优先）。梯度：百万医疗(基础兜底)/中端(特需部)/高端(私立海外)/惠民保(带病体普惠)。"
- },
- {
-  "id": "L2-21",
-  "layer": "advanced",
-  "label": "分红险实现率",
-  "confidence": 0.85,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "红利实现率=实际派发÷演示×100%。2026-07演示利率上限降至3.5%，新品实现率易超100%但实际收益约3.2%，新老产品不可直接比。分配规则：至少70%可分配盈余给保单持有人。限高令：中小险企3.3%/大型3.1%。实现率≠收益承诺。"
- },
- {
-  "id": "L2-22",
-  "layer": "advanced",
-  "label": "个人养老金税优",
-  "confidence": 0.9,
-  "weight": 4,
-  "color": "#4A90E2",
-  "content": "第三支柱：年缴上限12000元，EET递延纳税——缴费税前扣除、投资收益暂不征税、领取单独按3%计税。封闭运行至法定领取条件。对边际税率≥3%人群省税+强制储蓄+养老现金流三合一；税率<3%者反而吃亏。"
- },
- {
-  "id": "INT-PROD",
-  "layer": "internal",
-  "label": "内部知识·产品知识",
-  "confidence": 0.95,
-  "weight": 12,
-  "color": "#16A085",
-  "content": "公司自有产品知识（内部知识域）：14 款民生人寿产品 × 12 题/款 = 168 道反盲选产品题，覆盖医疗险/重疾险/年金险/终身寿险/护理险/意外险六大类。考核业务员对本公司产品的真实掌握，防止话术背稿、概念混淆。"
- },
- {
-  "id": "PROD-01",
-  "layer": "internal",
-  "label": "优医保2.0",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 医疗险：优医保2.0（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-02",
-  "layer": "internal",
-  "label": "百万能量(守护星)",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 医疗险：百万能量(守护星)（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-03",
-  "layer": "internal",
-  "label": "如意东风",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 重疾险：如意东风（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-04",
-  "layer": "internal",
-  "label": "润泽恒赢",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 年金险：润泽恒赢（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-05",
-  "layer": "internal",
-  "label": "心裕人生",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 年金险：心裕人生（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-06",
-  "layer": "internal",
-  "label": "心赢人生",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 年金险：心赢人生（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-07",
-  "layer": "internal",
-  "label": "聚盈宝(2025)",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 年金险：聚盈宝(2025)（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-08",
-  "layer": "internal",
-  "label": "聚能宝(2025)",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 年金险：聚能宝(2025)（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-09",
-  "layer": "internal",
-  "label": "隽永世家",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 终身寿险：隽永世家（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-10",
-  "layer": "internal",
-  "label": "传世金樽",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 终身寿险：传世金樽（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-11",
-  "layer": "internal",
-  "label": "鎏金世家",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 终身寿险：鎏金世家（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-12",
-  "layer": "internal",
-  "label": "勿忘我惠享版2025",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 护理险：勿忘我惠享版2025（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-13",
-  "layer": "internal",
-  "label": "勿忘我爱永驻",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 护理险：勿忘我爱永驻（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- },
- {
-  "id": "PROD-14",
-  "layer": "internal",
-  "label": "活力腾腾",
-  "confidence": 0.9,
-  "weight": 6,
-  "color": "#16A085",
-  "content": "内部知识·产品知识 | 意外险：活力腾腾（民生人寿）12 道反盲选题（含场景/参数/判断）。"
- }
+  {
+    "id": "L1-01",
+    "layer": "foundation",
+    "label": "寿险产品结构",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "定期寿险(杠杆高无储蓄)/终身寿险(必赔确定性)/增额终身寿(保额复利递增,IRR回本减保三参数)/两全保险(满期+身故)。当前预定利率上限：普通型2.0%、分红型1.75%、万能型1.0%(2025-09起)。",
+    "category": "寿险年金"
+  },
+  {
+    "id": "L1-02",
+    "layer": "foundation",
+    "label": "健康险保障范围",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "重疾险28种统一定义覆盖95%+理赔,3种轻度疾病赔付≤30%,甲状腺癌I期按轻症。医疗险四梯度：百万(1万免赔)/中端(特需部约3倍保费)/高端/惠民保(带病可保高免赔)。DRG后外购药责任成标配。",
+    "category": "健康意外医疗"
+  },
+  {
+    "id": "L1-03",
+    "layer": "foundation",
+    "label": "意外险四要素",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "意外定义(突发的/外来的/非本意的/非疾病的)、职业分类与费率关系。",
+    "category": "健康意外医疗"
+  },
+  {
+    "id": "L1-04",
+    "layer": "foundation",
+    "label": "年金险与IRR",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "即期/延期年金、分红/万能/投连区别、内部收益率(IRR)计算。",
+    "category": "寿险年金"
+  },
+  {
+    "id": "L1-05",
+    "layer": "foundation",
+    "label": "保险法红线",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "保险法红线：投保人故意/重大过失未如实告知且足以影响承保决定，保险人可解除合同（两年不可抗辩）；代签名合同可无效；如实告知义务是合同最大诚信基石。格式条款不利解释规则、犹豫期（长期险一般10-15天）、宽限期60天。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-06",
+    "layer": "foundation",
+    "label": "合规双录制度",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "合规双录：一年期以上人身险销售全程录音录像，含出示执业证、征求投保人意见、对投保提示书/条款逐项确认；犹豫期回访录音确认本人投保；双录不完整、走形式=监管处罚+销售误导举证风险。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-07",
+    "layer": "foundation",
+    "label": "适当性管理",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "适当性管理：将合适产品卖给合适的人——匹配客户风险承受能力、财务状况与需求；风险测评如实填写是前提；对高龄/低收入客户推荐高风险产品（投连/万能）属违规；测评与产品风险等级错配是销售误导重灾区。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-08",
+    "layer": "foundation",
+    "label": "反洗钱义务",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FF6B6B",
+    "content": "反洗钱义务：2025新《反洗钱法》——身份资料保存≥5年、交易记录≥10年；大额现金交易（单日单笔或累计≥5万元或等值1万美元）须报告；识别客户身份与投保目的/资金来源；拆分交易规避报告=可疑交易须上报；协助客户拆分=违规。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-09",
+    "layer": "foundation",
+    "label": "客户获取方法",
+    "confidence": 0.8,
+    "weight": 5,
+    "color": "#FFA94D",
+    "content": "传统三大渠道：缘故市场(信任基础好但有限)、转介绍(无限连锁，需技巧)、陌生拜访(量大但转化率低)。数字化获客概览：私域运营(微信生态)、自媒体获客(短视频/直播/图文)、定制化活动(沙龙/产说会/社区活动)。核心原则：获客不是一次性动作，而是持续的流量池建设。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-10",
+    "layer": "foundation",
+    "label": "初次面谈结构",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "建立信任→了解需求→激发兴趣的标准面谈框架。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-11",
+    "layer": "foundation",
+    "label": "风险金字塔唤醒",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "死亡/疾病/养老/子女教育四大风险的需求唤醒逻辑。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-12",
+    "layer": "foundation",
+    "label": "产品呈现技巧",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "产品亮点提炼(非条款朗读)、利益说明(而非功能罗列)。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-13",
+    "layer": "foundation",
+    "label": "异议处理话术",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "LSCPA异议处理五步法(Listen倾听→Share同理→Clarify澄清→Present方案→Ask促成)、三大异议类型(不划算/不想买/不相信)、真假异议判断法、高频异议应对(太贵了/不需要/考虑一下/已买了/不吉利/有社保了/买保险容易理赔难)。核心原则：异议是购买的第一步，异议越多购买欲望越强。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-14",
+    "layer": "foundation",
+    "label": "促成技巧",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "七大促成法：①请求成交法(直接请求)②假设成交法(假定已购买，引导具体细节)③选择成交法/二择一法(保额50万还是100万)④小点成交法(次要问题先行)⑤从众成交法(社会认同)⑥优惠成交法(让步促成)⑦总结利益成交法(回顾核心利益)。客户类型匹配：犹豫不决型→选择+小点；专家型→请求；朋友型→假设。试探性促成→识别购买信号→正式促成→成交确认。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-15",
+    "layer": "foundation",
+    "label": "保单递送与服务",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "递送流程标准化/保单整理/年度检视/理赔协助。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L1-16",
+    "layer": "foundation",
+    "label": "活动量管理",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "日均拜访量(3-5访)/有效拜访率/活动量追踪表。",
+    "category": "团队增员"
+  },
+  {
+    "id": "L1-17",
+    "layer": "foundation",
+    "label": "销售误导边界",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "销售误导边界：禁止把保险与银行存款/理财简单类比并承诺收益；分红/万能演示须同时展示低中高档并注明非保证；选择性披露（只讲高档、不讲免责与退保损失）=误导；误导证据链（双录）是监管处罚关键。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-18",
+    "layer": "foundation",
+    "label": "职业道德诚信",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "最大诚信原则/客户信息保密/利益冲突披露。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-19",
+    "layer": "foundation",
+    "label": "名单管理",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "客户名单分类/更新频率/优先级排序。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L1-20",
+    "layer": "foundation",
+    "label": "保险赔款税务",
+    "confidence": 0.8,
+    "weight": 3,
+    "color": "#FF6B6B",
+    "content": "赔款税务：保险赔款（重疾/医疗理赔金）免税；指定受益人的身故保险金不属遗产、直接给付受益人；普通商业保险保费不能抵个税，税优健康险/个人养老金（年12000元）可税前扣除；企业补充养老/医疗保费在规定标准内可税前扣除。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L1-21",
+    "layer": "foundation",
+    "label": "续期管理",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#FFA94D",
+    "content": "续期提醒/宽限期管理/失效保单复效。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L1-22",
+    "layer": "foundation",
+    "label": "核保基础知识",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#FF6B6B",
+    "content": "标准体/次标准体/延期/拒保的判断标准、健康告知处理。",
+    "category": "健康意外医疗"
+  },
+  {
+    "id": "L2-01",
+    "layer": "advanced",
+    "label": "家庭财务诊断",
+    "confidence": 0.7,
+    "weight": 6,
+    "color": "#4A90E2",
+    "content": "资产负债表/收支储蓄表制作与解读、财务比率分析。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L2-02",
+    "layer": "advanced",
+    "label": "风险缺口量化",
+    "confidence": 0.7,
+    "weight": 5,
+    "color": "#4A90E2",
+    "content": "生命价值法/遗嘱需求法/收入替代率的计算与应用。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L2-03",
+    "layer": "advanced",
+    "label": "客户画像分层",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "按收入/家庭生命周期/风险偏好将客户分成6-8类画像，匹配产品组合。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L2-04",
+    "layer": "advanced",
+    "label": "场景化需求唤醒",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "用'如果发生XX，你的家庭会怎样'的场景构建替代恐吓式营销。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L2-05",
+    "layer": "advanced",
+    "label": "个人所得税基础",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "个人所得税基础：综合所得起征点5000元/月；个人养老金年缴费上限12000元，在综合所得或经营所得中据实扣除，领取时按3%单独计税；边际税率决定税优价值（税率≤3%时价值有限）；自由职业者在汇算清缴时于经营所得中扣除。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L2-06",
+    "layer": "advanced",
+    "label": "婚姻继承法基础",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "婚姻继承法：婚内用共同财产投保的现金价值属夫妻共同财产，离婚可分割；指定受益人的身故保险金属受益人个人财产；未指定受益人/受益人先于被保险人身故=保险金作为遗产按法定继承；第一顺序继承人：配偶、子女、父母。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L2-07",
+    "layer": "advanced",
+    "label": "分红险机制",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "分红险机制：可分配盈余来自三差（利差/死差/费差）；分红非保证，取决于实际经营成果；演示利率≠实际分红；分红实现率=实际分红/演示分红，是评估公司兑现能力的关键指标；预定利率上限分红型1.75%（2025-09起）。",
+    "category": "寿险年金"
+  },
+  {
+    "id": "L2-08",
+    "layer": "advanced",
+    "label": "万能险精算",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "结算利率与保底利率/初始费用/持续奖金/部分领取规则。",
+    "category": "寿险年金"
+  },
+  {
+    "id": "L2-09",
+    "layer": "advanced",
+    "label": "投资基础",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#4A90E2",
+    "content": "股市/债券/基金基本概念、利率与保险产品价格的联动。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L2-10",
+    "layer": "advanced",
+    "label": "客户分层管理",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "A/B/C类客户标准、差异化跟进频率、RFM模型应用。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L2-11",
+    "layer": "advanced",
+    "label": "转介绍系统",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "转介绍时机选择/话术设计/激励机制/拒绝处理。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L2-12",
+    "layer": "advanced",
+    "label": "沉默客户激活",
+    "confidence": 0.7,
+    "weight": 3,
+    "color": "#50E3C2",
+    "content": "流失预警信号/激活策略/二次接触脚本。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L2-13",
+    "layer": "advanced",
+    "label": "个人品牌运营",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#50E3C2",
+    "content": "朋友圈内容规划/短视频基础制作/公众号运营/本地IP打造。",
+    "category": "数字化品牌"
+  },
+  {
+    "id": "L2-14",
+    "layer": "advanced",
+    "label": "CRM系统应用",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#50E3C2",
+    "content": "客户信息录入/跟进提醒/数据看板/分析报表。",
+    "category": "数字化品牌"
+  },
+  {
+    "id": "L2-15",
+    "layer": "advanced",
+    "label": "AI工具辅助",
+    "confidence": 0.5,
+    "weight": 2,
+    "color": "#50E3C2",
+    "content": "用大模型优化话术/快速查询条款/生成个性化建议。",
+    "category": "数字化品牌"
+  },
+  {
+    "id": "L2-16",
+    "layer": "advanced",
+    "label": "房产保险交互",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#4A90E2",
+    "content": "房贷与定期寿险匹配逻辑/房产传承中的保险角色。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L2-17",
+    "layer": "advanced",
+    "label": "投连险风控",
+    "confidence": 0.6,
+    "weight": 3,
+    "color": "#4A90E2",
+    "content": "账户类型/费用结构/风险提示义务/适合性评估。",
+    "category": "合规风控"
+  },
+  {
+    "id": "L2-18",
+    "layer": "advanced",
+    "label": "竞品对比能力",
+    "confidence": 0.6,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "同业产品对比框架/优劣势分析/非恶性对比的处理方式。",
+    "category": "数字化品牌"
+  },
+  {
+    "id": "L3-01",
+    "layer": "transcendent",
+    "label": "资产配置理论",
+    "confidence": 0.5,
+    "weight": 6,
+    "color": "#B8E986",
+    "content": "马科维茨现代投资组合/标准普尔家庭资产象限/美林时钟。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L3-02",
+    "layer": "transcendent",
+    "label": "税务筹划",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "个人所得税优化/企业主综合税筹/跨境税务/CRS影响。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L3-03",
+    "layer": "transcendent",
+    "label": "家族财富传承",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "遗嘱+保险金信托+家族信托的组合架构设计。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L3-04",
+    "layer": "transcendent",
+    "label": "企业主风险隔离",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "家企资产分离/股东互保/关键人保险/公司治理中的保险角色。",
+    "category": "高客信托"
+  },
+  {
+    "id": "L3-05",
+    "layer": "transcendent",
+    "label": "跨境财富规划",
+    "confidence": 0.4,
+    "weight": 4,
+    "color": "#B8E986",
+    "content": "移民前后税务规划/境外保险配置/外汇管理考量。",
+    "category": "财务法税"
+  },
+  {
+    "id": "L3-06",
+    "layer": "transcendent",
+    "label": "高客画像与触达",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#DDA0DD",
+    "content": "企业家/高管/专业人士的特征画像/商会、俱乐部、私行等圈层入口。",
+    "category": "高客信托"
+  },
+  {
+    "id": "L3-07",
+    "layer": "transcendent",
+    "label": "高客面谈方法论",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "不做产品推销→做家庭CFO角色/目标导向型规划/深度KYC。",
+    "category": "高客信托"
+  },
+  {
+    "id": "L3-08",
+    "layer": "transcendent",
+    "label": "保险金信托架构",
+    "confidence": 0.5,
+    "weight": 5,
+    "color": "#B8E986",
+    "content": "1.0(理赔金进信托)/2.0(保单进信托)/3.0(信托持有保单)的区别与适用。",
+    "category": "高客信托"
+  },
+  {
+    "id": "L3-09",
+    "layer": "transcendent",
+    "label": "信托法基础",
+    "confidence": 0.5,
+    "weight": 3,
+    "color": "#B8E986",
+    "content": "信托三要素(委托人/受托人/受益人)、受托人义务、信托财产独立性。",
+    "category": "高客信托"
+  },
+  {
+    "id": "L3-10",
+    "layer": "transcendent",
+    "label": "增员方法论",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#FFD700",
+    "content": "增员画像定义/增员渠道(招募/同业引进/跨行挖角)/吸引力话术。",
+    "category": "团队增员"
+  },
+  {
+    "id": "L3-11",
+    "layer": "transcendent",
+    "label": "新人培养体系",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#FFD700",
+    "content": "90天培养计划/陪同拜访/复盘会/技能通关考核。",
+    "category": "团队增员"
+  },
+  {
+    "id": "L3-12",
+    "layer": "transcendent",
+    "label": "团队绩效管理",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#FFD700",
+    "content": "活动量追踪/产能看板/差异化辅导/流失预警与干预。",
+    "category": "团队增员"
+  },
+  {
+    "id": "L3-13",
+    "layer": "transcendent",
+    "label": "养老产业知识",
+    "confidence": 0.5,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "9073养老格局/CCRC持续照护社区/长护险制度/养老社区运营模式。",
+    "category": "产业资源"
+  },
+  {
+    "id": "L3-14",
+    "layer": "transcendent",
+    "label": "医疗资源整合",
+    "confidence": 0.5,
+    "weight": 3,
+    "color": "#DDA0DD",
+    "content": "就医绿通/二次诊疗/海外就医/高端体检资源的整合与应用。",
+    "category": "产业资源"
+  },
+  {
+    "id": "L3-15",
+    "layer": "transcendent",
+    "label": "家族办公室概念",
+    "confidence": 0.4,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "单一家办/联合家办的运作模式、服务范围、设立条件。",
+    "category": "高客信托"
+  },
+  {
+    "id": "L1-23",
+    "layer": "foundation",
+    "label": "购买信号识别",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "语言信号(询问细节/价格/缴费方式/理赔流程/比较产品)、非语言信号(点头/前倾/沉默思考/拿合同仔细看/与家人交换眼神)、试探性促成(假设成交提问测试反应)、促成时机判断(信号出现后3分钟内行动)。反面信号：过度纠结价格不谈保障/频繁看手机/身体后倾。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-24",
+    "layer": "foundation",
+    "label": "转介绍请求实务",
+    "confidence": 0.8,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "六大请求时机：资料收集后/促成填要保书时/递交保单时/服务回访时/理赔协助后/日常联络中。请求话术四要素：明确描述目标画像/引导联想具体人名/降低心理门槛/承诺反馈结果。抗拒处理：消除顾虑(不会强推/只是认识一下)、降低期望(只需2-3个名字)。信息收集：被介绍人年龄/职业/收入/家庭/健康/最佳拜访时间。回访报告：联络结果/面谈进展/感谢转介绍/请求再次推荐。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L1-25",
+    "layer": "foundation",
+    "label": "私域运营与活动获客",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#FFA94D",
+    "content": "私域运营三板斧：朋友圈经营(专业内容30%+生活30%+互动40%)、社群运营(保险知识群/客户服务群，定期分享+答疑)、一对一私聊(节日问候/生日祝福/保单周年提醒/理赔资讯分享)。自媒体获客入门：短视频(保险科普/理赔故事/避坑指南)、直播(保险知识讲座/答疑互动)、图文(公众号/小红书/知乎)。定制化活动：产说会(产品说明会)、创说会(创业说明会/增员)、客户沙龙(亲子/养生/理财主题)、社区活动(义诊/法律咨询/节日活动)。核心原则：内容价值优先，获客是价值提供的副产品。",
+    "category": "数字化品牌"
+  },
+  {
+    "id": "L2-19",
+    "layer": "advanced",
+    "label": "促成心理学",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "六类客户决策风格×促成策略：犹豫不决型→选择成交+小点成交+从众成交；专家型/自我中心型→请求成交(尊重自主决策)；敌对型→请求成交+小点成交；朋友型→假设成交(关系信任基础)；信念型→从众成交(群体认同)；渴求型→优惠成交+保证成交。心理压力管理：识别客户压力信号/适时后退降低防御/用提问替代陈述。决策加速技术：损失厌恶框架(不买的代价>买的好处)、时间稀缺性(合规前提下)、社会证明。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L2-20",
+    "layer": "advanced",
+    "label": "深层异议挖掘",
+    "confidence": 0.7,
+    "weight": 4,
+    "color": "#50E3C2",
+    "content": "表面异议vs真实异议：太贵了→可能是预算问题/价值感知不足/比价心态/支付能力不够。3F法则深挖：Feel(感受认同)→Focus(聚焦真实痛点)→Fact(数据事实支撑)。异议日志分析：建立异议类型-处理效果矩阵，识别高频问题，优化话术。异议预防策略：在客户提出前主动处理(价格锚定/价值前置/风险可视化)。情绪处理：先处理心情再处理事情，客户的情绪化异议需要同理心而非逻辑。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L3-16",
+    "layer": "transcendent",
+    "label": "无限连锁经营",
+    "confidence": 0.6,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "John Fleming无限连锁法(Unlimited Chain)：每次面谈都是下一次获客的起点，签单不是终点而是转介绍的起点。关键人物(Center of Influence)培养：识别有影响力的客户/持续提供价值/建立战略合作关系/定期互惠。转介绍自动化体系：标准化请求话术库/转介绍追踪表/感谢激励机制/客户转介绍率KPI。目标：每周15个访谈约定，其中80%来自转介绍和关键人物推荐。从个人品牌到转介绍飞轮：专业声誉→客户满意度→主动推荐→新客户→更高声誉。",
+    "category": "客户经营"
+  },
+  {
+    "id": "L3-17",
+    "layer": "transcendent",
+    "label": "销售说服心理学",
+    "confidence": 0.6,
+    "weight": 4,
+    "color": "#DDA0DD",
+    "content": "Cialdini说服六原则保险场景化：互惠(先提供价值→再请求帮助)、承诺一致(小同意→大决定，健康告知→保障规划)、社会认同(同类客户案例/理赔数据)、喜好(共同兴趣/真诚赞美/相似性)、权威(专业资质/行业认证/公司品牌)、稀缺(合规前提下：核保政策收紧/产品停售)。说服伦理边界：不得利用信息不对称误导/不得制造虚假紧迫感/不得操纵恐惧情绪。高阶应用：将说服原则融入日常服务而非仅用于签单，建立长期信任关系。",
+    "category": "销售技能"
+  },
+  {
+    "id": "L1-26",
+    "layer": "foundation",
+    "label": "增额终身寿险",
+    "confidence": 0.9,
+    "weight": 5,
+    "color": "#FF6B6B",
+    "content": "保额与现金价值按约定利率复利递增的终身寿险。核心三参数：IRR/回本速度/减保规则。预定利率上限2.0%（2025-09起），保额增长率≠投资收益率，减保=部分退保有损失。分红型=保证1.5-1.75%+浮动分红。",
+    "category": "寿险年金"
+  },
+  {
+    "id": "L1-27",
+    "layer": "foundation",
+    "label": "医疗险DRG选品",
+    "confidence": 0.85,
+    "weight": 4,
+    "color": "#FF6B6B",
+    "content": "DRG/DIP医改后医疗险选品三要素：外购药械责任（是否限清单）、免赔额设计（0免赔/家庭共享/递减）、保证续保年限（20年优先）。梯度：百万医疗(基础兜底)/中端(特需部)/高端(私立海外)/惠民保(带病体普惠)。",
+    "category": "健康意外医疗"
+  },
+  {
+    "id": "L2-21",
+    "layer": "advanced",
+    "label": "分红险实现率",
+    "confidence": 0.85,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "红利实现率=实际派发÷演示×100%。2026-07演示利率上限降至3.5%，新品实现率易超100%但实际收益约3.2%，新老产品不可直接比。分配规则：至少70%可分配盈余给保单持有人。限高令：中小险企3.3%/大型3.1%。实现率≠收益承诺。",
+    "category": "寿险年金"
+  },
+  {
+    "id": "L2-22",
+    "layer": "advanced",
+    "label": "个人养老金税优",
+    "confidence": 0.9,
+    "weight": 4,
+    "color": "#4A90E2",
+    "content": "第三支柱：年缴上限12000元，EET递延纳税——缴费税前扣除、投资收益暂不征税、领取单独按3%计税。封闭运行至法定领取条件。对边际税率≥3%人群省税+强制储蓄+养老现金流三合一；税率<3%者反而吃亏。",
+    "category": "财务法税"
+  },
+  {
+    "id": "INT-PROD",
+    "layer": "internal",
+    "label": "内部知识·产品知识",
+    "confidence": 0.95,
+    "weight": 12,
+    "color": "#16A085",
+    "content": "公司自有产品知识（内部知识域）：14 款民生人寿产品 × 12 题/款 = 168 道反盲选产品题，覆盖医疗险/重疾险/年金险/终身寿险/护理险/意外险六大类。考核业务员对本公司产品的真实掌握，防止话术背稿、概念混淆。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-01",
+    "layer": "internal",
+    "label": "优医保2.0",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 医疗险：优医保2.0（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-02",
+    "layer": "internal",
+    "label": "百万能量(守护星)",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 医疗险：百万能量(守护星)（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-03",
+    "layer": "internal",
+    "label": "如意东风",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 重疾险：如意东风（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-04",
+    "layer": "internal",
+    "label": "润泽恒赢",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 年金险：润泽恒赢（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-05",
+    "layer": "internal",
+    "label": "心裕人生",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 年金险：心裕人生（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-06",
+    "layer": "internal",
+    "label": "心赢人生",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 年金险：心赢人生（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-07",
+    "layer": "internal",
+    "label": "聚盈宝(2025)",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 年金险：聚盈宝(2025)（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-08",
+    "layer": "internal",
+    "label": "聚能宝(2025)",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 年金险：聚能宝(2025)（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-09",
+    "layer": "internal",
+    "label": "隽永世家",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 终身寿险：隽永世家（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-10",
+    "layer": "internal",
+    "label": "传世金樽",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 终身寿险：传世金樽（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-11",
+    "layer": "internal",
+    "label": "鎏金世家",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 终身寿险：鎏金世家（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-12",
+    "layer": "internal",
+    "label": "勿忘我惠享版2025",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 护理险：勿忘我惠享版2025（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-13",
+    "layer": "internal",
+    "label": "勿忘我爱永驻",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 护理险：勿忘我爱永驻（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  },
+  {
+    "id": "PROD-14",
+    "layer": "internal",
+    "label": "活力腾腾",
+    "confidence": 0.9,
+    "weight": 6,
+    "color": "#16A085",
+    "content": "内部知识·产品知识 | 意外险：活力腾腾（民生人寿）12 道反盲选题（含场景/参数/判断）。",
+    "category": "产品"
+  }
 ]

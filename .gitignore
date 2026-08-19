@@ -1,31 +1,28 @@
 # 密钥
 .env
-# 运行时
+
+# 运行时（本地数据库、Python 缓存）
 kgds.db
 *.pyc
 __pycache__/
-# 必须保留根干净
-/apps/
-/backup/
-/backup_v2/
-/content/
-/edge-tts/
-/platform/
-/screenshots/
-/deliverables/
-/wealth-flow-sales/
-/wealth_flow_ppt.py
+
+# 归档（V1/V2 旧架构 + 遗留 + 其他项目，确认后可整体删除）
+/_archive/
+
+# 数据（用户数据、自动备份不入库）
 /data/users/
 /data/backups/
-*.bak_*
+/data/cache/
 /data/roles/insurance-agent/.flywheel_last_run
-_*.py
-_*.gz
-*.log
-fix_*.py
-test_*.py
-screenshot_*.png
-manifest.json
-sw.js
-zeabur.json
-index.html
+*.bak_*
+
+# 临时/生成文件（仅根目录，避免误伤 src/test_engine.py 等核心模块）
+/_*.py
+/_*.gz
+/*.log
+/fix_*.py
+/test_*.py
+/screenshot_*.png
+
+# 部署平台文件
+/zeabur.json
