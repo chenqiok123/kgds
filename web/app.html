@@ -406,6 +406,10 @@ body {
             <label>邮箱</label>
             <input type="email" id="f-email" placeholder="your@email.com" autocomplete="email">
           </div>
+          <div class="field" id="field-password" style="display:none;">
+            <label>密码</label>
+            <input type="password" id="f-password" placeholder="管理员密码" autocomplete="current-password">
+          </div>
           <div class="field" id="field-industry" style="display:none;">
             <label>行业 <span class="req">*</span></label>
             <select id="f-industry"></select>
@@ -426,6 +430,9 @@ body {
           <button class="btn btn-primary btn-block" onclick="handleAuth()" id="btn-auth">🚀 开始测评</button>
           <div class="switch-mode" id="switch-mode">
             已有账号？<a onclick="toggleAuthMode()">直接登录</a>
+          </div>
+          <div class="switch-mode" id="admin-entry" style="margin-top:6px;font-size:12px">
+            <a onclick="switchToAdmin()" style="color:var(--tx2);text-decoration:underline">🔑 管理员登录</a>
           </div>
         </div>
       </div>

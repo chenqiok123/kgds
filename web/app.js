@@ -2,7 +2,7 @@
 var API = '';
 var state = {
   user: null,          // {id, name, email, token}
-  authMode: 'register', // 'register' | 'login'
+  authMode: 'register', // 'register' | 'login' | 'admin'
   profile:{}, questions:[], answers:{}, currentQ:0,
   nodes:[], edges:[], report:null, graphInstance:null,
   blinkTimer: null, selectedLevels: ['foundation','advanced'],
@@ -182,18 +182,30 @@ function fieldWrapper(id) {
 }
 
 function refreshAuthUI() {
+  var isAdmin = state.authMode === 'admin';
   var isLogin = state.authMode === 'login';
   var title = document.getElementById('login-title');
   var label = document.getElementById('field-email').querySelector('label');
   var btn = document.getElementById('btn-auth');
   var sw = document.getElementById('switch-mode');
   var sub = document.getElementById('sub-hint');
-  fieldWrapper('f-name').style.display = isLogin ? 'none' : 'block';
-  fieldWrapper('field-industry').style.display = isLogin ? 'none' : 'block';
-  fieldWrapper('field-occupation').style.display = isLogin ? 'none' : 'block';
-  fieldWrapper('field-company').style.display = isLogin ? 'none' : 'block';
+  var pw = document.getElementById('field-password');
+  var ae = document.getElementById('admin-entry');
+  fieldWrapper('f-name').style.display = (isLogin || isAdmin) ? 'none' : 'block';
+  fieldWrapper('field-industry').style.display = (isLogin || isAdmin) ? 'none' : 'block';
+  fieldWrapper('field-occupation').style.display = (isLogin || isAdmin) ? 'none' : 'block';
+  fieldWrapper('field-company').style.display = (isLogin || isAdmin) ? 'none' : 'block';
+  fieldWrapper('field-phone').style.display = (isLogin || isAdmin) ? 'none' : 'block';
+  if (pw) pw.style.display = isAdmin ? 'block' : 'none';
+  if (ae) ae.style.display = isAdmin ? 'none' : 'block';
   togglePhoneField();
-  if (isLogin) {
+  if (isAdmin) {
+    title.textContent = '🔑 管理员登录';
+    label.textContent = '邮箱（管理员账号）';
+    btn.textContent = '进入管理后台';
+    sw.innerHTML = '返回用户端？<a onclick="switchToUser()">用户登录</a>';
+    if (sub) sub.innerHTML = '管理后台 · 岗位 / 题库 / 用户 / 系统设置';
+  } else if (isLogin) {
     title.textContent = '🔑 登录 KGDS';
     label.textContent = '邮箱';
     btn.textContent = '登录';
@@ -213,6 +225,16 @@ function toggleAuthMode() {
   refreshAuthUI();
 }
 
+function switchToAdmin() {
+  state.authMode = 'admin';
+  refreshAuthUI();
+}
+
+function switchToUser() {
+  state.authMode = 'register';
+  refreshAuthUI();
+}
+
 function handleAuth() {
   var name = document.getElementById('f-name').value.trim();
   var email = document.getElementById('f-email').value.trim();
@@ -220,7 +242,12 @@ function handleAuth() {
   if (!email.includes('@') || !email.includes('.')) { toast('请输入有效的邮箱地址', 'error'); return; }
 
   var endpoint, body;
-  if (state.authMode === 'register') {
+  if (state.authMode === 'admin') {
+    var password = document.getElementById('f-password').value;
+    if (!password) { toast('请输入管理员密码', 'error'); return; }
+    endpoint = '/admin/login';
+    body = { email: email, password: password };
+  } else if (state.authMode === 'register') {
     if (!name) { toast('请输入姓名', 'error'); return; }
     var industry = document.getElementById('f-industry').value;
     var occupation = document.getElementById('f-occupation').value;
@@ -237,10 +264,18 @@ function handleAuth() {
   var btn = document.getElementById('btn-auth');
   btn.disabled = true; btn.textContent = '处理中...';
 
+  var authBtnText = state.authMode === 'register' ? '🚀 开始测评' : (state.authMode === 'admin' ? '进入管理后台' : '登录');
+
   fetch(API + endpoint, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.error) { toast(data.error, 'error'); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; return; }
+      if (data.error) { toast(data.error, 'error'); btn.disabled = false; btn.textContent = authBtnText; return; }
+      if (state.authMode === 'admin') {
+        // 管理员登录成功 → 存 token 并跳转管理后台
+        localStorage.setItem('kgds_admin', JSON.stringify(data.user));
+        window.location.href = 'admin.html';
+        return;
+      }
       state.user = data.user;
       state.user.login_at = Date.now();  // 记录登录时间，作为30天自动登录有效期起点
       localStorage.setItem('kgds_user', JSON.stringify(state.user));
@@ -250,7 +285,7 @@ function handleAuth() {
       loadDaily();  // 当日首次进入跳出每日一题弹窗
       showPhase('profile');
     })
-    .catch(function(e) { toast('网络异常，请检查连接后重试', 'error'); btn.disabled = false; btn.textContent = state.authMode==='register'?'🚀 开始测评':'登录'; });
+    .catch(function(e) { toast('网络异常，请检查连接后重试', 'error'); btn.disabled = false; btn.textContent = authBtnText; });
 }
 
 function logout() {
