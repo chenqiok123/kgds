@@ -214,10 +214,12 @@ def init_db():
     conn.commit()
 
     # Seed default admin — 密码从环境变量读取，绝不硬编码
+    admin_email = os.environ.get("ADMIN_EMAIL", "admin@kgds.local")
+    admin_pw = os.environ.get("ADMIN_PASSWORD")
     admin = conn.execute("SELECT id FROM users WHERE is_admin = 1").fetchone()
     if not admin:
-        admin_email = os.environ.get("ADMIN_EMAIL", "admin@kgds.local")
-        admin_pw = os.environ.get("ADMIN_PASSWORD", secrets.token_hex(8))
+        if not admin_pw:
+            admin_pw = secrets.token_hex(8)
         conn.execute("INSERT INTO users (name, email, token, password_hash, is_admin) VALUES (?,?,?,?,?)",
                      ("管理员", admin_email, new_token(), hash_pw(admin_pw), 1))
         conn.commit()
@@ -226,6 +228,11 @@ def init_db():
             print(f"[KGDS]    邮箱: {admin_email}")
             print(f"[KGDS]    密码: {admin_pw}")
             print(f"[KGDS]    ⚠️  请立即在 Zeabur 环境变量中设置 ADMIN_PASSWORD，否则重新部署后密码会变！")
+    elif admin_pw:
+        # 已有管理员 + 已设置 ADMIN_PASSWORD → 强制更新密码（旧的随机密码已不可知，保证环境变量始终生效）
+        conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_pw(admin_pw), admin["id"]))
+        conn.commit()
+        print(f"[KGDS] 已用 ADMIN_PASSWORD 环境变量更新管理员密码（{admin_email}）")
 
     # Seed 默认行业/岗位/企业（保险 → 代理人 → 民生人寿）
     if not conn.execute("SELECT id FROM industries LIMIT 1").fetchone():
