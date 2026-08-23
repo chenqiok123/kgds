@@ -1210,12 +1210,15 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             occupation = (data.get("occupation") or "").strip()
             company = (data.get("company") or "").strip()
             phone = (data.get("phone") or "").strip()
+            source = (data.get("source") or "").strip()
             if not name or not email: return self._send_json({"error": "姓名和邮箱不能为空"}, 400)
             if "@" not in email or "." not in email: return self._send_json({"error": "请输入有效的邮箱地址"}, 400)
-            if not industry: return self._send_json({"error": "请选择行业"}, 400)
-            # 行业必须与管理员录入一致
-            valid_industries = {r["key"] for r in list_industries()}
-            if industry not in valid_industries: return self._send_json({"error": "所选行业无效，请刷新后重试"}, 400)
+            # 兔扑书友注册（source=topoo）：免选行业——阅读擂台用户不加载行业知识包
+            if source != "topoo":
+                if not industry: return self._send_json({"error": "请选择行业"}, 400)
+                # 行业必须与管理员录入一致
+                valid_industries = {r["key"] for r in list_industries()}
+                if industry not in valid_industries: return self._send_json({"error": "所选行业无效，请刷新后重试"}, 400)
             # 企业用户：必填手机号 + 白名单校验 + 手机号查重
             if company:
                 if not phone: return self._send_json({"error": "企业用户需填写手机号"}, 400)
