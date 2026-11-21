@@ -27,7 +27,7 @@ KGDS API Server v3 — 管理后台版
 启动: python server.py [--port 8081]
 """
 
-import json, os, sys, sqlite3, hashlib, secrets, re, shutil, random
+import json, os, sys, sqlite3, hashlib, secrets, re, shutil, random, base64
 from pathlib import Path
 from datetime import datetime, date, timedelta
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
@@ -56,14 +56,52 @@ from selector import select_questions, extract_tested_qids, extract_node_confide
 _flywheel = FlywheelEngine()  # 三飞轮引擎实例
 _scheduler = FlywheelScheduler(_flywheel, min_new=10)  # 自动触发调度器
 
+# ── 运行时常量 ──
+APP_VERSION = "v3-20261121-authfix"
+_BIND_ATTEMPTS = {}  # 绑定密码接口的内存限流：{ip: [时间戳,...]}
+ALLOWED_ORIGINS = [o.strip() for o in os.environ.get(
+    "ALLOWED_ORIGINS",
+    "https://chunrg.cn,http://localhost:8081,http://127.0.0.1:8081").split(",") if o.strip()]
+
 # ── Database ──
 def get_db():
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     return conn
 
+PBKDF2_ITER = 200_000
+
 def hash_pw(password):
-    return hashlib.sha256(("kgds_salt_" + password).encode()).hexdigest()
+    """pbkdf2_hmac + 每用户随机盐。格式 pbkdf2$iter$b64salt$b64hash，仍存在 password_hash(TEXT)，无需改表。"""
+    salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, PBKDF2_ITER)
+    return "pbkdf2$%d$%s$%s" % (PBKDF2_ITER, base64.b64encode(salt).decode(), base64.b64encode(dk).decode())
+
+def verify_pw(password, stored):
+    """校验密码；兼容旧格式 sha256('kgds_salt_'+pw)，旧格式通过后由调用方透明升级。"""
+    if not stored or not isinstance(stored, str):
+        return False
+    if stored.startswith("pbkdf2$"):
+        try:
+            _, it, s, h = stored.split("$")
+            dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), base64.b64decode(s), int(it))
+            return secrets.compare_digest(dk, base64.b64decode(h))
+        except Exception:
+            return False
+    return secrets.compare_digest(stored, hashlib.sha256(("kgds_salt_" + password).encode()).hexdigest())
+
+def is_legacy_hash(stored):
+    return bool(stored) and isinstance(stored, str) and not stored.startswith("pbkdf2$")
+
+def check_password_strength(password):
+    """返回错误文案；None 表示合格。"""
+    if not password or len(password) < 8:
+        return "密码至少 8 位"
+    if not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password):
+        return "密码需同时包含字母和数字"
+    if password.lower() in ("12345678", "password", "kgds1234", "abcd1234"):
+        return "密码过于简单，请更换"
+    return None
 
 def init_db():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)  # 确保持久卷目录存在
@@ -231,6 +269,17 @@ def init_db():
     elif admin_pw:
         # 已有管理员 + 已设置 ADMIN_PASSWORD → 强制更新密码（旧的随机密码已不可知，保证环境变量始终生效）
         conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_pw(admin_pw), admin["id"]))
+        # ADMIN_EMAIL 有值且与库中不同 → 迁移管理员邮箱（邮件唯一，冲突则跳过并告警）
+        want_email = (os.environ.get("ADMIN_EMAIL") or "").strip()
+        if want_email:
+            cur = conn.execute("SELECT email FROM users WHERE id = ?", (admin["id"],)).fetchone()
+            cur_email = cur["email"] if cur else ""
+            if cur_email.lower() != want_email.lower():
+                try:
+                    conn.execute("UPDATE users SET email = ? WHERE id = ?", (want_email, admin["id"]))
+                    print(f"[KGDS] 管理员邮箱已迁移：{cur_email} → {want_email}")
+                except sqlite3.IntegrityError:
+                    print(f"[KGDS] ⚠️  管理员邮箱迁移失败：{want_email} 已被其他账号占用，保留 {cur_email}")
         conn.commit()
         print(f"[KGDS] 已用 ADMIN_PASSWORD 环境变量更新管理员密码（{admin_email}）")
 
@@ -359,48 +408,69 @@ def pick_internal_questions(items, per_product=2, seed=None):
 def new_token():
     return secrets.token_hex(16)
 
-def register_user(name, email, industry="", occupation="", company="", phone=""):
+def register_user(name, email, password, industry="", occupation="", company="", phone=""):
     conn = get_db()
     token = new_token()
     try:
-        conn.execute("INSERT INTO users (name, email, token, industry, occupation, company, phone) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                     (name, email, token, industry, occupation, company, phone))
+        conn.execute("INSERT INTO users (name, email, token, password_hash, industry, occupation, company, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                     (name, email, token, hash_pw(password), industry, occupation, company, phone))
         conn.commit()
         uid = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()["id"]
         return {"id": uid, "name": name, "email": email, "token": token, "is_admin": False,
                 "industry": industry, "occupation": occupation, "company": company, "phone": phone}
     except sqlite3.IntegrityError:
-        row = conn.execute("SELECT id, name, token, is_admin, industry, occupation, company, phone FROM users WHERE email = ?", (email,)).fetchone()
-        if row:
-            return {"id": row["id"], "name": row["name"], "email": email, "token": row["token"], "is_admin": bool(row["is_admin"]),
-                    "industry": row["industry"], "occupation": row["occupation"], "company": row["company"], "phone": row["phone"]}
-        raise
+        # 邮箱已存在：绝不返回原用户 token（旧实现的账号接管漏洞就在此处）
+        return None
     finally:
         conn.close()
 
-def login_user(email):
+def verify_login(email, password):
+    """邮箱 + 密码 校验。旧哈希（sha256 固定盐）验证通过后透明升级为 pbkdf2。"""
     conn = get_db()
-    row = conn.execute("SELECT id, name, token, is_admin, industry, occupation, company, phone FROM users WHERE email = ?", (email,)).fetchone()
+    row = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
     conn.close()
-    if row:
-        return {"id": row["id"], "name": row["name"], "email": email, "token": row["token"], "is_admin": bool(row["is_admin"]),
-                "industry": row["industry"], "occupation": row["occupation"], "company": row["company"], "phone": row["phone"]}
-    return None
+    if not row or not row["password_hash"]:
+        return None
+    if not verify_pw(password, row["password_hash"]):
+        return None
+    if is_legacy_hash(row["password_hash"]):
+        conn = get_db()
+        conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_pw(password), row["id"]))
+        conn.commit()
+        conn.close()
+    u = {k: row[k] for k in ("id", "name", "email", "is_admin", "industry", "occupation", "company", "phone")}
+    u["is_admin"] = bool(u["is_admin"])
+    return u
+
+def bind_password(email, name, phone, password):
+    """存量用户首次绑定密码：邮箱 + 姓名 + 手机号 三者与库中记录一致才允许设置。
+    手机号在注册时已与企业白名单比对过，本身即为可信因子。"""
+    conn = get_db()
+    row = conn.execute("SELECT id, name, phone, password_hash FROM users WHERE email = ?", (email,)).fetchone()
+    conn.close()
+    if not row:
+        return False, "信息不匹配"
+    if row["password_hash"]:
+        return False, "该账号已设置密码，请直接登录"
+    db_name = (row["name"] or "").strip()
+    db_phone = (row["phone"] or "").strip()
+    if not db_name or not db_phone:
+        return False, "该账号缺少姓名或手机号，请联系管理员重置密码"
+    if db_name != name.strip() or db_phone != phone.strip():
+        return False, "信息不匹配"
+    conn = get_db()
+    conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_pw(password), row["id"]))
+    conn.commit()
+    conn.close()
+    return True, "ok"
 
 def admin_login(email, password):
     conn = get_db()
     row = conn.execute("SELECT id, name, password_hash, is_admin FROM users WHERE email = ?", (email,)).fetchone()
     conn.close()
-    if not row or not row["is_admin"]:
+    if not row or not row["is_admin"] or not row["password_hash"]:
         return None
-    if not row["password_hash"]:
-        # First login — set password
-        conn = get_db()
-        conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_pw(password), row["id"]))
-        conn.commit()
-        conn.close()
-        return {"id": row["id"], "name": row["name"], "email": email, "is_admin": True}
-    if row["password_hash"] == hash_pw(password):
+    if verify_pw(password, row["password_hash"]):
         # Regenerate token
         token = new_token()
         conn = get_db()
@@ -951,12 +1021,28 @@ class KGDSHandler(SimpleHTTPRequestHandler):
         auth = self.headers.get("Authorization", "")
         return auth.replace("Bearer ", "") if auth.startswith("Bearer ") else ""
 
+    def _cors_origin(self):
+        origin = self.headers.get("Origin", "")
+        return origin if origin in ALLOWED_ORIGINS else ""
+
+    def _sec_headers(self):
+        """低风险安全头（CSP 待单独一轮回归后再加，免得打断 3D 图谱的 unpkg/worker）"""
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        self.send_header("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+
     def _send_json(self, data, status=200):
         body = json.dumps(data, ensure_ascii=False, default=str).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", len(body))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        _o = self._cors_origin()
+        if _o:
+            self.send_header("Access-Control-Allow-Origin", _o)
+            self.send_header("Vary", "Origin")
+        self._sec_headers()
         self.end_headers()
         self.wfile.write(body)
 
@@ -974,15 +1060,23 @@ class KGDSHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         body = path.read_bytes()
         self.send_header("Content-Length", len(body))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        _o = self._cors_origin()
+        if _o:
+            self.send_header("Access-Control-Allow-Origin", _o)
+            self.send_header("Vary", "Origin")
+        self._sec_headers()
         self.end_headers()
         self.wfile.write(body)
 
     def do_OPTIONS(self):
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        _o = self._cors_origin()
+        if _o:
+            self.send_header("Access-Control-Allow-Origin", _o)
+            self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self._sec_headers()
         self.end_headers()
 
     # ── Routing helpers ──
@@ -1059,6 +1153,35 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             return self._send_json({"error": "该行业知识包尚未配置"}, 404)
 
         # ── 多行业元数据（注册页下拉用，公开）──
+        if path == "/api/health":
+            dbok = False
+            try:
+                _c = get_db(); _c.execute("SELECT 1").fetchone(); _c.close(); dbok = True
+            except Exception:
+                dbok = False
+            return self._send_json({"ok": dbok, "db": dbok, "version": APP_VERSION,
+                                    "time": datetime.now().isoformat()})
+
+        if path == "/api/stats":
+            user = get_user_by_token(self._auth_header())
+            if not user: return self._send_json({"error": "请先登录"}, 401)
+            if not user.get("is_admin"): return self._send_json({"error": "权限不足"}, 403)
+            conn = get_db()
+            try:
+                total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+                total_admin = conn.execute("SELECT COUNT(*) FROM users WHERE is_admin = 1").fetchone()[0]
+                total_sessions = conn.execute("SELECT COUNT(*) FROM test_sessions").fetchone()[0]
+                active7 = conn.execute("SELECT COUNT(DISTINCT user_id) FROM test_sessions WHERE created_at >= datetime('now','localtime','-7 days')").fetchone()[0]
+                sessions7 = conn.execute("SELECT COUNT(*) FROM test_sessions WHERE created_at >= datetime('now','localtime','-7 days')").fetchone()[0]
+                last_at = conn.execute("SELECT MAX(created_at) FROM test_sessions").fetchone()[0]
+                unbound = conn.execute("SELECT COUNT(*) FROM users WHERE password_hash IS NULL").fetchone()[0]
+            finally:
+                conn.close()
+            return self._send_json({"users": total_users, "admins": total_admin,
+                                    "sessions": total_sessions, "active_users_7d": active7,
+                                    "sessions_7d": sessions7, "last_activity": last_at,
+                                    "users_without_password": unbound, "version": APP_VERSION})
+
         if path == "/api/meta":
             return self._send_json({
                 "industries": list_industries(),
@@ -1211,8 +1334,11 @@ class KGDSHandler(SimpleHTTPRequestHandler):
             company = (data.get("company") or "").strip()
             phone = (data.get("phone") or "").strip()
             source = (data.get("source") or "").strip()
+            password = data.get("password") or ""
             if not name or not email: return self._send_json({"error": "姓名和邮箱不能为空"}, 400)
             if "@" not in email or "." not in email: return self._send_json({"error": "请输入有效的邮箱地址"}, 400)
+            pw_err = check_password_strength(password)
+            if pw_err: return self._send_json({"error": pw_err}, 400)
             # 兔扑书友注册（source=topoo）：免选行业——阅读擂台用户不加载行业知识包
             if source != "topoo":
                 if not industry: return self._send_json({"error": "请选择行业"}, 400)
@@ -1230,15 +1356,36 @@ class KGDSHandler(SimpleHTTPRequestHandler):
                     conn.close()
                     if not dup or dup["email"].lower() != email:
                         return self._send_json({"error": "该手机号已被其他账号绑定，无法重复注册"}, 403)
-            user = register_user(name, email, industry, occupation, company, phone)
+            user = register_user(name, email, password, industry, occupation, company, phone)
+            if not user:
+                return self._send_json({"error": "该邮箱已注册，请直接登录"}, 409)
             return self._send_json({"user": user, "message": "注册成功"})
 
         if path == "/api/login":
             email = (data.get("email") or "").strip().lower()
-            if not email: return self._send_json({"error": "请输入邮箱"}, 400)
-            user = login_user(email)
+            password = data.get("password") or ""
+            if not email or not password: return self._send_json({"error": "请输入邮箱和密码"}, 400)
+            user = verify_login(email, password)
             if user: return self._send_json({"user": user, "message": "欢迎回来"})
-            return self._send_json({"error": "该邮箱未注册，请先注册"}, 404)
+            return self._send_json({"error": "邮箱或密码错误"}, 401)
+
+        if path == "/api/bind-password":
+            email = (data.get("email") or "").strip().lower()
+            name = (data.get("name") or "").strip()
+            phone = (data.get("phone") or "").strip()
+            password = data.get("password") or ""
+            if not email or not name or not phone: return self._send_json({"error": "请填写邮箱、姓名、手机号"}, 400)
+            pw_err = check_password_strength(password)
+            if pw_err: return self._send_json({"error": pw_err}, 400)
+            _rl_key = "bind:" + (self.client_address[0] if self.client_address else "?")
+            _now = __import__("time").time()
+            _hits = [t for t in _BIND_ATTEMPTS.get(_rl_key, []) if _now - t < 600]
+            if len(_hits) >= 8:
+                return self._send_json({"error": "尝试过于频繁，请 10 分钟后再试"}, 429)
+            _hits.append(_now); _BIND_ATTEMPTS[_rl_key] = _hits
+            ok, msg = bind_password(email, name, phone, password)
+            if ok: return self._send_json({"ok": True, "message": "密码已设置，请用新密码登录"})
+            return self._send_json({"error": msg}, 400)
 
         if path == "/api/generate-test":
             levels = data.get("levels")
@@ -1853,8 +2000,9 @@ if __name__ == "__main__":
     init_db()
     sync_internal_questions()
     port = int(os.environ.get("PORT", sys.argv[2] if len(sys.argv) > 2 and sys.argv[1] == "--port" else 8081))
-    server = ThreadingHTTPServer(("0.0.0.0", port), KGDSHandler)
-    print(f"[KGDS] Server v3 running on port {port}")
+    host = os.environ.get("HOST", "0.0.0.0")   # Zeabur 需 0.0.0.0；本地调试可设 HOST=127.0.0.1
+    server = ThreadingHTTPServer((host, port), KGDSHandler)
+    print(f"[KGDS] Server {APP_VERSION} running on {host}:{port}")
     print(f"[KGDS] Admin: http://localhost:{port}/admin")
     print(f"[KGDS] SQLite: {DB_PATH}")
     try:

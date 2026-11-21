@@ -184,6 +184,7 @@ function fieldWrapper(id) {
 function refreshAuthUI() {
   var isAdmin = state.authMode === 'admin';
   var isLogin = state.authMode === 'login';
+  var isBind  = state.authMode === 'bind';
   var title = document.getElementById('login-title');
   var label = document.getElementById('field-email').querySelector('label');
   var btn = document.getElementById('btn-auth');
@@ -191,32 +192,44 @@ function refreshAuthUI() {
   var sub = document.getElementById('sub-hint');
   var pw = document.getElementById('field-password');
   var ae = document.getElementById('admin-entry');
+  var be = document.getElementById('bind-entry');
   fieldWrapper('f-name').style.display = (isLogin || isAdmin) ? 'none' : 'block';
-  fieldWrapper('field-industry').style.display = (isLogin || isAdmin) ? 'none' : 'block';
-  fieldWrapper('field-occupation').style.display = (isLogin || isAdmin) ? 'none' : 'block';
-  fieldWrapper('field-company').style.display = (isLogin || isAdmin) ? 'none' : 'block';
+  fieldWrapper('field-industry').style.display = (isLogin || isAdmin || isBind) ? 'none' : 'block';
+  fieldWrapper('field-occupation').style.display = (isLogin || isAdmin || isBind) ? 'none' : 'block';
+  fieldWrapper('field-company').style.display = (isLogin || isAdmin || isBind) ? 'none' : 'block';
   fieldWrapper('field-phone').style.display = (isLogin || isAdmin) ? 'none' : 'block';
-  if (pw) pw.style.display = isAdmin ? 'block' : 'none';
-  if (ae) ae.style.display = isAdmin ? 'none' : 'block';
+  if (pw) pw.style.display = 'block';          // 注册/登录/管理员/绑定 四种模式都要密码
+  if (ae) ae.style.display = (isAdmin || isBind) ? 'none' : 'block';
+  if (be) be.style.display = (isAdmin || isBind) ? 'none' : 'block';
   togglePhoneField();
   if (isAdmin) {
     title.textContent = '🔑 管理员登录';
     label.textContent = '邮箱（管理员账号）';
     btn.textContent = '进入管理后台';
+    pw.querySelector('label').textContent = '管理员密码';
     sw.innerHTML = '返回用户端？<a onclick="switchToUser()">用户登录</a>';
     if (sub) sub.innerHTML = '管理后台 · 岗位 / 题库 / 用户 / 系统设置';
+  } else if (isBind) {
+    title.textContent = '🔐 绑定密码';
+    label.textContent = '注册时用的邮箱';
+    btn.textContent = '设置密码';
+    pw.querySelector('label').textContent = '新密码';
+    sw.innerHTML = '<a onclick="switchToUser()">返回登录</a>';
+    if (sub) sub.innerHTML = '老用户的密码是空的，需要先绑定一次<br>填写注册时的姓名与手机号即可';
   } else if (isLogin) {
     title.textContent = '🔑 登录 KGDS';
     label.textContent = '邮箱';
     btn.textContent = '登录';
+    pw.querySelector('label').textContent = '密码';
     sw.innerHTML = '还没有账号？<a onclick="toggleAuthMode()">立即注册</a>';
     if (sub) sub.innerHTML = '欢迎回来';
   } else {
     title.textContent = '👋 欢迎使用 KGDS';
     label.textContent = '邮箱';
     btn.textContent = '🚀 开始测评';
+    pw.querySelector('label').textContent = '设置密码';
     sw.innerHTML = '已有账号？<a onclick="toggleAuthMode()">直接登录</a>';
-    if (sub) sub.innerHTML = '知识图谱诊断系统<br>首次使用将自动注册';
+    if (sub) sub.innerHTML = '知识图谱诊断系统<br>注册需设置密码（至少 8 位，含字母和数字）';
   }
 }
 
@@ -230,6 +243,11 @@ function switchToAdmin() {
   refreshAuthUI();
 }
 
+function switchToBind() {
+  state.authMode = 'bind';
+  refreshAuthUI();
+}
+
 function switchToUser() {
   state.authMode = 'register';
   refreshAuthUI();
@@ -238,17 +256,25 @@ function switchToUser() {
 function handleAuth() {
   var name = document.getElementById('f-name').value.trim();
   var email = document.getElementById('f-email').value.trim();
+  var password = document.getElementById('f-password').value;
   if (!email) { toast('请输入邮箱地址', 'error'); return; }
   if (!email.includes('@') || !email.includes('.')) { toast('请输入有效的邮箱地址', 'error'); return; }
 
   var endpoint, body;
   if (state.authMode === 'admin') {
-    var password = document.getElementById('f-password').value;
     if (!password) { toast('请输入管理员密码', 'error'); return; }
     endpoint = '/admin/login';
     body = { email: email, password: password };
+  } else if (state.authMode === 'bind') {
+    if (!name) { toast('请输入注册时的姓名', 'error'); return; }
+    var bindPhone = document.getElementById('f-phone').value.trim();
+    if (!bindPhone) { toast('请输入注册时的手机号', 'error'); return; }
+    if (!password) { toast('请设置新密码', 'error'); return; }
+    endpoint = '/api/bind-password';
+    body = { email: email, name: name, phone: bindPhone, password: password };
   } else if (state.authMode === 'register') {
     if (!name) { toast('请输入姓名', 'error'); return; }
+    if (!password) { toast('请设置密码（至少 8 位，含字母和数字）', 'error'); return; }
     var industry = document.getElementById('f-industry').value;
     var occupation = document.getElementById('f-occupation').value;
     var company = document.getElementById('f-company').value;
@@ -256,20 +282,29 @@ function handleAuth() {
     if (!industry) { toast('请选择行业', 'error'); return; }
     if (company && !phone) { toast('加入企业需填写手机号', 'error'); return; }
     endpoint = '/api/register';
-    body = { name: name, email: email, industry: industry, occupation: occupation, company: company, phone: phone };
+    body = { name: name, email: email, password: password, industry: industry, occupation: occupation, company: company, phone: phone };
   } else {
+    if (!password) { toast('请输入密码', 'error'); return; }
     endpoint = '/api/login';
-    body = { email: email };
+    body = { email: email, password: password };
   }
   var btn = document.getElementById('btn-auth');
   btn.disabled = true; btn.textContent = '处理中...';
 
-  var authBtnText = state.authMode === 'register' ? '🚀 开始测评' : (state.authMode === 'admin' ? '进入管理后台' : '登录');
+  var authBtnText = state.authMode === 'register' ? '🚀 开始测评' : (state.authMode === 'admin' ? '进入管理后台' : (state.authMode === 'bind' ? '设置密码' : '登录'));
 
   fetch(API + endpoint, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.error) { toast(data.error, 'error'); btn.disabled = false; btn.textContent = authBtnText; return; }
+      if (state.authMode === 'bind') {
+        toast('密码已设置，请用新密码登录', 'success');
+        state.authMode = 'login';
+        refreshAuthUI();
+        btn.disabled = false; btn.textContent = '登录';
+        document.getElementById('f-password').value = '';
+        return;
+      }
       if (state.authMode === 'admin') {
         // 管理员登录成功 → 存 token 并跳转管理后台
         localStorage.setItem('kgds_admin', JSON.stringify(data.user));

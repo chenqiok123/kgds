@@ -408,7 +408,7 @@ body {
           </div>
           <div class="field" id="field-password" style="display:none;">
             <label>密码</label>
-            <input type="password" id="f-password" placeholder="管理员密码" autocomplete="current-password">
+            <input type="password" id="f-password" placeholder="至少 8 位，含字母和数字" autocomplete="current-password">
           </div>
           <div class="field" id="field-industry" style="display:none;">
             <label>行业 <span class="req">*</span></label>
@@ -433,6 +433,9 @@ body {
           </div>
           <div class="switch-mode" id="admin-entry" style="margin-top:6px;font-size:12px">
             <a onclick="switchToAdmin()" style="color:var(--tx2);text-decoration:underline">🔑 管理员登录</a>
+          </div>
+          <div class="switch-mode" id="bind-entry" style="margin-top:6px;font-size:12px">
+            <a onclick="switchToBind()" style="color:var(--tx2);text-decoration:underline">老用户还没设密码？绑定密码</a>
           </div>
         </div>
       </div>
